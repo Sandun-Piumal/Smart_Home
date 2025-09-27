@@ -1,81 +1,4 @@
-// Add these new functions to SmartHomeSystem class
-
 class SmartHomeSystem {
-    // ... existing code ...
-
-    updateUI(data) {
-        // Update gate status
-        this.updateStatusElement('gate-status', data.gateOpen, 'Open', 'Closed');
-        
-        // Update garage status
-        this.updateStatusElement('garage-status', data.garageOpen, 'Open', 'Closed');
-        document.getElementById('ultrasonic-distance').textContent = 
-            `${data.ultrasonicDistance || 0} cm`;
-        
-        // NEW: Update main door status
-        this.updateStatusElement('main-door-status', data.mainDoorOpen, 'Open', 'Closed');
-        this.updateStatusElement('door-lock-status', data.doorLocked, 'Locked', 'Unlocked');
-
-        // ... rest of existing updateUI code ...
-    }
-
-    // NEW: Main door control functions
-    async openMainDoor() {
-        return await this.sendCommand('control/door', { 
-            door: 'main', 
-            action: 'open' 
-        });
-    }
-
-    async closeMainDoor() {
-        return await this.sendCommand('control/door', { 
-            door: 'main', 
-            action: 'close' 
-        });
-    }
-
-    async toggleDoorLock() {
-        return await this.sendCommand('control/door', { 
-            door: 'main', 
-            action: 'toggleLock' 
-        });
-    }
-
-    // Update status element function to handle door lock status
-    updateStatusElement(elementId, condition, trueText, falseText) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.textContent = condition ? trueText : falseText;
-            
-            // Special handling for different status types
-            if (elementId.includes('lock')) {
-                element.className = `status-badge ${condition ? 'status-locked' : 'status-unlocked'}`;
-            } else if (elementId.includes('door') || elementId.includes('gate') || elementId.includes('garage')) {
-                element.className = `status-badge ${condition ? 'status-open' : 'status-closed'}`;
-            } else if (elementId.includes('alarm') && condition) {
-                element.className = 'status-badge status-alert';
-            } else if (elementId.includes('gas') && condition) {
-                element.className = 'status-badge status-alert';
-            } else {
-                element.className = `status-badge ${condition ? 'status-on' : 'status-off'}`;
-            }
-        }
-    }
-}
-
-// NEW: Global functions for main door control
-function openMainDoor() {
-    smartHome.openMainDoor();
-}
-
-function closeMainDoor() {
-    smartHome.closeMainDoor();
-}
-
-function toggleDoorLock() {
-    smartHome.toggleDoorLock();
-}
-
     constructor() {
         this.esp32IP = localStorage.getItem('esp32IP') || '192.168.1.100';
         this.updateInterval = localStorage.getItem('updateInterval') || 2000;
@@ -194,6 +117,10 @@ function toggleDoorLock() {
         document.getElementById('ultrasonic-distance').textContent = 
             `${data.ultrasonicDistance || 0} cm`;
         
+        // Update main door status
+        this.updateStatusElement('main-door-status', data.mainDoorOpen, 'Open', 'Closed');
+        this.updateStatusElement('door-lock-status', data.doorLocked, 'Locked', 'Unlocked');
+
         // Update garage mode
         const garageModeToggle = document.getElementById('garage-mode-toggle');
         if (garageModeToggle) {
@@ -222,6 +149,7 @@ function toggleDoorLock() {
         this.updateStatusElement('rain-status', data.rainDetected, 'Raining', 'No Rain');
         this.updateStatusElement('gas-status', data.gasAlarm, 'Gas Leak!', 'Safe');
         this.updateStatusElement('alarm-status', data.securityBreach, 'ACTIVE', 'Inactive');
+        this.updateStatusElement('security-status', data.securityActive, 'Active', 'Disabled');
 
         // Update progress bars
         this.updateProgressBar('battery-level', data.batteryLevel || 0, 'battery-text');
@@ -233,31 +161,29 @@ function toggleDoorLock() {
         document.getElementById('curtain-status').textContent = 
             data.rainDetected ? 'Inside' : 'Outside';
 
-        // Update security status
-        this.updateStatusElement('security-status', data.securityActive, 'Active', 'Disabled');
-
-        // Update alerts
-        this.updateAlerts(data.alerts || []);
-
         // Show/hide stop alarm button
         const stopAlarmBtn = document.getElementById('stop-alarm-btn');
         if (stopAlarmBtn) {
             stopAlarmBtn.style.display = data.securityBreach ? 'block' : 'none';
         }
+
+        // Update alerts
+        this.updateAlerts(data.alerts || []);
     }
 
     updateStatusElement(elementId, condition, trueText, falseText) {
         const element = document.getElementById(elementId);
         if (element) {
             element.textContent = condition ? trueText : falseText;
-            element.className = `status-badge ${condition ? 'status-on' : 'status-off'}`;
             
-            // Special handling for alarm status
-            if (elementId === 'alarm-status' && condition) {
+            if (elementId.includes('lock')) {
+                element.className = `status-badge ${condition ? 'status-locked' : 'status-unlocked'}`;
+            } else if (elementId.includes('door') || elementId.includes('gate') || elementId.includes('garage')) {
+                element.className = `status-badge ${condition ? 'status-open' : 'status-closed'}`;
+            } else if ((elementId.includes('alarm') || elementId.includes('gas')) && condition) {
                 element.className = 'status-badge status-alert';
-            }
-            if (elementId === 'gas-status' && condition) {
-                element.className = 'status-badge status-alert';
+            } else {
+                element.className = `status-badge ${condition ? 'status-on' : 'status-off'}`;
             }
         }
     }
@@ -271,7 +197,6 @@ function toggleDoorLock() {
             bar.style.width = `${clampedPercentage}%`;
             text.textContent = `${clampedPercentage}%`;
             
-            // Change color based on percentage
             if (clampedPercentage < 20) {
                 bar.style.background = 'linear-gradient(90deg, #dc3545, #e74c3c)';
             } else if (clampedPercentage < 50) {
@@ -296,6 +221,9 @@ function toggleDoorLock() {
                 } else if (alert.toLowerCase().includes('gas')) {
                     type = 'warning';
                     icon = 'fas fa-gas-pump';
+                } else if (alert.toLowerCase().includes('door')) {
+                    type = 'warning';
+                    icon = 'fas fa-door-closed';
                 }
                 
                 return `<div class="alert-item ${type}">
@@ -364,6 +292,27 @@ function toggleDoorLock() {
         return await this.sendCommand('control/alarm', { action: action });
     }
 
+    async openMainDoor() {
+        return await this.sendCommand('control/door', { 
+            door: 'main', 
+            action: 'open' 
+        });
+    }
+
+    async closeMainDoor() {
+        return await this.sendCommand('control/door', { 
+            door: 'main', 
+            action: 'close' 
+        });
+    }
+
+    async toggleDoorLock() {
+        return await this.sendCommand('control/door', { 
+            door: 'main', 
+            action: 'toggleLock' 
+        });
+    }
+
     // Modal functions
     openSettings() {
         document.getElementById('settings-modal').style.display = 'block';
@@ -375,7 +324,7 @@ function toggleDoorLock() {
 
     // Status update management
     startStatusUpdates() {
-        this.fetchStatus(); // Initial fetch
+        this.fetchStatus();
         this.statusUpdateInterval = setInterval(() => {
             this.fetchStatus();
         }, this.updateInterval);
@@ -447,6 +396,10 @@ function toggleDoorLock() {
                     from { transform: translateX(100%); opacity: 0; }
                     to { transform: translateX(0); opacity: 1; }
                 }
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
             `;
             document.head.appendChild(style);
         }
@@ -494,10 +447,6 @@ function closeGarage() {
     smartHome.controlGarage('close');
 }
 
-function toggleGarage() {
-    smartHome.controlGarage('toggle');
-}
-
 function setGarageMode(autoMode) {
     smartHome.setGarageMode(autoMode);
 }
@@ -514,6 +463,18 @@ function testBuzzer() {
     smartHome.controlAlarm('test');
 }
 
+function openMainDoor() {
+    smartHome.openMainDoor();
+}
+
+function closeMainDoor() {
+    smartHome.closeMainDoor();
+}
+
+function toggleDoorLock() {
+    smartHome.toggleDoorLock();
+}
+
 function openSettings() {
     smartHome.openSettings();
 }
@@ -525,16 +486,6 @@ function closeSettings() {
 function saveSettings() {
     smartHome.saveSettings();
 }
-
-// Add slideOutRight animation
-const slideOutStyle = document.createElement('style');
-slideOutStyle.textContent = `
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-`;
-document.head.appendChild(slideOutStyle);
 
 // Initialize the system when page loads
 let smartHome;
@@ -548,4 +499,3 @@ document.addEventListener('visibilitychange', function() {
         smartHome.fetchStatus();
     }
 });
-

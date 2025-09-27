@@ -1,8 +1,9 @@
 class SmartHomeSystem {
     constructor() {
         this.esp32IP = localStorage.getItem('esp32IP') || '192.168.1.100';
+        this.updateInterval = localStorage.getItem('updateInterval') || 2000;
         this.isConnected = false;
-        this.updateInterval = null;
+        this.statusUpdateInterval = null;
         this.init();
     }
 
@@ -11,19 +12,27 @@ class SmartHomeSystem {
         this.loadSettings();
         this.startStatusUpdates();
         this.setupEventListeners();
+        this.showNotification('Smart Home System initialized!', 'success');
     }
 
     setupEventListeners() {
         // Settings modal
         document.querySelector('.close').addEventListener('click', () => {
-            document.getElementById('settings-modal').style.display = 'none';
+            this.closeSettings();
         });
 
         // Click outside modal to close
         window.addEventListener('click', (event) => {
             const modal = document.getElementById('settings-modal');
             if (event.target === modal) {
-                modal.style.display = 'none';
+                this.closeSettings();
+            }
+        });
+
+        // Escape key to close modal
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                this.closeSettings();
             }
         });
     }
@@ -31,7 +40,7 @@ class SmartHomeSystem {
     updateDateTime() {
         const now = new Date();
         document.getElementById('time-display').textContent = 
-            now.toLocaleTimeString('si-LK');
+            now.toLocaleTimeString('si-LK', { hour12: false });
         document.getElementById('date-display').textContent = 
             now.toLocaleDateString('si-LK', { 
                 weekday: 'long', 
@@ -43,31 +52,46 @@ class SmartHomeSystem {
 
     loadSettings() {
         document.getElementById('esp32-ip').value = this.esp32IP;
+        document.getElementById('update-interval').value = parseInt(this.updateInterval) / 1000;
+        document.getElementById('esp-ip').textContent = this.esp32IP;
     }
 
     saveSettings() {
         this.esp32IP = document.getElementById('esp32-ip').value;
+        const intervalSeconds = parseInt(document.getElementById('update-interval').value);
+        this.updateInterval = intervalSeconds * 1000;
+        
         localStorage.setItem('esp32IP', this.esp32IP);
-        document.getElementById('settings-modal').style.display = 'none';
+        localStorage.setItem('updateInterval', this.updateInterval);
+        
+        this.restartStatusUpdates();
+        this.closeSettings();
         this.showNotification('Settings saved successfully!', 'success');
     }
 
     async fetchStatus() {
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
             const response = await fetch(`http://${this.esp32IP}/status`, {
-                timeout: 5000
+                signal: controller.signal
             });
+            
+            clearTimeout(timeoutId);
             
             if (response.ok) {
                 const data = await response.json();
                 this.updateUI(data);
                 this.setConnectionStatus(true);
+                return true;
             } else {
-                throw new Error('Connection failed');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
         } catch (error) {
             this.setConnectionStatus(false);
             console.error('Error fetching status:', error);
+            return false;
         }
     }
 
@@ -86,55 +110,97 @@ class SmartHomeSystem {
 
     updateUI(data) {
         // Update gate status
-        document.getElementById('gate-status').textContent = 
-            data.gateOpen ? 'Open' : 'Closed';
-        document.getElementById('gate-status').className = 
-            data.gateOpen ? 'status-open' : 'status-closed';
-
+        this.updateStatusElement('gate-status', data.gateOpen, 'Open', 'Closed');
+        
         // Update garage status
-        document.getElementById('garage-status').textContent = 
-            data.garageOpen ? 'Open' : 'Closed';
-        document.getElementById('garage-status').className = 
-            data.garageOpen ? 'status-open' : 'status-closed';
+        this.updateStatusElement('garage-status', data.garageOpen, 'Open', 'Closed');
         document.getElementById('ultrasonic-distance').textContent = 
-            data.ultrasonicDistance;
+            `${data.ultrasonicDistance || 0} cm`;
+        
+        // Update garage mode
+        const garageModeToggle = document.getElementById('garage-mode-toggle');
+        if (garageModeToggle) {
+            garageModeToggle.checked = data.garageAutoMode !== false;
+        }
 
-        // Update LED status
+        // Update LED states
         for (let i = 1; i <= 6; i++) {
             const ledElement = document.getElementById(`led-${i}`);
-            if (ledElement) {
-                ledElement.checked = data[`led${i}`] || false;
+            if (ledElement && data[`led${i}`] !== undefined) {
+                ledElement.checked = data[`led${i}`];
             }
         }
 
         // Update sensor readings
-        document.getElementById('temperature').textContent = data.temperature;
-        document.getElementById('fan-status').textContent = 
-            data.fanOn ? 'ON' : 'OFF';
-        document.getElementById('fan-status').className = 
-            data.fanOn ? 'status-on' : 'status-off';
+        document.getElementById('temperature').textContent = 
+            `${data.temperature || 0}°C`;
+        document.getElementById('temperature-display').textContent = 
+            `${data.temperature || 0}°C`;
+        document.getElementById('humidity').textContent = 
+            `${data.humidity || 0}%`;
+        document.getElementById('humidity-display').textContent = 
+            `${data.humidity || 0}%`;
+        
+        this.updateStatusElement('fan-status', data.fanOn, 'ON', 'OFF');
+        this.updateStatusElement('rain-status', data.rainDetected, 'Raining', 'No Rain');
+        this.updateStatusElement('gas-status', data.gasAlarm, 'Gas Leak!', 'Safe');
+        this.updateStatusElement('alarm-status', data.securityBreach, 'ACTIVE', 'Inactive');
 
-        document.getElementById('rain-status').textContent = 
-            data.rainDetected ? 'Raining' : 'No Rain';
+        // Update progress bars
+        this.updateProgressBar('battery-level', data.batteryLevel || 0, 'battery-text');
+        this.updateProgressBar('water-level', data.waterLevel || 0, 'water-text');
+        document.getElementById('water-level-display').textContent = 
+            `${data.waterLevel || 0}%`;
+
+        // Update curtain status
         document.getElementById('curtain-status').textContent = 
             data.rainDetected ? 'Inside' : 'Outside';
 
-        document.getElementById('gas-status').textContent = 
-            data.gasAlert ? 'Gas Leak!' : 'Safe';
-        document.getElementById('gas-status').className = 
-            data.gasAlert ? 'status-alert' : 'status-safe';
-        document.getElementById('gas-alarm').textContent = 
-            data.gasAlert ? 'ON' : 'OFF';
+        // Update security status
+        this.updateStatusElement('security-status', data.securityActive, 'Active', 'Disabled');
 
-        // Update progress bars
-        document.getElementById('battery-level').style.width = `${data.batteryLevel}%`;
-        document.getElementById('battery-text').textContent = `${data.batteryLevel}%`;
+        // Update alerts
+        this.updateAlerts(data.alerts || []);
+
+        // Show/hide stop alarm button
+        const stopAlarmBtn = document.getElementById('stop-alarm-btn');
+        if (stopAlarmBtn) {
+            stopAlarmBtn.style.display = data.securityBreach ? 'block' : 'none';
+        }
+    }
+
+    updateStatusElement(elementId, condition, trueText, falseText) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = condition ? trueText : falseText;
+            element.className = `status-badge ${condition ? 'status-on' : 'status-off'}`;
+            
+            // Special handling for alarm status
+            if (elementId === 'alarm-status' && condition) {
+                element.className = 'status-badge status-alert';
+            }
+            if (elementId === 'gas-status' && condition) {
+                element.className = 'status-badge status-alert';
+            }
+        }
+    }
+
+    updateProgressBar(barId, percentage, textId) {
+        const bar = document.getElementById(barId);
+        const text = document.getElementById(textId);
         
-        document.getElementById('water-level').style.width = `${data.waterLevel}%`;
-        document.getElementById('water-text').textContent = `${data.waterLevel}%`;
-
-        // Update security alerts
-        this.updateAlerts(data.alerts);
+        if (bar && text) {
+            const clampedPercentage = Math.max(0, Math.min(100, percentage));
+            bar.style.width = `${clampedPercentage}%`;
+            text.textContent = `${clampedPercentage}%`;
+            
+            // Change color based on percentage
+            if (clampedPercentage < 20) {
+                bar.style.background = 'linear-gradient(90deg, #dc3545, #e74c3c)';
+            } else if (clampedPercentage < 50) {
+                bar.style.background = 'linear-gradient(90deg, #ffc107, #f39c12)';
+            }
+        }
     }
 
     updateAlerts(alerts) {
@@ -143,13 +209,28 @@ class SmartHomeSystem {
         
         if (alerts && alerts.length > 0) {
             alertPanel.style.display = 'block';
-            alertContent.innerHTML = alerts.map(alert => 
-                `<div class="alert-item" style="color: #dc3545; margin: 5px 0;">
-                    <i class="fas fa-exclamation-triangle"></i> ${alert}
-                </div>`
-            ).join('');
+            alertContent.innerHTML = alerts.map(alert => {
+                let type = 'info';
+                let icon = 'fas fa-info-circle';
+                
+                if (alert.toLowerCase().includes('breach') || alert.toLowerCase().includes('security')) {
+                    type = 'danger';
+                    icon = 'fas fa-exclamation-triangle';
+                } else if (alert.toLowerCase().includes('gas')) {
+                    type = 'warning';
+                    icon = 'fas fa-gas-pump';
+                }
+                
+                return `<div class="alert-item ${type}">
+                    <i class="${icon}"></i>
+                    <span>${alert}</span>
+                </div>`;
+            }).join('');
         } else {
-            alertPanel.style.display = 'none';
+            alertContent.innerHTML = `<div class="alert-item info">
+                <i class="fas fa-info-circle"></i>
+                <span>System running normally</span>
+            </div>`;
         }
     }
 
@@ -164,46 +245,130 @@ class SmartHomeSystem {
             });
             
             if (response.ok) {
-                this.showNotification('Command sent successfully!', 'success');
-                return await response.json();
+                const result = await response.json();
+                this.showNotification(result.message || 'Command sent successfully!', 'success');
+                return result;
             } else {
                 throw new Error('Command failed');
             }
         } catch (error) {
-            this.showNotification('Failed to send command!', 'error');
+            this.showNotification('Failed to send command! Check connection.', 'error');
             console.error('Error sending command:', error);
+            return null;
         }
     }
 
+    // Command functions
+    async controlLED(ledNumber, state) {
+        return await this.sendCommand('control/led', { led: ledNumber, state: state });
+    }
+
+    async controlGate() {
+        return await this.sendCommand('control/gate', {});
+    }
+
+    async controlGarage(action) {
+        return await this.sendCommand('control/garage', { action: action });
+    }
+
+    async setGarageMode(autoMode) {
+        return await this.sendCommand('control/garage-mode', { autoMode: autoMode });
+    }
+
+    async setSecuritySystem(enabled) {
+        return await this.sendCommand('control/security', { enabled: enabled });
+    }
+
+    async controlAllLights(state) {
+        return await this.sendCommand('control/all-lights', { state: state });
+    }
+
+    async controlAlarm(action) {
+        return await this.sendCommand('control/alarm', { action: action });
+    }
+
+    // Modal functions
+    openSettings() {
+        document.getElementById('settings-modal').style.display = 'block';
+    }
+
+    closeSettings() {
+        document.getElementById('settings-modal').style.display = 'none';
+    }
+
+    // Status update management
+    startStatusUpdates() {
+        this.fetchStatus(); // Initial fetch
+        this.statusUpdateInterval = setInterval(() => {
+            this.fetchStatus();
+        }, this.updateInterval);
+    }
+
+    restartStatusUpdates() {
+        if (this.statusUpdateInterval) {
+            clearInterval(this.statusUpdateInterval);
+        }
+        this.startStatusUpdates();
+    }
+
     showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+
         // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.innerHTML = `
-            <span>${message}</span>
-            <button onclick="this.parentElement.remove()">&times;</button>
+            <div class="notification-content">
+                <i class="fas fa-${this.getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         `;
         
         // Add styles if not already added
-        if (!document.querySelector('.notification')) {
+        if (!document.querySelector('#notification-styles')) {
             const style = document.createElement('style');
+            style.id = 'notification-styles';
             style.textContent = `
                 .notification {
                     position: fixed;
                     top: 20px;
                     right: 20px;
-                    padding: 15px;
-                    border-radius: 5px;
-                    color: white;
-                    z-index: 1000;
-                    animation: slideIn 0.3s ease;
+                    background: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                    z-index: 1001;
+                    border-left: 4px solid;
+                    animation: slideInRight 0.3s ease;
+                    max-width: 400px;
                 }
-                .notification.success { background: #28a745; }
-                .notification.error { background: #dc3545; }
-                .notification.info { background: #17a2b8; }
-                @keyframes slideIn {
-                    from { transform: translateX(100%); }
-                    to { transform: translateX(0); }
+                .notification.success { border-left-color: #28a745; }
+                .notification.error { border-left-color: #dc3545; }
+                .notification.info { border-left-color: #17a2b8; }
+                .notification.warning { border-left-color: #ffc107; }
+                .notification-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .notification-content i:first-child {
+                    font-size: 1.2rem;
+                }
+                .notification-content button {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 5px;
+                    margin-left: auto;
+                }
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
                 }
             `;
             document.head.appendChild(style);
@@ -211,50 +376,88 @@ class SmartHomeSystem {
         
         document.body.appendChild(notification);
         
-        // Auto remove after 3 seconds
+        // Auto remove after 5 seconds
         setTimeout(() => {
             if (notification.parentElement) {
-                notification.remove();
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
             }
-        }, 3000);
+        }, 5000);
     }
 
-    startStatusUpdates() {
-        // Update time every second
-        setInterval(() => this.updateDateTime(), 1000);
-        
-        // Update status every 2 seconds
-        this.updateInterval = setInterval(() => this.fetchStatus(), 2000);
+    getNotificationIcon(type) {
+        const icons = {
+            'success': 'check-circle',
+            'error': 'exclamation-circle',
+            'info': 'info-circle',
+            'warning': 'exclamation-triangle'
+        };
+        return icons[type] || 'info-circle';
     }
 }
 
-// Global functions for HTML onclick events
+// Global functions for HTML event handlers
 function controlLED(ledNumber, state) {
-    smartHome.sendCommand('control/led', { led: ledNumber, state: state });
+    smartHome.controlLED(ledNumber, state);
 }
 
 function controlAllLights(state) {
-    for (let i = 1; i <= 6; i++) {
-        document.getElementById(`led-${i}`).checked = state;
-        controlLED(i, state);
-    }
+    smartHome.controlAllLights(state);
 }
 
 function controlGate() {
-    smartHome.sendCommand('control/gate');
+    smartHome.controlGate();
 }
 
-function controlDoor(doorType, open) {
-    smartHome.sendCommand('control/door', { door: doorType, action: open ? 'open' : 'close' });
+function openGarage() {
+    smartHome.controlGarage('open');
+}
+
+function closeGarage() {
+    smartHome.controlGarage('close');
+}
+
+function toggleGarage() {
+    smartHome.controlGarage('toggle');
+}
+
+function setGarageMode(autoMode) {
+    smartHome.setGarageMode(autoMode);
+}
+
+function setSecuritySystem(enabled) {
+    smartHome.setSecuritySystem(enabled);
+}
+
+function stopAlarm() {
+    smartHome.controlAlarm('stop');
+}
+
+function testBuzzer() {
+    smartHome.controlAlarm('test');
 }
 
 function openSettings() {
-    document.getElementById('settings-modal').style.display = 'block';
+    smartHome.openSettings();
+}
+
+function closeSettings() {
+    smartHome.closeSettings();
 }
 
 function saveSettings() {
     smartHome.saveSettings();
 }
+
+// Add slideOutRight animation
+const slideOutStyle = document.createElement('style');
+slideOutStyle.textContent = `
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(slideOutStyle);
 
 // Initialize the system when page loads
 let smartHome;
@@ -262,24 +465,9 @@ document.addEventListener('DOMContentLoaded', () => {
     smartHome = new SmartHomeSystem();
 });
 
-// Simulated data for demo purposes (remove when connected to real ESP32)
-function simulateData() {
-    return {
-        gateOpen: Math.random() > 0.5,
-        garageOpen: Math.random() > 0.7,
-        ultrasonicDistance: Math.floor(Math.random() * 20),
-        led1: Math.random() > 0.5,
-        led2: Math.random() > 0.5,
-        led3: Math.random() > 0.5,
-        led4: Math.random() > 0.5,
-        led5: Math.random() > 0.5,
-        led6: Math.random() > 0.5,
-        temperature: Math.floor(Math.random() * 10) + 22,
-        fanOn: Math.random() > 0.7,
-        rainDetected: Math.random() > 0.8,
-        gasAlert: Math.random() > 0.9,
-        batteryLevel: Math.floor(Math.random() * 30) + 70,
-        waterLevel: Math.floor(Math.random() * 40) + 60,
-        alerts: Math.random() > 0.8 ? ['Security breach detected!'] : []
-    };
-}
+// Handle page visibility changes
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        smartHome.fetchStatus();
+    }
+});

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHome AI - Advanced Control System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-home-ai"></i>
+                    <span>SmartHome AI</span>
+                </div>
+                <h1>Welcome Back</h1>
+                <p>Advanced Home Automation System</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span>Access System</span>
+                    <i class="fas fa-fingerprint"></i>
+                </button>
+            </form>
+        </div>
+        <div class="login-background">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app-container hidden">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <i class="fas fa-robot"></i>
+                    <span>HomeAI</span>
+                </div>
+                <div class="user-info">
+                    <img src="https://i.pravatar.cc/40" alt="User" class="user-avatar">
+                    <span class="username">Admin</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" data-page="devices">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Devices</span>
+                </li>
+                <li class="menu-item" data-page="security">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Security</span>
+                </li>
+                <li class="menu-item" data-page="energy">
+                    <i class="fas fa-bolt"></i>
+                    <span>Energy</span>
+                </li>
+                <li class="menu-item" data-page="automation">
+                    <i class="fas fa-magic"></i>
+                    <span>Automation</span>
+                </li>
+                <li class="menu-item" data-page="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-left">
+                    <h1 id="pageTitle">AI Dashboard</h1>
+                    <div class="date-time">
+                        <span id="currentTime">00:00:00</span>
+                        <span id="currentDate">January 1, 2024</span>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="weather-widget">
+                        <i class="fas fa-sun"></i>
+                        <span id="weatherTemp">28°C</span>
+                    </div>
+                    <div class="notification-bell" id="notificationBell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">3</span>
+                    </div>
+                    <button class="voice-control-btn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon temperature">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="tempValue">24.5°C</span>
+                            <span class="stat-label">Temperature</span>
+                        </div>
+                        <div class="stat-trend up">+0.5°</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon energy">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="energyValue">2.4 kW</span>
+                            <span class="stat-label">Energy Usage</span>
+                        </div>
+                        <div class="stat-trend down">-15%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon security">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="securityValue">Active</span>
+                            <span class="stat-label">Security System</span>
+                        </div>
+                        <div class="stat-status safe">All Secure</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon devices">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="devicesValue">8/12</span>
+                            <span class="stat-label">Active Devices</span>
+                        </div>
+                        <div class="stat-trend stable">Online</div>
+                    </div>
+                </div>
+
+                <div class="main-grid">
+                    <!-- 3D House Visualization -->
+                    <div class="house-visualization">
+                        <h3>Smart Home 3D View</h3>
+                        <div class="house-model" id="houseModel">
+                            <!-- 3D house will be rendered here -->
+                            <div class="room living-room" data-room="living">
+                                <div class="room-label">Living Room</div>
+                                <div class="room-controls">
+                                    <button class="control-btn light" data-device="living_light">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </button>
+                                    <button class="control-btn temp" data-device="living_temp">
+                                        <i class="fas fa-thermometer-half"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- More rooms will be added dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Real-time Charts -->
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h4>Energy Consumption</h4>
+                            <canvas id="energyChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h4>Temperature Trend</h4>
+                            <canvas id="tempChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" data-action="all_lights">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>All Lights</span>
+                        </button>
+                        <button class="action-btn" data-action="security_arm">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Arm Security</span>
+                        </button>
+                        <button class="action-btn" data-action="climate_comfort">
+                            <i class="fas fa-wind"></i>
+                            <span>Comfort Mode</span>
+                        </button>
+                        <button class="action-btn" data-action="energy_save">
+                            <i class="fas fa-leaf"></i>
+                            <span>Energy Save</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other pages would go here -->
+        </main>
+
+        <!-- Notification Panel -->
+        <div class="notification-panel" id="notificationPanel">
+            <div class="panel-header">
+                <h3>Notifications</h3>
+                <button class="close-panel">&times;</button>
+            </div>
+            <div class="notifications-list" id="notificationsList">
+                <!-- Notifications will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

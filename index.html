@@ -162,6 +162,91 @@
                     </div>
                 </div>
 
+                <!-- Gate & Garage Control Row එකට Home Door එකතු කරන්න -->
+<div class="card-row">
+    <div class="card control-card">
+        <div class="card-header">
+            <i class="fas fa-gate"></i>
+            <h3>Gate Control</h3>
+        </div>
+        <div class="card-content">
+            <div class="status-display">
+                <span class="label">Status:</span>
+                <span id="gate-status" class="status-badge status-closed">Closed</span>
+            </div>
+            <div class="control-buttons">
+                <button class="btn btn-success" onclick="controlGate()">
+                    <i class="fas fa-door-open"></i> Open Gate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card control-card">
+        <div class="card-header">
+            <i class="fas fa-warehouse"></i>
+            <h3>Garage Door</h3>
+        </div>
+        <div class="card-content">
+            <div class="status-display">
+                <span class="label">Status:</span>
+                <span id="garage-status" class="status-badge status-closed">Closed</span>
+            </div>
+            <div class="status-display">
+                <span class="label">Distance:</span>
+                <span id="ultrasonic-distance" class="value">0 cm</span>
+            </div>
+            <div class="control-buttons">
+                <button class="btn btn-success" onclick="openGarage()">
+                    <i class="fas fa-arrow-up"></i> Open
+                </button>
+                <button class="btn btn-danger" onclick="closeGarage()">
+                    <i class="fas fa-arrow-down"></i> Close
+                </button>
+            </div>
+            <div class="mode-control">
+                <label class="switch">
+                    <input type="checkbox" id="garage-mode-toggle" onchange="setGarageMode(this.checked)" checked>
+                    <span class="slider"></span>
+                </label>
+                <span>Auto Mode</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Home Main Door Control Card -->
+    <div class="card control-card">
+        <div class="card-header">
+            <i class="fas fa-door-closed"></i>
+            <h3>Main Door Control</h3>
+        </div>
+        <div class="card-content">
+            <div class="status-display">
+                <span class="label">Status:</span>
+                <span id="main-door-status" class="status-badge status-closed">Closed</span>
+            </div>
+            <div class="status-display">
+                <span class="label">Lock:</span>
+                <span id="door-lock-status" class="status-badge status-locked">Locked</span>
+            </div>
+            <div class="control-buttons">
+                <button class="btn btn-success" onclick="openMainDoor()">
+                    <i class="fas fa-door-open"></i> Open Door
+                </button>
+                <button class="btn btn-danger" onclick="closeMainDoor()">
+                    <i class="fas fa-door-closed"></i> Close Door
+                </button>
+                <button class="btn btn-warning" onclick="toggleDoorLock()">
+                    <i class="fas fa-lock"></i> Toggle Lock
+                </button>
+            </div>
+            <div class="rfid-info">
+                <small><i class="fas fa-id-card"></i> RFID access enabled</small>
+            </div>
+        </div>
+    </div>
+    </div>
+
                 <!-- Lighting Control Card -->
                 <div class="card lighting-card">
                     <div class="card-header">

@@ -698,3 +698,62 @@ input:checked + .slider:before {
         padding: 15px;
     }
 }
+/* Add these new styles */
+
+.status-locked {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-unlocked {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.rfid-info {
+    margin-top: 10px;
+    padding: 8px;
+    background: #e3f2fd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.rfid-info i {
+    color: #2196f3;
+    margin-right: 5px;
+}
+
+.door-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.door-control-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.door-control-btn:hover {
+    border-color: #4361ee;
+    transform: translateY(-2px);
+}
+
+.door-control-btn.active {
+    border-color: #4361ee;
+    background: #4361ee;
+    color: white;
+}
+
+.door-control-btn i {
+    font-size: 1.5rem;
+        }

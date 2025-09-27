@@ -471,3 +471,81 @@ document.addEventListener('visibilitychange', function() {
         smartHome.fetchStatus();
     }
 });
+
+// Add these new functions to SmartHomeSystem class
+
+class SmartHomeSystem {
+    // ... existing code ...
+
+    updateUI(data) {
+        // Update gate status
+        this.updateStatusElement('gate-status', data.gateOpen, 'Open', 'Closed');
+        
+        // Update garage status
+        this.updateStatusElement('garage-status', data.garageOpen, 'Open', 'Closed');
+        document.getElementById('ultrasonic-distance').textContent = 
+            `${data.ultrasonicDistance || 0} cm`;
+        
+        // NEW: Update main door status
+        this.updateStatusElement('main-door-status', data.mainDoorOpen, 'Open', 'Closed');
+        this.updateStatusElement('door-lock-status', data.doorLocked, 'Locked', 'Unlocked');
+
+        // ... rest of existing updateUI code ...
+    }
+
+    // NEW: Main door control functions
+    async openMainDoor() {
+        return await this.sendCommand('control/door', { 
+            door: 'main', 
+            action: 'open' 
+        });
+    }
+
+    async closeMainDoor() {
+        return await this.sendCommand('control/door', { 
+            door: 'main', 
+            action: 'close' 
+        });
+    }
+
+    async toggleDoorLock() {
+        return await this.sendCommand('control/door', { 
+            door: 'main', 
+            action: 'toggleLock' 
+        });
+    }
+
+    // Update status element function to handle door lock status
+    updateStatusElement(elementId, condition, trueText, falseText) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = condition ? trueText : falseText;
+            
+            // Special handling for different status types
+            if (elementId.includes('lock')) {
+                element.className = `status-badge ${condition ? 'status-locked' : 'status-unlocked'}`;
+            } else if (elementId.includes('door') || elementId.includes('gate') || elementId.includes('garage')) {
+                element.className = `status-badge ${condition ? 'status-open' : 'status-closed'}`;
+            } else if (elementId.includes('alarm') && condition) {
+                element.className = 'status-badge status-alert';
+            } else if (elementId.includes('gas') && condition) {
+                element.className = 'status-badge status-alert';
+            } else {
+                element.className = `status-badge ${condition ? 'status-on' : 'status-off'}`;
+            }
+        }
+    }
+}
+
+// NEW: Global functions for main door control
+function openMainDoor() {
+    smartHome.openMainDoor();
+}
+
+function closeMainDoor() {
+    smartHome.closeMainDoor();
+}
+
+function toggleDoorLock() {
+    smartHome.toggleDoorLock();
+}

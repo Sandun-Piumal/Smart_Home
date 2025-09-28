@@ -1,472 +1,487 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Home System</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>SmartHome Pro - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --accent: #8b5cf6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.25);
+            --glass-dark: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            left: -100px;
+        }
+
+        .shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            right: -50px;
+        }
+
+        .shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            right: 10%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.5);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
+        .form-container {
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .toggle-form a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            font-weight: 500;
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 20px;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
-<body class="light-theme">
-    <!-- Skip to main content for accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-
-    <div class="container">
-        <!-- Header Section -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-home"></i>
-                    <h1>Smart Home System</h1>
-                </div>
-                <div class="connection-info">
-                    <div class="status-indicators">
-                        <div class="status-item">
-                            <span class="status-label">Connection:</span>
-                            <span id="connection-status" class="status offline">
-                                <span class="connection-dot disconnected"></span>
-                                <i class="fas fa-wifi"></i> Disconnected
-                            </span>
-                        </div>
-                        <div class="status-item">
-                            <span class="status-label">Security:</span>
-                            <span id="security-status" class="status-active">
-                                <i class="fas fa-shield-alt"></i> Active
-                            </span>
-                        </div>
-                    </div>
-                    <div class="datetime">
-                        <div id="time-display" class="time">00:00:00</div>
-                        <div id="date-display" class="date">January 1, 2024</div>
-                    </div>
-                    <div class="control-buttons-small">
-                        <button class="btn btn-info" onclick="manualRefresh()" title="Refresh Data (F5)">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                        <button class="btn btn-outline" onclick="openSettings()" title="Settings">
-                            <i class="fas fa-cog"></i> Settings
-                        </button>
-                        <button class="btn btn-outline theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                            <i class="fas fa-moon" id="theme-icon"></i>
-                            <span id="theme-text">Dark</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Dashboard -->
-        <main class="dashboard" id="main-content">
-            <!-- Left Sidebar - Quick Controls -->
-            <aside class="sidebar">
-                <!-- System Overview Card -->
-                <div class="card overview-card">
-                    <div class="card-header">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <h3>System Overview</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="overview-item">
-                            <span class="label">Battery Level</span>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div id="battery-level" class="progress-fill battery" style="width: 85%"></div>
-                                </div>
-                                <span id="battery-text" class="value">85%</span>
-                            </div>
-                        </div>
-                        <div class="overview-item">
-                            <span class="label">Water Tank</span>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div id="water-level" class="progress-fill water" style="width: 70%"></div>
-                                </div>
-                                <span id="water-text" class="value">70%</span>
-                            </div>
-                        </div>
-                        <div class="overview-item">
-                            <span class="label">Temperature</span>
-                            <span id="temperature" class="value">25°C</span>
-                        </div>
-                        <div class="overview-item">
-                            <span class="label">Humidity</span>
-                            <span id="humidity" class="value">60%</span>
-                        </div>
-                        <div class="overview-item">
-                            <span class="label">Last Update</span>
-                            <span id="last-update" class="value">Just now</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions Card -->
-                <div class="card quick-actions-card">
-                    <div class="card-header">
-                        <i class="fas fa-bolt"></i>
-                        <h3>Quick Actions</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="action-group">
-                            <button class="btn btn-primary btn-block" onclick="controlAllLights(true)">
-                                <i class="fas fa-lightbulb"></i> All Lights ON
-                            </button>
-                            <button class="btn btn-secondary btn-block" onclick="controlAllLights(false)">
-                                <i class="fas fa-lightbulb"></i> All Lights OFF
-                            </button>
-                        </div>
-                        <div class="action-group">
-                            <button class="btn btn-success btn-block" onclick="setSecuritySystem(true)">
-                                <i class="fas fa-shield-alt"></i> Enable Security
-                            </button>
-                            <button class="btn btn-warning btn-block" onclick="setSecuritySystem(false)">
-                                <i class="fas fa-shield-alt"></i> Disable Security
-                            </button>
-                        </div>
-                        <div class="action-group">
-                            <button class="btn btn-info btn-block" onclick="testBuzzer()">
-                                <i class="fas fa-bell"></i> Test Buzzer
-                            </button>
-                            <button class="btn btn-danger btn-block" onclick="stopAlarm()" id="stop-alarm-btn">
-                                <i class="fas fa-bell-slash"></i> Stop Alarm
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Content Area -->
-            <section class="main-content">
-                <!-- Gate & Garage & Door Control Row -->
-                <div class="card-row">
-                    <!-- Gate Control Card -->
-                    <div class="card control-card">
-                        <div class="card-header">
-                            <i class="fas fa-gate"></i>
-                            <h3>Gate Control</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="status-display">
-                                <span class="label">Status:</span>
-                                <span id="gate-status" class="status-badge status-closed">Closed</span>
-                            </div>
-                            <div class="control-buttons">
-                                <button class="btn btn-success" onclick="controlGate()">
-                                    <i class="fas fa-door-open"></i> Open Gate
-                                </button>
-                            </div>
-                            <div class="last-update">RFID access enabled</div>
-                        </div>
-                    </div>
-
-                    <!-- Garage Control Card -->
-                    <div class="card control-card">
-                        <div class="card-header">
-                            <i class="fas fa-warehouse"></i>
-                            <h3>Garage Door</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="status-display">
-                                <span class="label">Status:</span>
-                                <span id="garage-status" class="status-badge status-closed">Closed</span>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Distance:</span>
-                                <span id="ultrasonic-distance" class="value">0 cm</span>
-                            </div>
-                            <div class="control-buttons">
-                                <button class="btn btn-success" onclick="openGarage()">
-                                    <i class="fas fa-arrow-up"></i> Open
-                                </button>
-                                <button class="btn btn-danger" onclick="closeGarage()">
-                                    <i class="fas fa-arrow-down"></i> Close
-                                </button>
-                            </div>
-                            <div class="mode-control">
-                                <label class="switch">
-                                    <input type="checkbox" id="garage-mode-toggle" onchange="setGarageMode(this.checked)" checked>
-                                    <span class="slider"></span>
-                                </label>
-                                <span>Auto Mode</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Main Door Control Card -->
-                    <div class="card control-card">
-                        <div class="card-header">
-                            <i class="fas fa-door-closed"></i>
-                            <h3>Main Door Control</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="status-display">
-                                <span class="label">Status:</span>
-                                <span id="main-door-status" class="status-badge status-closed">Closed</span>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Lock:</span>
-                                <span id="door-lock-status" class="status-badge status-locked">Locked</span>
-                            </div>
-                            <div class="control-buttons">
-                                <button class="btn btn-success" onclick="openMainDoor()">
-                                    <i class="fas fa-door-open"></i> Open Door
-                                </button>
-                                <button class="btn btn-danger" onclick="closeMainDoor()">
-                                    <i class="fas fa-door-closed"></i> Close Door
-                                </button>
-                                <button class="btn btn-warning" onclick="toggleDoorLock()">
-                                    <i class="fas fa-lock"></i> Toggle Lock
-                                </button>
-                            </div>
-                            <div class="rfid-info">
-                                <small><i class="fas fa-id-card"></i> RFID access enabled</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lighting Control Card -->
-                <div class="card lighting-card">
-                    <div class="card-header">
-                        <i class="fas fa-lightbulb"></i>
-                        <h3>Lighting Control</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="light-grid">
-                            <div class="light-item">
-                                <span class="light-label">LED 1 - Living Room</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-1" onchange="controlLED(1, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 2 - Kitchen</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-2" onchange="controlLED(2, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 3 - Bedroom</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-3" onchange="controlLED(3, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 4 - Garden</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-4" onchange="controlLED(4, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 5 - Garage</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-5" onchange="controlLED(5, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 6 - Security</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-6" onchange="controlLED(6, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sensors & Environment Row -->
-                <div class="card-row">
-                    <!-- Climate Control Card -->
-                    <div class="card sensor-card">
-                        <div class="card-header">
-                            <i class="fas fa-temperature-high"></i>
-                            <h3>Climate Control</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="sensor-reading">
-                                <i class="fas fa-thermometer-half"></i>
-                                <div class="reading-value">
-                                    <span id="temperature-display">25°C</span>
-                                    <span class="reading-label">Temperature</span>
-                                </div>
-                            </div>
-                            <div class="sensor-reading">
-                                <i class="fas fa-tint"></i>
-                                <div class="reading-value">
-                                    <span id="humidity-display">60%</span>
-                                    <span class="reading-label">Humidity</span>
-                                </div>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Fan Status:</span>
-                                <span id="fan-status" class="status-badge status-off">OFF</span>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Motion:</span>
-                                <span id="motion-status" class="status-badge status-off">No Motion</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Water & Rain Card -->
-                    <div class="card sensor-card">
-                        <div class="card-header">
-                            <i class="fas fa-tint"></i>
-                            <h3>Water & Rain</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="sensor-reading">
-                                <i class="fas fa-water"></i>
-                                <div class="reading-value">
-                                    <span id="water-level-display">70%</span>
-                                    <span class="reading-label">Water Level</span>
-                                </div>
-                            </div>
-                            <div class="sensor-reading">
-                                <i class="fas fa-cloud-rain"></i>
-                                <div class="reading-value">
-                                    <span id="rain-status" class="status-dry">No Rain</span>
-                                    <span class="reading-label">Rain Status</span>
-                                </div>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Curtains:</span>
-                                <span id="curtain-status" class="value">Outside</span>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Solar Panel:</span>
-                                <span id="solar-angle" class="value">90°</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Gas & Security Card -->
-                    <div class="card sensor-card">
-                        <div class="card-header">
-                            <i class="fas fa-wind"></i>
-                            <h3>Gas & Security</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="sensor-reading">
-                                <i class="fas fa-gas-pump"></i>
-                                <div class="reading-value">
-                                    <span id="gas-status" class="status-safe">Safe</span>
-                                    <span class="reading-label">Gas Status</span>
-                                </div>
-                            </div>
-                            <div class="sensor-reading">
-                                <i class="fas fa-bell"></i>
-                                <div class="reading-value">
-                                    <span id="alarm-status" class="status-safe">Inactive</span>
-                                    <span class="reading-label">Alarm Status</span>
-                                </div>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Laser Security:</span>
-                                <span id="laser-status" class="status-badge status-on">Active</span>
-                            </div>
-                            <div class="control-buttons">
-                                <button class="btn btn-warning btn-block" onclick="testBuzzer()">
-                                    <i class="fas fa-bell"></i> Test Buzzer
-                                </button>
-                                <button class="btn btn-danger btn-block" onclick="stopAlarm()" id="stop-alarm-main-btn" style="display:none;">
-                                    <i class="fas fa-bell-slash"></i> Stop Alarm
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Alerts Panel -->
-                <div class="card alert-card" id="alert-panel">
-                    <div class="card-header">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>System Alerts & Notifications</h3>
-                    </div>
-                    <div class="card-content">
-                        <div id="alert-content" class="alert-content">
-                            <div class="alert-item info">
-                                <i class="fas fa-info-circle"></i>
-                                <span>System initialized and running normally</span>
-                            </div>
-                            <div class="alert-item info">
-                                <i class="fas fa-wifi"></i>
-                                <span>Connect to ESP32 to start monitoring</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <span>Smart Home System v2.0 • Real-time Monitoring</span>
-                <span>Connected to: <span id="esp-ip">192.168.1.100</span></span>
-                <span id="connection-stats">Theme: <span id="current-theme">Light</span></span>
-            </div>
-        </footer>
+<body>
+    <div class="background-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-cog"></i> ESP32 Connection Settings</h3>
-                <span class="close">&times;</span>
+    <div class="container">
+        <!-- Login Form -->
+        <div class="card" id="login-form">
+            <div class="logo">
+                <h1><i class="fas fa-home"></i> SmartHome Pro</h1>
+                <p>Control Your Home, Anytime, Anywhere</p>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="esp32-ip">ESP32 IP Address:</label>
-                    <input type="text" id="esp32-ip" placeholder="192.168.1.100" class="form-input">
-                    <small>Enter the IP address shown in ESP32 Serial Monitor</small>
-                </div>
-                <div class="form-group">
-                    <label for="update-interval">Update Interval (seconds):</label>
-                    <input type="number" id="update-interval" value="2" min="1" max="10" class="form-input">
-                    <small>How often to refresh data from ESP32 (1-10 seconds)</small>
-                </div>
-                <div class="form-group">
-                    <label>Theme Settings:</label>
-                    <div class="theme-options">
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="light" checked onchange="setTheme('light')">
-                            <span class="theme-checkmark"></span>
-                            Light Theme
-                        </label>
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="dark" onchange="setTheme('dark')">
-                            <span class="theme-checkmark"></span>
-                            Dark Theme
-                        </label>
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="auto" onchange="setTheme('auto')">
-                            <span class="theme-checkmark"></span>
-                            Auto (System)
-                        </label>
+            <h2>Welcome Back</h2>
+            <div class="message" id="login-message"></div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="login-email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
                     </div>
                 </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+                <button type="submit">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login to Control Panel
+                </button>
+            </form>
+            <div class="toggle-form">
+                Don't have an account? <a href="#" id="show-signup">Sign up</a>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeSettings()">
-                    <i class="fas fa-times"></i> Cancel
+        </div>
+
+        <!-- Signup Form -->
+        <div class="card" id="signup-form" style="display: none;">
+            <div class="logo">
+                <h1><i class="fas fa-home"></i> SmartHome Pro</h1>
+                <p>Create Your Smart Home Account</p>
+            </div>
+            <h2>Create Account</h2>
+            <div class="message" id="signup-message"></div>
+            <form id="signupForm">
+                <div class="input-group">
+                    <label for="signup-name">Full Name</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signup-name" placeholder="Enter your full name" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="signup-email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signup-email" placeholder="Enter your email" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="signup-password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-password" placeholder="Create a password" required minlength="6">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                    </div>
+                </div>
+                <button type="submit">
+                    <i class="fas fa-user-plus"></i>
+                    Create Smart Home Account
                 </button>
-                <button class="btn btn-primary" onclick="saveSettings()">
-                    <i class="fas fa-save"></i> Save Settings
-                </button>
-                <button class="btn btn-info" onclick="testConnection()">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
+            </form>
+            <div class="toggle-form">
+                Already have an account? <a href="#" id="show-login">Login</a>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Database simulation using localStorage
+        const Database = {
+            init: function() {
+                if (!localStorage.getItem('smartHomeUsers')) {
+                    localStorage.setItem('smartHomeUsers', JSON.stringify([]));
+                }
+            },
+
+            addUser: function(user) {
+                const users = this.getUsers();
+                users.push(user);
+                localStorage.setItem('smartHomeUsers', JSON.stringify(users));
+            },
+
+            getUsers: function() {
+                return JSON.parse(localStorage.getItem('smartHomeUsers')) || [];
+            },
+
+            findUserByEmail: function(email) {
+                const users = this.getUsers();
+                return users.find(user => user.email === email);
+            },
+
+            setCurrentUser: function(user) {
+                localStorage.setItem('currentSmartHomeUser', JSON.stringify(user));
+            },
+
+            getCurrentUser: function() {
+                return JSON.parse(localStorage.getItem('currentSmartHomeUser'));
+            },
+
+            clearCurrentUser: function() {
+                localStorage.removeItem('currentSmartHomeUser');
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            Database.init();
+            
+            // Check if user is already logged in
+            const currentUser = Database.getCurrentUser();
+            if (currentUser) {
+                redirectToDashboard();
+            }
+
+            // Form toggle functionality
+            document.getElementById('show-signup').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('signup-form').style.display = 'block';
+                clearMessages();
+            });
+
+            document.getElementById('show-login').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('signup-form').style.display = 'none';
+                document.getElementById('login-form').style.display = 'block';
+                clearMessages();
+            });
+
+            // Login form submission
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                const user = Database.findUserByEmail(email);
+                const messageEl = document.getElementById('login-message');
+                
+                if (user && user.password === password) {
+                    Database.setCurrentUser(user);
+                    showMessage(messageEl, 'Login successful! Redirecting to dashboard...', 'success');
+                    
+                    // Redirect to dashboard after 1.5 seconds
+                    setTimeout(() => {
+                        redirectToDashboard();
+                    }, 1500);
+                } else {
+                    showMessage(messageEl, 'Invalid email or password', 'error');
+                }
+            });
+
+            // Signup form submission
+            document.getElementById('signupForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+                
+                const messageEl = document.getElementById('signup-message');
+                
+                // Validation
+                if (password !== confirmPassword) {
+                    showMessage(messageEl, 'Passwords do not match', 'error');
+                    return;
+                }
+                
+                if (Database.findUserByEmail(email)) {
+                    showMessage(messageEl, 'Email already registered', 'error');
+                    return;
+                }
+                
+                // Create new user
+                const newUser = {
+                    id: Date.now(),
+                    name: name,
+                    email: email,
+                    password: password,
+                    created: new Date().toLocaleDateString()
+                };
+                
+                Database.addUser(newUser);
+                showMessage(messageEl, 'Account created successfully! Please login.', 'success');
+                
+                // Clear form
+                document.getElementById('signupForm').reset();
+                
+                // Switch to login form after a delay
+                setTimeout(() => {
+                    document.getElementById('signup-form').style.display = 'none';
+                    document.getElementById('login-form').style.display = 'block';
+                    clearMessages();
+                }, 2000);
+            });
+        });
+
+        // Helper functions
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+        }
+
+        function redirectToDashboard() {
+            // Redirect to your existing dashboard.html
+            window.location.href = 'dashboard.html';
+        }
+    </script>
 </body>
-</html>
+    </html>

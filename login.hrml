@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+        }
+
+        .form-container {
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .toggle-form a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .dashboard {
+            display: none;
+            text-align: center;
+        }
+
+        .dashboard h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div class="form-container" id="login-form">
+            <h2>ගිණුමට පිවිසෙන්න</h2>
+            <div class="message" id="login-message"></div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="login-email">ඊමේල් ලිපිනය</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">මුරපදය</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit">පිවිසෙන්න</button>
+            </form>
+            <div class="toggle-form">
+                ගිණුමක් නැද්ද? <a href="#" id="show-signup">ලියාපදිංචි වන්න</a>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="form-container" id="signup-form" style="display: none;">
+            <h2>නව ගිණුමක් සාදන්න</h2>
+            <div class="message" id="signup-message"></div>
+            <form id="signupForm">
+                <div class="input-group">
+                    <label for="signup-name">සම්පූර්ණ නම</label>
+                    <input type="text" id="signup-name" required>
+                </div>
+                <div class="input-group">
+                    <label for="signup-email">ඊමේල් ලිපිනය</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="signup-password">මුරපදය</label>
+                    <input type="password" id="signup-password" required minlength="6">
+                </div>
+                <div class="input-group">
+                    <label for="signup-confirm-password">මුරපදය තහවුරු කරන්න</label>
+                    <input type="password" id="signup-confirm-password" required>
+                </div>
+                <button type="submit">ලියාපදිංචි වන්න</button>
+            </form>
+            <div class="toggle-form">
+                දැනටමත් ගිණුමක් තිබේද? <a href="#" id="show-login">පිවිසෙන්න</a>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <h2>ඔබගේ ගිණුම</h2>
+            <div class="user-info">
+                <p id="user-name"></p>
+                <p id="user-email"></p>
+            </div>
+            <button class="logout-btn" id="logout-btn">පිටවෙන්න</button>
+        </div>
+    </div>
+
+    <script>
+        // Database simulation using localStorage
+        const Database = {
+            init: function() {
+                if (!localStorage.getItem('users')) {
+                    localStorage.setItem('users', JSON.stringify([]));
+                }
+            },
+
+            addUser: function(user) {
+                const users = this.getUsers();
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+            },
+
+            getUsers: function() {
+                return JSON.parse(localStorage.getItem('users')) || [];
+            },
+
+            findUserByEmail: function(email) {
+                const users = this.getUsers();
+                return users.find(user => user.email === email);
+            },
+
+            setCurrentUser: function(user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+            },
+
+            getCurrentUser: function() {
+                return JSON.parse(localStorage.getItem('currentUser'));
+            },
+
+            clearCurrentUser: function() {
+                localStorage.removeItem('currentUser');
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            Database.init();
+            
+            // Check if user is already logged in
+            const currentUser = Database.getCurrentUser();
+            if (currentUser) {
+                showDashboard(currentUser);
+            }
+
+            // Form toggle functionality
+            document.getElementById('show-signup').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('signup-form').style.display = 'block';
+                clearMessages();
+            });
+
+            document.getElementById('show-login').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('signup-form').style.display = 'none';
+                document.getElementById('login-form').style.display = 'block';
+                clearMessages();
+            });
+
+            // Login form submission
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                const user = Database.findUserByEmail(email);
+                const messageEl = document.getElementById('login-message');
+                
+                if (user && user.password === password) {
+                    Database.setCurrentUser(user);
+                    showDashboard(user);
+                    showMessage(messageEl, 'සාර්ථකව පිවිසුනා!', 'success');
+                } else {
+                    showMessage(messageEl, 'වලංගු නොවන ඊමේල් ලිපිනය හෝ මුරපදය', 'error');
+                }
+            });
+
+            // Signup form submission
+            document.getElementById('signupForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+                
+                const messageEl = document.getElementById('signup-message');
+                
+                // Validation
+                if (password !== confirmPassword) {
+                    showMessage(messageEl, 'මුරපදය ගැලපෙන්නේ නැහැ', 'error');
+                    return;
+                }
+                
+                if (Database.findUserByEmail(email)) {
+                    showMessage(messageEl, 'ඊමේල් ලිපිනය දැනටමත් ලියාපදිංචි වී ඇත', 'error');
+                    return;
+                }
+                
+                // Create new user
+                const newUser = {
+                    id: Date.now(),
+                    name: name,
+                    email: email,
+                    password: password
+                };
+                
+                Database.addUser(newUser);
+                showMessage(messageEl, 'ගිණුම සාර්ථකව සෑදුවා! දැන් පිවිසෙන්න.', 'success');
+                
+                // Clear form
+                document.getElementById('signupForm').reset();
+                
+                // Switch to login form after a delay
+                setTimeout(() => {
+                    document.getElementById('signup-form').style.display = 'none';
+                    document.getElementById('login-form').style.display = 'block';
+                    clearMessages();
+                }, 2000);
+            });
+
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                Database.clearCurrentUser();
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('login-form').style.display = 'block';
+                document.getElementById('loginForm').reset();
+            });
+        });
+
+        // Helper functions
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+        }
+
+        function showDashboard(user) {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('user-name').textContent = `නම: ${user.name}`;
+            document.getElementById('user-email').textContent = `ඊමේල්: ${user.email}`;
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuthFlow - Login & Signup</title>
+    <title>SmartHome Pro - Control Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,18 +14,22 @@
         }
 
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
             --secondary: #10b981;
-            --dark: #1f2937;
+            --accent: #8b5cf6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
             --light: #f8fafc;
             --glass: rgba(255, 255, 255, 0.25);
+            --glass-dark: rgba(30, 41, 59, 0.7);
             --glass-border: rgba(255, 255, 255, 0.18);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -48,7 +52,7 @@
         .shape {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(59, 130, 246, 0.1);
         }
 
         .shape:nth-child(1) {
@@ -232,100 +236,164 @@
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
-        .dashboard, .home-page {
+        /* Dashboard Styles */
+        .dashboard {
             display: none;
-            text-align: center;
             width: 100%;
+            max-width: 1000px;
         }
 
-        .dashboard h2, .home-page h2 {
-            color: white;
-            margin-bottom: 15px;
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
         }
 
         .user-info {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            color: white;
+        }
+
+        .user-info h2 {
+            margin-bottom: 5px;
             text-align: left;
         }
 
         .user-info p {
-            margin-bottom: 10px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-info i {
-            width: 20px;
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .logout-btn {
-            background: rgba(239, 68, 68, 0.8);
-            margin-top: 10px;
+            width: auto;
+            padding: 10px 20px;
+            background: var(--danger);
         }
 
         .logout-btn:hover {
-            background: rgba(220, 38, 38, 0.9);
+            background: #dc2626;
         }
 
-        .home-content {
+        .devices-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
-            margin-top: 30px;
+            margin-bottom: 30px;
         }
 
-        .feature-card {
+        .device-card {
             background: var(--glass);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             border: 1px solid var(--glass-border);
             padding: 20px;
             text-align: center;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            cursor: pointer;
         }
 
-        .feature-card:hover {
+        .device-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .feature-card i {
+        .device-icon {
             font-size: 2.5rem;
-            color: var(--secondary);
             margin-bottom: 15px;
+            color: var(--primary);
         }
 
-        .feature-card h3 {
+        .device-card h3 {
             color: white;
             margin-bottom: 10px;
         }
 
-        .feature-card p {
+        .device-status {
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.9rem;
+            margin-bottom: 15px;
         }
 
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+        .device-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
         }
 
-        .nav-buttons button {
-            flex: 1;
+        .device-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
 
-        .secondary-btn {
-            background: rgba(255, 255, 255, 0.1);
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
         }
 
-        .secondary-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--secondary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .room-section {
+            margin-bottom: 30px;
+        }
+
+        .room-title {
+            color: white;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            font-weight: bold;
         }
 
         @media (max-width: 768px) {
@@ -337,8 +405,14 @@
                 font-size: 2rem;
             }
             
-            .home-content {
-                grid-template-columns: 1fr;
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .logout-btn {
+                width: 100%;
             }
         }
     </style>
@@ -351,14 +425,12 @@
     </div>
 
     <div class="container">
-        <!-- Logo -->
-        <div class="logo">
-            <h1>AuthFlow</h1>
-            <p>Secure & Simple Authentication</p>
-        </div>
-
         <!-- Login Form -->
         <div class="card" id="login-form">
+            <div class="logo">
+                <h1><i class="fas fa-home"></i> SmartHome Pro</h1>
+                <p>Control Your Home, Anytime, Anywhere</p>
+            </div>
             <h2>Welcome Back</h2>
             <div class="message" id="login-message"></div>
             <form id="loginForm">
@@ -378,7 +450,7 @@
                 </div>
                 <button type="submit">
                     <i class="fas fa-sign-in-alt"></i>
-                    Login
+                    Login to Control Panel
                 </button>
             </form>
             <div class="toggle-form">
@@ -388,6 +460,10 @@
 
         <!-- Signup Form -->
         <div class="card" id="signup-form" style="display: none;">
+            <div class="logo">
+                <h1><i class="fas fa-home"></i> SmartHome Pro</h1>
+                <p>Create Your Smart Home Account</p>
+            </div>
             <h2>Create Account</h2>
             <div class="message" id="signup-message"></div>
             <form id="signupForm">
@@ -421,7 +497,7 @@
                 </div>
                 <button type="submit">
                     <i class="fas fa-user-plus"></i>
-                    Sign Up
+                    Create Smart Home Account
                 </button>
             </form>
             <div class="toggle-form">
@@ -430,53 +506,140 @@
         </div>
 
         <!-- Dashboard -->
-        <div class="card dashboard" id="dashboard">
-            <h2>Your Dashboard</h2>
-            <div class="user-info">
-                <p><i class="fas fa-user"></i> <span id="user-name"></span></p>
-                <p><i class="fas fa-envelope"></i> <span id="user-email"></span></p>
-                <p><i class="fas fa-calendar"></i> Account Created: <span id="account-created"></span></p>
-            </div>
-            <div class="nav-buttons">
-                <button class="secondary-btn" id="go-home-btn">
-                    <i class="fas fa-home"></i> Go Home
-                </button>
+        <div class="dashboard" id="dashboard">
+            <div class="dashboard-header">
+                <div class="user-info">
+                    <h2>Welcome, <span id="user-name">User</span>!</h2>
+                    <p>Your Smart Home Control Panel</p>
+                </div>
                 <button class="logout-btn" id="logout-btn">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
-        </div>
 
-        <!-- Home Page -->
-        <div class="card home-page" id="home-page">
-            <h2>Welcome to AuthFlow</h2>
-            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 20px;">Your secure authentication solution</p>
-            
-            <div class="home-content">
-                <div class="feature-card">
-                    <i class="fas fa-shield-alt"></i>
-                    <h3>Secure</h3>
-                    <p>Your data is protected with advanced security measures</p>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h4>Energy Usage</h4>
+                    <p>2.3 kWh</p>
                 </div>
-                <div class="feature-card">
-                    <i class="fas fa-bolt"></i>
-                    <h3>Fast</h3>
-                    <p>Lightning-fast authentication with minimal loading times</p>
+                <div class="stat-card">
+                    <h4>Active Devices</h4>
+                    <p id="active-devices">3</p>
                 </div>
-                <div class="feature-card">
-                    <i class="fas fa-mobile-alt"></i>
-                    <h3>Responsive</h3>
-                    <p>Works perfectly on all devices and screen sizes</p>
+                <div class="stat-card">
+                    <h4>Temperature</h4>
+                    <p>24°C</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Security</h4>
+                    <p>Armed</p>
                 </div>
             </div>
-            
-            <div class="nav-buttons">
-                <button class="secondary-btn" id="go-dashboard-btn">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </button>
-                <button class="logout-btn" id="home-logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
+
+            <div class="room-section">
+                <h3 class="room-title">Living Room</h3>
+                <div class="devices-grid">
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Main Light</h3>
+                        <p class="device-status">Status: <span class="status-text">Off</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="main-light">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                        <h3>Smart TV</h3>
+                        <p class="device-status">Status: <span class="status-text">On</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="smart-tv" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-temperature-low"></i>
+                        </div>
+                        <h3>AC Unit</h3>
+                        <p class="device-status">Status: <span class="status-text">On</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="ac-unit" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-section">
+                <h3 class="room-title">Kitchen</h3>
+                <div class="devices-grid">
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-blender"></i>
+                        </div>
+                        <h3>Smart Refrigerator</h3>
+                        <p class="device-status">Status: <span class="status-text">On</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="refrigerator" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-oven"></i>
+                        </div>
+                        <h3>Smart Oven</h3>
+                        <p class="device-status">Status: <span class="status-text">Off</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="oven">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-fan"></i>
+                        </div>
+                        <h3>Exhaust Fan</h3>
+                        <p class="device-status">Status: <span class="status-text">Off</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="exhaust-fan">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-section">
+                <h3 class="room-title">Bedroom</h3>
+                <div class="devices-grid">
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <h3>Bedside Lamp</h3>
+                        <p class="device-status">Status: <span class="status-text">Off</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="bedside-lamp">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Security Camera</h3>
+                        <p class="device-status">Status: <span class="status-text">On</span></p>
+                        <label class="device-switch">
+                            <input type="checkbox" class="device-checkbox" data-device="security-camera" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -485,19 +648,19 @@
         // Database simulation using localStorage
         const Database = {
             init: function() {
-                if (!localStorage.getItem('users')) {
-                    localStorage.setItem('users', JSON.stringify([]));
+                if (!localStorage.getItem('smartHomeUsers')) {
+                    localStorage.setItem('smartHomeUsers', JSON.stringify([]));
                 }
             },
 
             addUser: function(user) {
                 const users = this.getUsers();
                 users.push(user);
-                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('smartHomeUsers', JSON.stringify(users));
             },
 
             getUsers: function() {
-                return JSON.parse(localStorage.getItem('users')) || [];
+                return JSON.parse(localStorage.getItem('smartHomeUsers')) || [];
             },
 
             findUserByEmail: function(email) {
@@ -506,15 +669,26 @@
             },
 
             setCurrentUser: function(user) {
-                localStorage.setItem('currentUser', JSON.stringify(user));
+                localStorage.setItem('currentSmartHomeUser', JSON.stringify(user));
             },
 
             getCurrentUser: function() {
-                return JSON.parse(localStorage.getItem('currentUser'));
+                return JSON.parse(localStorage.getItem('currentSmartHomeUser'));
             },
 
             clearCurrentUser: function() {
-                localStorage.removeItem('currentUser');
+                localStorage.removeItem('currentSmartHomeUser');
+            },
+
+            // Device state management
+            getDeviceStates: function() {
+                return JSON.parse(localStorage.getItem('deviceStates')) || {};
+            },
+
+            setDeviceState: function(deviceId, state) {
+                const states = this.getDeviceStates();
+                states[deviceId] = state;
+                localStorage.setItem('deviceStates', JSON.stringify(states));
             }
         };
 
@@ -555,7 +729,7 @@
                 if (user && user.password === password) {
                     Database.setCurrentUser(user);
                     showDashboard(user);
-                    showMessage(messageEl, 'Login successful!', 'success');
+                    showMessage(messageEl, 'Login successful! Redirecting to control panel...', 'success');
                 } else {
                     showMessage(messageEl, 'Invalid email or password', 'error');
                 }
@@ -607,23 +781,34 @@
 
             // Logout functionality
             document.getElementById('logout-btn').addEventListener('click', function() {
-                logoutUser();
-            });
-
-            document.getElementById('home-logout-btn').addEventListener('click', function() {
-                logoutUser();
-            });
-
-            // Navigation between Dashboard and Home
-            document.getElementById('go-home-btn').addEventListener('click', function() {
+                Database.clearCurrentUser();
                 document.getElementById('dashboard').style.display = 'none';
-                document.getElementById('home-page').style.display = 'block';
+                document.getElementById('login-form').style.display = 'block';
+                document.getElementById('loginForm').reset();
+                clearMessages();
             });
 
-            document.getElementById('go-dashboard-btn').addEventListener('click', function() {
-                document.getElementById('home-page').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
+            // Device switch functionality
+            document.querySelectorAll('.device-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const deviceId = this.getAttribute('data-device');
+                    const isOn = this.checked;
+                    
+                    // Update status text
+                    const statusText = this.closest('.device-card').querySelector('.status-text');
+                    statusText.textContent = isOn ? 'On' : 'Off';
+                    statusText.style.color = isOn ? '#10b981' : '#ef4444';
+                    
+                    // Save device state
+                    Database.setDeviceState(deviceId, isOn);
+                    
+                    // Update active devices count
+                    updateActiveDevicesCount();
+                });
             });
+
+            // Initialize device states from storage
+            initializeDeviceStates();
         });
 
         // Helper functions
@@ -643,27 +828,40 @@
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('signup-form').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('home-page').style.display = 'none';
             
             document.getElementById('user-name').textContent = user.name;
-            document.getElementById('user-email').textContent = user.email;
-            document.getElementById('account-created').textContent = user.created || 'Today';
+            
+            // Update active devices count
+            updateActiveDevicesCount();
         }
 
-        function showHomePage() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('signup-form').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('home-page').style.display = 'block';
+        function initializeDeviceStates() {
+            const deviceStates = Database.getDeviceStates();
+            
+            document.querySelectorAll('.device-checkbox').forEach(checkbox => {
+                const deviceId = checkbox.getAttribute('data-device');
+                if (deviceStates.hasOwnProperty(deviceId)) {
+                    checkbox.checked = deviceStates[deviceId];
+                    
+                    // Update status text
+                    const statusText = checkbox.closest('.device-card').querySelector('.status-text');
+                    statusText.textContent = deviceStates[deviceId] ? 'On' : 'Off';
+                    statusText.style.color = deviceStates[deviceId] ? '#10b981' : '#ef4444';
+                }
+            });
         }
 
-        function logoutUser() {
-            Database.clearCurrentUser();
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('home-page').style.display = 'none';
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('loginForm').reset();
-            clearMessages();
+        function updateActiveDevicesCount() {
+            const deviceStates = Database.getDeviceStates();
+            let activeCount = 0;
+            
+            for (const deviceId in deviceStates) {
+                if (deviceStates[deviceId]) {
+                    activeCount++;
+                }
+            }
+            
+            document.getElementById('active-devices').textContent = activeCount;
         }
     </script>
 </body>

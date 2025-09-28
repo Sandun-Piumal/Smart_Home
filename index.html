@@ -17,13 +17,7 @@
             --primary: #3b82f6;
             --primary-dark: #2563eb;
             --secondary: #10b981;
-            --accent: #8b5cf6;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1e293b;
-            --light: #f8fafc;
             --glass: rgba(255, 255, 255, 0.25);
-            --glass-dark: rgba(30, 41, 59, 0.7);
             --glass-border: rgba(255, 255, 255, 0.18);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
@@ -69,13 +63,6 @@
             right: -50px;
         }
 
-        .shape:nth-child(3) {
-            width: 150px;
-            height: 150px;
-            top: 50%;
-            right: 10%;
-        }
-
         .container {
             width: 100%;
             max-width: 1200px;
@@ -117,10 +104,6 @@
         .logo p {
             color: rgba(255, 255, 255, 0.8);
             font-size: 1rem;
-        }
-
-        .form-container {
-            width: 100%;
         }
 
         h2 {
@@ -251,7 +234,6 @@
     <div class="background-shapes">
         <div class="shape"></div>
         <div class="shape"></div>
-        <div class="shape"></div>
     </div>
 
     <div class="container">
@@ -362,6 +344,8 @@
 
             setCurrentUser: function(user) {
                 localStorage.setItem('currentSmartHomeUser', JSON.stringify(user));
+                // Set login timestamp for session management
+                localStorage.setItem('loginTime', Date.now());
             },
 
             getCurrentUser: function() {
@@ -370,6 +354,18 @@
 
             clearCurrentUser: function() {
                 localStorage.removeItem('currentSmartHomeUser');
+                localStorage.removeItem('loginTime');
+            },
+
+            isLoggedIn: function() {
+                const user = this.getCurrentUser();
+                const loginTime = localStorage.getItem('loginTime');
+                
+                if (!user || !loginTime) return false;
+                
+                // Check if session is still valid (24 hours)
+                const sessionDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+                return (Date.now() - parseInt(loginTime)) < sessionDuration;
             }
         };
 
@@ -378,9 +374,9 @@
             Database.init();
             
             // Check if user is already logged in
-            const currentUser = Database.getCurrentUser();
-            if (currentUser) {
+            if (Database.isLoggedIn()) {
                 redirectToDashboard();
+                return;
             }
 
             // Form toggle functionality
@@ -479,9 +475,8 @@
         }
 
         function redirectToDashboard() {
-            // Redirect to your existing dashboard.html
             window.location.href = 'dashboard.html';
         }
     </script>
 </body>
-    </html>
+</html>

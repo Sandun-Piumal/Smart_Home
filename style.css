@@ -1048,23 +1048,3 @@ input:checked + .slider:before {
     }
 }
 
-.logout-btn {
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.logout-btn:hover {
-    background: #dc2626;
-    transform: translateY(-2px);
-}
-

@@ -468,5 +468,42 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- ඔබගේ existing dashboard content -->
+    
+    <script>
+        // Authentication check for dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem('currentSmartHomeUser'));
+            const loginTime = localStorage.getItem('loginTime');
+            
+            // Session validation (24 hours)
+            const sessionDuration = 24 * 60 * 60 * 1000;
+            const isSessionValid = loginTime && (Date.now() - parseInt(loginTime)) < sessionDuration;
+            
+            if (!currentUser || !isSessionValid) {
+                // If not logged in or session expired, redirect to login
+                localStorage.removeItem('currentSmartHomeUser');
+                localStorage.removeItem('loginTime');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // User is properly logged in, show dashboard content
+            console.log('User authenticated:', currentUser.name);
+            
+            // Add logout functionality if you have a logout button
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    localStorage.removeItem('currentSmartHomeUser');
+                    localStorage.removeItem('loginTime');
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>

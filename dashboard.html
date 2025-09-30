@@ -54,10 +54,10 @@
                     </div>
 
                     <div class="header-actions">
-    <button id="logout-btn" class="logout-btn">
-        <i class="fas fa-sign-out-alt"></i>
-        Logout
-    </button>
+                        <button id="logout-btn" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
                     </div>
                 </div>
             </div>
@@ -140,6 +140,32 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Connection Help Card -->
+                <div class="card help-card">
+                    <div class="card-header">
+                        <i class="fas fa-question-circle"></i>
+                        <h3>Connection Help</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="help-item">
+                            <strong>ESP32 IP Format:</strong>
+                            <code>192.168.1.100</code>
+                        </div>
+                        <div class="help-item">
+                            <strong>Common Issues:</strong>
+                            <ul>
+                                <li>Check ESP32 is powered on</li>
+                                <li>Verify IP address in Serial Monitor</li>
+                                <li>Ensure same WiFi network</li>
+                                <li>Check firewall settings</li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-outline btn-block" onclick="openSettings()">
+                            <i class="fas fa-cog"></i> Connection Settings
+                        </button>
+                    </div>
+                </div>
             </aside>
 
             <!-- Main Content Area -->
@@ -157,12 +183,9 @@
                                 <span class="label">Status:</span>
                                 <span id="gate-status" class="status-badge status-closed">Closed</span>
                             </div>
-                            <div class="control-buttons">
-                                <button class="btn btn-success" onclick="controlGate()">
-                                    <i class="fas fa-door-open"></i> Open Gate
-                                </button>
-                            </div>
-                            <div class="last-update">RFID access enabled</div>
+                            <button class="btn btn-primary btn-block" onclick="controlGate()">
+                                <i class="fas fa-exchange-alt"></i> Toggle Gate
+                            </button>
                         </div>
                     </div>
 
@@ -170,7 +193,7 @@
                     <div class="card control-card">
                         <div class="card-header">
                             <i class="fas fa-warehouse"></i>
-                            <h3>Garage Door</h3>
+                            <h3>Garage Control</h3>
                         </div>
                         <div class="card-content">
                             <div class="status-display">
@@ -181,20 +204,22 @@
                                 <span class="label">Distance:</span>
                                 <span id="ultrasonic-distance" class="value">0 cm</span>
                             </div>
-                            <div class="control-buttons">
+                            <div class="control-group">
                                 <button class="btn btn-success" onclick="openGarage()">
-                                    <i class="fas fa-arrow-up"></i> Open
+                                    <i class="fas fa-door-open"></i> Open
                                 </button>
-                                <button class="btn btn-danger" onclick="closeGarage()">
-                                    <i class="fas fa-arrow-down"></i> Close
+                                <button class="btn btn-warning" onclick="closeGarage()">
+                                    <i class="fas fa-door-closed"></i> Close
                                 </button>
                             </div>
-                            <div class="mode-control">
-                                <label class="switch">
-                                    <input type="checkbox" id="garage-mode-toggle" onchange="setGarageMode(this.checked)" checked>
-                                    <span class="slider"></span>
+                            <div class="toggle-group">
+                                <label class="toggle-label">
+                                    <span>Auto Mode</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="garage-mode-toggle" onchange="setGarageMode(this.checked)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
                                 </label>
-                                <span>Auto Mode</span>
                             </div>
                         </div>
                     </div>
@@ -207,321 +232,319 @@
                         </div>
                         <div class="card-content">
                             <div class="status-display">
-                                <span class="label">Status:</span>
+                                <span class="label">Door Status:</span>
                                 <span id="main-door-status" class="status-badge status-closed">Closed</span>
                             </div>
                             <div class="status-display">
-                                <span class="label">Lock:</span>
+                                <span class="label">Lock Status:</span>
                                 <span id="door-lock-status" class="status-badge status-locked">Locked</span>
                             </div>
-                            <div class="control-buttons">
+                            <div class="control-group">
                                 <button class="btn btn-success" onclick="openMainDoor()">
-                                    <i class="fas fa-door-open"></i> Open Door
+                                    <i class="fas fa-door-open"></i> Open
                                 </button>
-                                <button class="btn btn-danger" onclick="closeMainDoor()">
-                                    <i class="fas fa-door-closed"></i> Close Door
+                                <button class="btn btn-warning" onclick="closeMainDoor()">
+                                    <i class="fas fa-door-closed"></i> Close
                                 </button>
-                                <button class="btn btn-warning" onclick="toggleDoorLock()">
-                                    <i class="fas fa-lock"></i> Toggle Lock
+                                <button class="btn btn-info" onclick="toggleDoorLock()">
+                                    <i class="fas fa-key"></i> Toggle Lock
                                 </button>
-                            </div>
-                            <div class="rfid-info">
-                                <small><i class="fas fa-id-card"></i> RFID access enabled</small>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Lighting Control Card -->
-                <div class="card lighting-card">
-                    <div class="card-header">
-                        <i class="fas fa-lightbulb"></i>
-                        <h3>Lighting Control</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="light-grid">
-                            <div class="light-item">
-                                <span class="light-label">LED 1 - Living Room</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-1" onchange="controlLED(1, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 2 - Kitchen</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-2" onchange="controlLED(2, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 3 - Bedroom</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-3" onchange="controlLED(3, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 4 - Garden</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-4" onchange="controlLED(4, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 5 - Garage</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-5" onchange="controlLED(5, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="light-item">
-                                <span class="light-label">LED 6 - Security</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="led-6" onchange="controlLED(6, this.checked)">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sensors & Environment Row -->
+                <!-- LED Control Row -->
                 <div class="card-row">
-                    <!-- Climate Control Card -->
-                    <div class="card sensor-card">
+                    <div class="card led-control-card">
                         <div class="card-header">
-                            <i class="fas fa-temperature-high"></i>
-                            <h3>Climate Control</h3>
+                            <i class="fas fa-lightbulb"></i>
+                            <h3>LED Control</h3>
                         </div>
                         <div class="card-content">
-                            <div class="sensor-reading">
-                                <i class="fas fa-thermometer-half"></i>
-                                <div class="reading-value">
-                                    <span id="temperature-display">25°C</span>
-                                    <span class="reading-label">Temperature</span>
+                            <div class="led-grid">
+                                <div class="led-item">
+                                    <label class="toggle-label">
+                                        <span>LED 1</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="led-1" onchange="controlLED(1, this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </label>
+                                </div>
+                                <div class="led-item">
+                                    <label class="toggle-label">
+                                        <span>LED 2</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="led-2" onchange="controlLED(2, this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </label>
+                                </div>
+                                <div class="led-item">
+                                    <label class="toggle-label">
+                                        <span>LED 3</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="led-3" onchange="controlLED(3, this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </label>
+                                </div>
+                                <div class="led-item">
+                                    <label class="toggle-label">
+                                        <span>LED 4</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="led-4" onchange="controlLED(4, this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </label>
+                                </div>
+                                <div class="led-item">
+                                    <label class="toggle-label">
+                                        <span>LED 5</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="led-5" onchange="controlLED(5, this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </label>
+                                </div>
+                                <div class="led-item">
+                                    <label class="toggle-label">
+                                        <span>LED 6</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="led-6" onchange="controlLED(6, this.checked)">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </label>
                                 </div>
                             </div>
-                            <div class="sensor-reading">
-                                <i class="fas fa-tint"></i>
-                                <div class="reading-value">
-                                    <span id="humidity-display">60%</span>
-                                    <span class="reading-label">Humidity</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensor Data Row -->
+                <div class="card-row">
+                    <!-- Temperature & Humidity Card -->
+                    <div class="card sensor-card">
+                        <div class="card-header">
+                            <i class="fas fa-thermometer-half"></i>
+                            <h3>Temperature & Humidity</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="sensor-display">
+                                <div class="sensor-item">
+                                    <i class="fas fa-temperature-high"></i>
+                                    <div class="sensor-value" id="temperature-display">25°C</div>
+                                </div>
+                                <div class="sensor-item">
+                                    <i class="fas fa-tint"></i>
+                                    <div class="sensor-value" id="humidity-display">60%</div>
                                 </div>
                             </div>
                             <div class="status-display">
                                 <span class="label">Fan Status:</span>
                                 <span id="fan-status" class="status-badge status-off">OFF</span>
                             </div>
-                            <div class="status-display">
-                                <span class="label">Motion:</span>
-                                <span id="motion-status" class="status-badge status-off">No Motion</span>
+                        </div>
+                    </div>
+
+                    <!-- Water Level Card -->
+                    <div class="card sensor-card">
+                        <div class="card-header">
+                            <i class="fas fa-water"></i>
+                            <h3>Water Tank Level</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="water-level-display">
+                                <div class="water-level-value" id="water-level-display">70%</div>
+                                <div class="water-level-bar">
+                                    <div class="water-level-fill" style="height: 70%"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Water & Rain Card -->
-                    <div class="card sensor-card">
+                    <!-- Security Status Card -->
+                    <div class="card security-card">
                         <div class="card-header">
-                            <i class="fas fa-tint"></i>
-                            <h3>Water & Rain</h3>
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Security System</h3>
                         </div>
                         <div class="card-content">
-                            <div class="sensor-reading">
-                                <i class="fas fa-water"></i>
-                                <div class="reading-value">
-                                    <span id="water-level-display">70%</span>
-                                    <span class="reading-label">Water Level</span>
+                            <div class="security-status">
+                                <div class="status-item">
+                                    <span class="label">System Status:</span>
+                                    <span id="security-status" class="status-badge status-on">Active</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">Motion Sensor:</span>
+                                    <span id="motion-status" class="status-badge status-off">No Motion</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">Laser Security:</span>
+                                    <span id="laser-status" class="status-badge status-off">Inactive</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">Alarm Status:</span>
+                                    <span id="alarm-status" class="status-badge status-off">Inactive</span>
                                 </div>
                             </div>
-                            <div class="sensor-reading">
-                                <i class="fas fa-cloud-rain"></i>
-                                <div class="reading-value">
-                                    <span id="rain-status" class="status-dry">No Rain</span>
-                                    <span class="reading-label">Rain Status</span>
-                                </div>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Curtains:</span>
-                                <span id="curtain-status" class="value">Outside</span>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Solar Panel:</span>
-                                <span id="solar-angle" class="value">90°</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Gas & Security Card -->
-                    <div class="card sensor-card">
-                        <div class="card-header">
-                            <i class="fas fa-wind"></i>
-                            <h3>Gas & Security</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="sensor-reading">
-                                <i class="fas fa-gas-pump"></i>
-                                <div class="reading-value">
-                                    <span id="gas-status" class="status-safe">Safe</span>
-                                    <span class="reading-label">Gas Status</span>
-                                </div>
-                            </div>
-                            <div class="sensor-reading">
-                                <i class="fas fa-bell"></i>
-                                <div class="reading-value">
-                                    <span id="alarm-status" class="status-safe">Inactive</span>
-                                    <span class="reading-label">Alarm Status</span>
-                                </div>
-                            </div>
-                            <div class="status-display">
-                                <span class="label">Laser Security:</span>
-                                <span id="laser-status" class="status-badge status-on">Active</span>
-                            </div>
-                            <div class="control-buttons">
-                                <button class="btn btn-warning btn-block" onclick="testBuzzer()">
-                                    <i class="fas fa-bell"></i> Test Buzzer
-                                </button>
-                                <button class="btn btn-danger btn-block" onclick="stopAlarm()" id="stop-alarm-main-btn" style="display:none;">
-                                    <i class="fas fa-bell-slash"></i> Stop Alarm
-                                </button>
-                            </div>
+                            <button class="btn btn-danger btn-block" onclick="stopAlarm()" id="stop-alarm-main-btn">
+                                <i class="fas fa-bell-slash"></i> Stop Alarm
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Alerts Panel -->
-                <div class="card alert-card" id="alert-panel">
-                    <div class="card-header">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>System Alerts & Notifications</h3>
-                    </div>
-                    <div class="card-content">
-                        <div id="alert-content" class="alert-content">
-                            <div class="alert-item info">
-                                <i class="fas fa-info-circle"></i>
-                                <span>System initialized and running normally</span>
+                <!-- Environment Monitoring Row -->
+                <div class="card-row">
+                    <!-- Weather & Environment Card -->
+                    <div class="card environment-card">
+                        <div class="card-header">
+                            <i class="fas fa-cloud-sun"></i>
+                            <h3>Environment Monitoring</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="environment-grid">
+                                <div class="env-item">
+                                    <i class="fas fa-cloud-rain"></i>
+                                    <span class="label">Rain Status:</span>
+                                    <span id="rain-status" class="status-badge status-off">No Rain</span>
+                                </div>
+                                <div class="env-item">
+                                    <i class="fas fa-wind"></i>
+                                    <span class="label">Curtain Status:</span>
+                                    <span id="curtain-status" class="status-badge status-off">Outside</span>
+                                </div>
+                                <div class="env-item">
+                                    <i class="fas fa-sun"></i>
+                                    <span class="label">Solar Panel Angle:</span>
+                                    <span id="solar-angle" class="value">45°</span>
+                                </div>
+                                <div class="env-item">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span class="label">Gas Detection:</span>
+                                    <span id="gas-status" class="status-badge status-off">Safe</span>
+                                </div>
                             </div>
-                            <div class="alert-item info">
-                                <i class="fas fa-wifi"></i>
-                                <span>Connect to ESP32 to start monitoring</span>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Panel -->
+                    <div class="card alerts-card" id="alert-panel">
+                        <div class="card-header">
+                            <i class="fas fa-bell"></i>
+                            <h3>System Alerts</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="alert-content" class="alert-content">
+                                <div class="alert-item info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>All systems normal</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <span>Smart Home System v1.0 • Real-time Monitoring</span>
-                <span>Connected to: <span id="esp-ip">192.168.1.100</span></span>
-                <span id="connection-stats">Theme: <span id="current-theme">Light</span></span>
-            </div>
-        </footer>
     </div>
 
     <!-- Settings Modal -->
-    <!-- Settings Modal -->
-<div id="settings-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3><i class="fas fa-cog"></i> ESP32 Connection Settings</h3>
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="esp32-ip">ESP32 IP Address:</label>
-                <input type="text" id="esp32-ip" placeholder="192.168.1.100" class="form-input">
-                <small>Enter the IP address shown in ESP32 Serial Monitor (e.g., 192.168.1.50)</small>
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> System Settings</h2>
+                <span class="close" onclick="closeSettings()">&times;</span>
             </div>
-            <div class="form-group">
-                <label for="update-interval">Update Interval (seconds):</label>
-                <input type="number" id="update-interval" value="2" min="1" max="10" class="form-input">
-                <small>How often to refresh data from ESP32 (1-10 seconds)</small>
-            </div>
-            <div class="form-group">
-                <label>Theme Settings:</label>
-                <div class="theme-options">
-                    <label class="theme-option">
-                        <input type="radio" name="theme" value="light" checked>
-                        <span class="theme-checkmark"></span>
-                        Light Theme
-                    </label>
-                    <label class="theme-option">
-                        <input type="radio" name="theme" value="dark">
-                        <span class="theme-checkmark"></span>
-                        Dark Theme
-                    </label>
-                    <label class="theme-option">
-                        <input type="radio" name="theme" value="auto">
-                        <span class="theme-checkmark"></span>
-                        Auto (System)
-                    </label>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3><i class="fas fa-wifi"></i> Connection Settings</h3>
+                    <div class="form-group">
+                        <label for="esp32-ip">ESP32 IP Address:</label>
+                        <input type="text" id="esp32-ip" placeholder="192.168.1.100">
+                        <small>Current IP: <span id="esp-ip">192.168.1.100</span></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="update-interval">Update Interval (seconds):</label>
+                        <input type="number" id="update-interval" min="1" max="60" value="2">
+                    </div>
+                    <button class="btn btn-info" onclick="testConnection()">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                </div>
+
+                <div class="settings-section">
+                    <h3><i class="fas fa-palette"></i> Theme Settings</h3>
+                    <div class="form-group">
+                        <label>Select Theme:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="theme" value="light" onchange="setTheme('light')">
+                                <span class="radio-custom"></span>
+                                <i class="fas fa-sun"></i> Light Mode
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="theme" value="dark" onchange="setTheme('dark')">
+                                <span class="radio-custom"></span>
+                                <i class="fas fa-moon"></i> Dark Mode
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="theme" value="auto" onchange="setTheme('auto')">
+                                <span class="radio-custom"></span>
+                                <i class="fas fa-adjust"></i> Auto (System)
+                            </label>
+                        </div>
+                        <small>Current theme: <span id="current-theme">Light</span></small>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3><i class="fas fa-info-circle"></i> System Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Web App Version:</span>
+                            <span class="value">2.0.0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Last Updated:</span>
+                            <span class="value">2024-01-20</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Browser:</span>
+                            <span class="value" id="browser-info">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Online Status:</span>
+                            <span class="value" id="online-status">Checking...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeSettings()">
-                <i class="fas fa-times"></i> Cancel
-            </button>
-            <button class="btn btn-primary" onclick="saveSettings()">
-                <i class="fas fa-save"></i> Save Settings
-            </button>
-            <button class="btn btn-info" onclick="testConnection()">
-                <i class="fas fa-plug"></i> Test Connection
-            </button>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
         </div>
     </div>
-</div>
 
     <script src="script.js"></script>
-
-    <!-- ඔබගේ existing dashboard content -->
-    
     <script>
-
-        // Logout functionality
-document.getElementById('logout-btn').addEventListener('click', function() {
-    // Clear user data from localStorage
-    localStorage.removeItem('currentSmartHomeUser');
-    localStorage.removeItem('loginTime');
-    
-    // Redirect to login page
-    window.location.href = 'index.html';
-});
-        // Authentication check for dashboard
+        // Browser detection for settings
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in
-            const currentUser = JSON.parse(localStorage.getItem('currentSmartHomeUser'));
-            const loginTime = localStorage.getItem('loginTime');
+            const browserInfo = document.getElementById('browser-info');
+            const onlineStatus = document.getElementById('online-status');
             
-            // Session validation (24 hours)
-            const sessionDuration = 24 * 60 * 60 * 1000;
-            const isSessionValid = loginTime && (Date.now() - parseInt(loginTime)) < sessionDuration;
-            
-            if (!currentUser || !isSessionValid) {
-                // If not logged in or session expired, redirect to login
-                localStorage.removeItem('currentSmartHomeUser');
-                localStorage.removeItem('loginTime');
-                window.location.href = 'index.html';
-                return;
+            if (browserInfo) {
+                browserInfo.textContent = navigator.userAgent.split(' ')[0];
             }
             
-            // User is properly logged in, show dashboard content
-            console.log('User authenticated:', currentUser.name);
-            
-            // Add logout functionality if you have a logout button
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function() {
-                    localStorage.removeItem('currentSmartHomeUser');
-                    localStorage.removeItem('loginTime');
-                    window.location.href = 'index.html';
-                });
+            if (onlineStatus) {
+                onlineStatus.textContent = navigator.onLine ? 'Online' : 'Offline';
+                onlineStatus.className = navigator.onLine ? 'value online' : 'value offline';
             }
         });
     </script>
-
 </body>
 </html>
+[file content end]

@@ -22,9 +22,12 @@ class SmartHomeSystem {
 
     setupEventListeners() {
         // Settings modal
-        document.querySelector('.close').addEventListener('click', () => {
-            this.closeSettings();
-        });
+        const closeBtn = document.querySelector('.close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeSettings();
+            });
+        }
 
         // Click outside modal to close
         window.addEventListener('click', (event) => {
@@ -39,18 +42,6 @@ class SmartHomeSystem {
             if (event.key === 'F5') {
                 event.preventDefault();
                 this.manualRefresh();
-            }
-            if (event.ctrlKey && event.key === 'r') {
-                event.preventDefault();
-                this.manualRefresh();
-            }
-            if (event.key === 'Escape') {
-                this.closeSettings();
-            }
-            // Theme toggle shortcut (Ctrl+T)
-            if (event.ctrlKey && event.key === 't') {
-                event.preventDefault();
-                this.toggleTheme();
             }
         });
 
@@ -104,7 +95,9 @@ class SmartHomeSystem {
         // Update radio buttons in settings
         const radioButtons = document.querySelectorAll('input[name="theme"]');
         radioButtons.forEach(radio => {
-            radio.checked = radio.value === localStorage.getItem('theme');
+            if (radio.value === localStorage.getItem('theme')) {
+                radio.checked = true;
+            }
         });
     }
 
@@ -129,7 +122,7 @@ class SmartHomeSystem {
         const dateElement = document.getElementById('date-display');
         
         if (timeElement) {
-            timeElement.textContent = now.toLocaleTimeString('si-LK', { 
+            timeElement.textContent = now.toLocaleTimeString('en-US', { 
                 hour12: false,
                 hour: '2-digit',
                 minute: '2-digit',
@@ -138,7 +131,7 @@ class SmartHomeSystem {
         }
         
         if (dateElement) {
-            dateElement.textContent = now.toLocaleDateString('si-LK', { 
+            dateElement.textContent = now.toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
@@ -167,9 +160,9 @@ class SmartHomeSystem {
         const intervalInput = document.getElementById('update-interval');
         
         if (ipInput && intervalInput) {
-            this.esp32IP = ipInput.value;
+            this.esp32IP = ipInput.value.trim();
             const intervalSeconds = parseInt(intervalInput.value);
-            this.updateInterval = intervalSeconds * 1000;
+            this.updateInterval = Math.max(1000, intervalSeconds * 1000); // Minimum 1 second
             
             localStorage.setItem('esp32IP', this.esp32IP);
             localStorage.setItem('updateInterval', this.updateInterval);
@@ -181,26 +174,28 @@ class SmartHomeSystem {
     }
 
     async fetchStatus() {
+        // If no IP set, use simulated data
+        if (!this.esp32IP || this.esp32IP === '192.168.1.100') {
+            this.setConnectionStatus(false);
+            this.updateUIWithSimulatedData();
+            return false;
+        }
+
         try {
             // Add timestamp to prevent caching
             const timestamp = new Date().getTime();
             const url = `http://${this.esp32IP}/status?t=${timestamp}`;
             
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            console.log('Fetching from:', url);
             
             const response = await fetch(url, {
-                signal: controller.signal,
                 method: 'GET',
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
+                    'Cache-Control': 'no-cache'
                 }
             });
-            
-            clearTimeout(timeoutId);
             
             if (response.ok) {
                 const data = await response.json();
@@ -289,7 +284,16 @@ class SmartHomeSystem {
             this.updateStatusElement('rain-status', data.rainDetected, 'Raining', 'No Rain');
             this.updateStatusElement('gas-status', data.gasAlarm, 'Gas Leak!', 'Safe');
             this.updateStatusElement('alarm-status', data.securityBreach, 'ACTIVE', 'Inactive');
-            this.updateStatusElement('security-status', data.securityActive, 'Active', 'Disabled');
+            
+            // Update security status
+            const securityStatus = document.getElementById('security-status');
+            if (securityStatus) {
+                securityStatus.className = data.securityActive ? 'status-active' : 'status offline';
+                securityStatus.innerHTML = data.securityActive ? 
+                    '<i class="fas fa-shield-alt"></i> Active' : 
+                    '<i class="fas fa-shield-alt"></i> Disabled';
+            }
+            
             this.updateStatusElement('motion-status', data.motionDetected, 'Motion', 'No Motion');
             this.updateStatusElement('laser-status', data.securityActive, 'Active', 'Inactive');
 
@@ -311,8 +315,8 @@ class SmartHomeSystem {
             this.updateTextContent('curtain-status', data.rainDetected ? 'Inside' : 'Outside');
 
             // Show/hide stop alarm button
-            this.toggleElement('stop-alarm-btn', data.securityBreach);
-            this.toggleElement('stop-alarm-main-btn', data.securityBreach);
+            this.toggleElement('stop-alarm-btn', data.securityBreach || data.gasAlarm);
+            this.toggleElement('stop-alarm-main-btn', data.securityBreach || data.gasAlarm);
 
             // Update alerts
             this.updateAlerts(data.alerts || []);
@@ -411,7 +415,7 @@ class SmartHomeSystem {
 
     updateLastUpdateTime() {
         const now = new Date();
-        const timeString = now.toLocaleTimeString('si-LK', { 
+        const timeString = now.toLocaleTimeString('en-US', { 
             hour12: false,
             hour: '2-digit',
             minute: '2-digit',
@@ -419,12 +423,6 @@ class SmartHomeSystem {
         });
         
         this.updateTextContent('last-update', timeString);
-        
-        // Update connection status tooltip
-        const statusElement = document.getElementById('connection-status');
-        if (statusElement && this.isConnected) {
-            statusElement.title = `Last update: ${timeString}`;
-        }
     }
 
     updateUIWithSimulatedData() {
@@ -454,13 +452,20 @@ class SmartHomeSystem {
                 led5: Math.random() > 0.5,
                 led6: Math.random() > 0.5
             },
-            alerts: this.isConnected ? [] : ['Connection lost - Using simulated data']
+            alerts: this.isConnected ? [] : ['Set ESP32 IP in settings to connect']
         };
 
         this.updateUI(simulatedData);
     }
 
     async sendCommand(endpoint, data = {}) {
+        // If no IP set, simulate success
+        if (!this.esp32IP || this.esp32IP === '192.168.1.100') {
+            this.showNotification('Command simulated (set ESP32 IP to connect)', 'warning');
+            setTimeout(() => this.fetchStatus(), 500);
+            return { status: 'success', message: 'Command simulated' };
+        }
+
         try {
             const url = `http://${this.esp32IP}/${endpoint}`;
             
@@ -560,11 +565,15 @@ class SmartHomeSystem {
     }
 
     async testConnection() {
+        if (!this.esp32IP || this.esp32IP === '192.168.1.100') {
+            this.showNotification('Please set ESP32 IP address first', 'warning');
+            return false;
+        }
+
         try {
             const response = await fetch(`http://${this.esp32IP}/status`, {
                 method: 'GET',
-                mode: 'cors',
-                timeout: 3000
+                mode: 'cors'
             });
             
             if (response.ok) {
@@ -574,7 +583,7 @@ class SmartHomeSystem {
                 throw new Error('Connection failed');
             }
         } catch (error) {
-            this.showNotification('Connection test failed!', 'error');
+            this.showNotification('Connection test failed! Check IP address.', 'error');
             return false;
         }
     }
@@ -629,102 +638,12 @@ class SmartHomeSystem {
             </div>
         `;
         
-        // Add styles if not already added
-        if (!document.querySelector('#notification-styles')) {
-            const style = document.createElement('style');
-            style.id = 'notification-styles';
-            style.textContent = `
-                .notification {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: white;
-                    padding: 15px 20px;
-                    border-radius: 10px;
-                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                    z-index: 1001;
-                    border-left: 4px solid;
-                    animation: slideInRight 0.3s ease;
-                    max-width: 400px;
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255,255,255,0.2);
-                }
-                .notification.success { 
-                    border-left-color: #28a745;
-                    background: linear-gradient(135deg, #d4edda, #c3e6cb);
-                    color: #155724;
-                }
-                .notification.error { 
-                    border-left-color: #dc3545;
-                    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-                    color: #721c24;
-                }
-                .notification.info { 
-                    border-left-color: #17a2b8;
-                    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
-                    color: #0c5460;
-                }
-                .notification.warning { 
-                    border-left-color: #ffc107;
-                    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-                    color: #856404;
-                }
-                .notification-content {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                }
-                .notification-content i:first-child {
-                    font-size: 1.2rem;
-                }
-                .notification-content button {
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                    padding: 5px;
-                    margin-left: auto;
-                    color: inherit;
-                    opacity: 0.7;
-                    transition: opacity 0.3s ease;
-                }
-                .notification-content button:hover {
-                    opacity: 1;
-                }
-                @keyframes slideInRight {
-                    from { 
-                        transform: translateX(100%); 
-                        opacity: 0; 
-                    }
-                    to { 
-                        transform: translateX(0); 
-                        opacity: 1; 
-                    }
-                }
-                @keyframes slideOutRight {
-                    from { 
-                        transform: translateX(0); 
-                        opacity: 1; 
-                    }
-                    to { 
-                        transform: translateX(100%); 
-                        opacity: 0; 
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
         document.body.appendChild(notification);
         
         // Auto remove after 5 seconds
         setTimeout(() => {
             if (notification.parentElement) {
-                notification.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => {
-                    if (notification.parentElement) {
-                        notification.remove();
-                    }
-                }, 300);
+                notification.remove();
             }
         }, 5000);
     }
@@ -742,149 +661,120 @@ class SmartHomeSystem {
 
 // Global functions for HTML event handlers
 function controlLED(ledNumber, state) {
-    if (smartHome) {
-        smartHome.controlLED(ledNumber, state);
+    if (window.smartHome) {
+        window.smartHome.controlLED(ledNumber, state);
     }
 }
 
 function controlAllLights(state) {
-    if (smartHome) {
-        smartHome.controlAllLights(state);
+    if (window.smartHome) {
+        window.smartHome.controlAllLights(state);
     }
 }
 
 function controlGate() {
-    if (smartHome) {
-        smartHome.controlGate();
+    if (window.smartHome) {
+        window.smartHome.controlGate();
     }
 }
 
 function openGarage() {
-    if (smartHome) {
-        smartHome.controlGarage('open');
+    if (window.smartHome) {
+        window.smartHome.controlGarage('open');
     }
 }
 
 function closeGarage() {
-    if (smartHome) {
-        smartHome.controlGarage('close');
+    if (window.smartHome) {
+        window.smartHome.controlGarage('close');
     }
 }
 
 function setGarageMode(autoMode) {
-    if (smartHome) {
-        smartHome.setGarageMode(autoMode);
+    if (window.smartHome) {
+        window.smartHome.setGarageMode(autoMode);
     }
 }
 
 function setSecuritySystem(enabled) {
-    if (smartHome) {
-        smartHome.setSecuritySystem(enabled);
+    if (window.smartHome) {
+        window.smartHome.setSecuritySystem(enabled);
     }
 }
 
 function stopAlarm() {
-    if (smartHome) {
-        smartHome.controlAlarm('stop');
+    if (window.smartHome) {
+        window.smartHome.controlAlarm('stop');
     }
 }
 
 function testBuzzer() {
-    if (smartHome) {
-        smartHome.controlAlarm('test');
+    if (window.smartHome) {
+        window.smartHome.controlAlarm('test');
     }
 }
 
 function openMainDoor() {
-    if (smartHome) {
-        smartHome.openMainDoor();
+    if (window.smartHome) {
+        window.smartHome.openMainDoor();
     }
 }
 
 function closeMainDoor() {
-    if (smartHome) {
-        smartHome.closeMainDoor();
+    if (window.smartHome) {
+        window.smartHome.closeMainDoor();
     }
 }
 
 function toggleDoorLock() {
-    if (smartHome) {
-        smartHome.toggleDoorLock();
+    if (window.smartHome) {
+        window.smartHome.toggleDoorLock();
     }
 }
 
 function toggleTheme() {
-    if (smartHome) {
-        smartHome.toggleTheme();
+    if (window.smartHome) {
+        window.smartHome.toggleTheme();
     }
 }
 
 function setTheme(theme) {
-    if (smartHome) {
-        smartHome.setTheme(theme);
+    if (window.smartHome) {
+        window.smartHome.setTheme(theme);
     }
 }
 
 function openSettings() {
-    if (smartHome) {
-        smartHome.openSettings();
+    if (window.smartHome) {
+        window.smartHome.openSettings();
     }
 }
 
 function closeSettings() {
-    if (smartHome) {
-        smartHome.closeSettings();
+    if (window.smartHome) {
+        window.smartHome.closeSettings();
     }
 }
 
 function saveSettings() {
-    if (smartHome) {
-        smartHome.saveSettings();
+    if (window.smartHome) {
+        window.smartHome.saveSettings();
     }
 }
 
 function testConnection() {
-    if (smartHome) {
-        smartHome.testConnection();
+    if (window.smartHome) {
+        window.smartHome.testConnection();
     }
 }
 
 function manualRefresh() {
-    if (smartHome) {
-        smartHome.manualRefresh();
+    if (window.smartHome) {
+        window.smartHome.manualRefresh();
     }
 }
 
 // Initialize the system when page loads
-let smartHome;
-
 document.addEventListener('DOMContentLoaded', () => {
-    smartHome = new SmartHomeSystem();
+    window.smartHome = new SmartHomeSystem();
 });
-
-// System theme change listener
-if (window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', (e) => {
-        if (smartHome && localStorage.getItem('theme') === 'auto') {
-            smartHome.applyTheme('auto');
-        }
-    });
-}
-
-// Handle page visibility changes
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden && smartHome) {
-        smartHome.fetchStatus();
-    }
-});
-
-// Error handling for uncaught errors
-window.addEventListener('error', function(e) {
-    console.error('Uncaught error:', e.error);
-});
-
-// Export for debugging (optional)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SmartHomeSystem;
-}

@@ -49,7 +49,7 @@
 
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             padding: 20px;
         }
 
@@ -152,6 +152,10 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -160,10 +164,22 @@
             border: 1px solid rgba(99, 102, 241, 0.4);
         }
 
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            color: white;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
         .btn-secondary {
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-primary);
             border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.4);
         }
 
         .btn:hover {
@@ -229,8 +245,56 @@
             border-left: 3px solid rgba(99, 102, 241, 0.6);
         }
 
+        .ip-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .ip-display {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ip-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
         .hidden {
             display: none;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .status-offline {
+            background: #ef4444;
         }
     </style>
 </head>
@@ -306,7 +370,7 @@
             <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
         </div>
 
-        <!-- Dashboard (Hidden by default) -->
+        <!-- Dashboard -->
         <div class="glass-card hidden" id="dashboard">
             <div class="logo">
                 <div class="logo-icon">🚀</div>
@@ -314,13 +378,45 @@
                 <p id="welcomeMessage">Loading your dashboard...</p>
             </div>
 
+            <!-- ESP32 IP Section -->
+            <div class="ip-section">
+                <h3>🏠 SmartHome Controller</h3>
+                <div class="ip-display" id="espIpDisplay">
+                    <span class="status-indicator" id="espStatus"></span>
+                    <span id="espIpText">Loading ESP32 IP...</span>
+                </div>
+                
+                <div class="ip-actions">
+                    <button class="btn btn-success" onclick="openEspApp()">
+                        <span>🔗</span> Open Control Panel
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyEspIp()">
+                        <span>📋</span> Copy IP
+                    </button>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onclick="testConnection()">
+                        <span>🔍</span> Test Connection
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshIp()">
+                        <span>🔄</span> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- User Information -->
             <div class="access-logs">
-                <h3>Your Access Information</h3>
+                <h3>👤 Your Profile</h3>
                 <div id="userInfo"></div>
+                
+                <h3 style="margin-top: 20px;">📱 Access History</h3>
                 <div id="dashboardLogs"></div>
             </div>
 
-            <button class="btn btn-danger" onclick="logout()">Logout</button>
+            <button class="btn btn-danger" onclick="logout()">
+                <span>🚪</span> Logout
+            </button>
         </div>
     </div>
 
@@ -331,6 +427,11 @@
                 this.users = JSON.parse(localStorage.getItem('smartHomeUsers')) || [];
                 this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
                 this.accessLogs = JSON.parse(localStorage.getItem('accessLogs')) || [];
+                this.espConfig = JSON.parse(localStorage.getItem('espConfig')) || {
+                    ip: '192.168.1.100',
+                    port: '80',
+                    status: 'unknown'
+                };
             }
 
             saveUsers() {
@@ -342,6 +443,11 @@
                 localStorage.setItem('currentUser', JSON.stringify(user));
             }
 
+            saveEspConfig(config) {
+                this.espConfig = config;
+                localStorage.setItem('espConfig', JSON.stringify(config));
+            }
+
             addAccessLog(username, action, ip = 'Unknown') {
                 const log = {
                     username,
@@ -351,23 +457,19 @@
                     userAgent: navigator.userAgent
                 };
                 this.accessLogs.unshift(log);
-                // Keep only last 10 logs
                 this.accessLogs = this.accessLogs.slice(0, 10);
                 localStorage.setItem('accessLogs', JSON.stringify(this.accessLogs));
             }
 
             signup(userData) {
-                // Check if username already exists
                 if (this.users.find(user => user.username === userData.username)) {
                     return { success: false, message: 'Username already exists' };
                 }
 
-                // Check if email already exists
                 if (this.users.find(user => user.email === userData.email)) {
                     return { success: false, message: 'Email already registered' };
                 }
 
-                // Add new user
                 const newUser = {
                     id: Date.now().toString(),
                     ...userData,
@@ -376,9 +478,7 @@
                 this.users.push(newUser);
                 this.saveUsers();
 
-                // Log the signup
                 this.addAccessLog(userData.username, 'signup');
-
                 return { success: true, message: 'Account created successfully' };
             }
 
@@ -406,6 +506,34 @@
                 }
                 return this.accessLogs;
             }
+
+            // ESP32 IP Management
+            setEspIp(ip, port = '80') {
+                this.espConfig.ip = ip;
+                this.espConfig.port = port;
+                this.saveEspConfig(this.espConfig);
+            }
+
+            getEspUrl() {
+                return `http://${this.espConfig.ip}:${this.espConfig.port}`;
+            }
+
+            async testEspConnection() {
+                try {
+                    const response = await fetch(this.getEspUrl(), {
+                        method: 'GET',
+                        mode: 'no-cors',
+                        cache: 'no-cache'
+                    });
+                    this.espConfig.status = 'online';
+                    this.saveEspConfig(this.espConfig);
+                    return { success: true, status: 'online' };
+                } catch (error) {
+                    this.espConfig.status = 'offline';
+                    this.saveEspConfig(this.espConfig);
+                    return { success: false, status: 'offline', error: error.message };
+                }
+            }
         }
 
         // Initialize User Manager
@@ -432,6 +560,9 @@
         const dashboardLogs = document.getElementById('dashboardLogs');
         const userInfo = document.getElementById('userInfo');
         const welcomeMessage = document.getElementById('welcomeMessage');
+        const espIpDisplay = document.getElementById('espIpDisplay');
+        const espIpText = document.getElementById('espIpText');
+        const espStatus = document.getElementById('espStatus');
 
         // Show/Hide Forms
         function showLogin() {
@@ -451,6 +582,26 @@
             signupForm.classList.add('hidden');
             dashboard.classList.remove('hidden');
             updateDashboard();
+            updateEspStatus();
+        }
+
+        // Update ESP32 Status
+        async function updateEspStatus() {
+            const config = userManager.espConfig;
+            const url = userManager.getEspUrl();
+            
+            espIpText.textContent = `${config.ip}:${config.port}`;
+            
+            // Test connection
+            const result = await userManager.testEspConnection();
+            
+            if (result.status === 'online') {
+                espStatus.className = 'status-indicator status-online';
+                espIpDisplay.style.borderLeft = '3px solid #10b981';
+            } else {
+                espStatus.className = 'status-indicator status-offline';
+                espIpDisplay.style.borderLeft = '3px solid #ef4444';
+            }
         }
 
         // Update Dashboard
@@ -490,6 +641,53 @@
                     <br><small>IP: ${log.ip}</small>
                 </div>
             `).join('');
+        }
+
+        // ESP32 Functions
+        function openEspApp() {
+            const url = userManager.getEspUrl();
+            window.open(url, '_blank');
+            
+            // Log the access
+            if (userManager.currentUser) {
+                userManager.addAccessLog(userManager.currentUser.username, 'accessed_esp');
+            }
+        }
+
+        function copyEspIp() {
+            const url = userManager.getEspUrl();
+            navigator.clipboard.writeText(url).then(() => {
+                showAlert(loginAlert, 'ESP32 URL copied to clipboard!', 'success');
+            });
+        }
+
+        async function testConnection() {
+            const result = await userManager.testEspConnection();
+            if (result.status === 'online') {
+                showAlert(loginAlert, '✅ ESP32 is online and accessible!', 'success');
+            } else {
+                showAlert(loginAlert, '❌ ESP32 is offline or unreachable', 'error');
+            }
+            updateEspStatus();
+        }
+
+        function refreshIp() {
+            // In a real scenario, you might want to fetch the IP from the ESP32
+            // For now, we'll just refresh the status
+            updateEspStatus();
+            showAlert(loginAlert, 'ESP32 status refreshed!', 'success');
+        }
+
+        // IP Configuration (for manual setup)
+        function configureEspIp() {
+            const newIp = prompt('Enter ESP32 IP address:', userManager.espConfig.ip);
+            const newPort = prompt('Enter port (default: 80):', userManager.espConfig.port);
+            
+            if (newIp) {
+                userManager.setEspIp(newIp, newPort || '80');
+                updateEspStatus();
+                showAlert(loginAlert, 'ESP32 configuration updated!', 'success');
+            }
         }
 
         // Show Alert
@@ -582,6 +780,15 @@
                     password: 'demo123'
                 });
             }
+
+            // Add right-click context menu for IP configuration
+            espIpDisplay.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                configureEspIp();
+            });
+
+            // Double-click to configure IP
+            espIpDisplay.addEventListener('dblclick', configureEspIp);
         });
     </script>
 </body>

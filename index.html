@@ -3,480 +3,586 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Home Pro - Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>SmartHome Pro | Login</title>
     <style>
+        :root {
+            --glass-primary: rgba(99, 102, 241, 0.15);
+            --glass-secondary: rgba(16, 185, 129, 0.15);
+            --glass-danger: rgba(239, 68, 68, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            --text-primary: rgba(255, 255, 255, 0.95);
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --secondary: #10b981;
-            --glass: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.18);
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            font-family: 'Inter', sans-serif;
         }
 
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            color: var(--text-primary);
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
-        .background-shapes {
+        body::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .shape {
-            position: absolute;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
-        }
-
-        .shape:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: -100px;
-            left: -100px;
-        }
-
-        .shape:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            bottom: -50px;
-            right: -50px;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .container {
             width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            padding: 30px;
-            width: 100%;
             max-width: 400px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 20px;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.5);
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
         }
 
         .logo {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 20px;
+            backdrop-filter: blur(10px);
         }
 
         .logo h1 {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #e2e8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
 
         .logo p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: white;
-            font-weight: 600;
-        }
-
-        .input-group {
+        .form-group {
             margin-bottom: 20px;
-            position: relative;
         }
 
-        label {
+        .form-label {
             display: block;
             margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
             font-weight: 500;
-            color: white;
         }
 
-        .input-with-icon {
-            position: relative;
-        }
-
-        .input-with-icon i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        input {
+        .glass-input {
             width: 100%;
-            padding: 12px 15px 12px 45px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            font-size: 16px;
-            color: white;
-            transition: all 0.3s;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        input:focus {
-            border-color: rgba(255, 255, 255, 0.5);
+        .glass-input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(99, 102, 241, 0.6);
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        button {
+        .glass-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn {
             width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
+            padding: 16px;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            margin-bottom: 15px;
         }
 
-        button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .toggle-form {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .toggle-form a {
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
             color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
+            border: 1px solid rgba(99, 102, 241, 0.4);
         }
 
-        .toggle-form a:hover {
-            text-decoration: underline;
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .message {
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-footer {
             text-align: center;
-            display: none;
+            margin-top: 25px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .form-footer a {
+            color: var(--text-primary);
+            text-decoration: none;
             font-weight: 500;
         }
 
-        .success {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(30, 41, 59, 0.8));
             border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
         }
 
-        .error {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
+        .alert-error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(30, 41, 59, 0.8));
             border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
         }
 
-        @media (max-width: 768px) {
-            .card {
-                padding: 20px;
-            }
-            
-            .logo h1 {
-                font-size: 2rem;
-            }
+        .access-logs {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .access-logs h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .log-entry {
+            font-size: 12px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid rgba(99, 102, 241, 0.6);
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="background-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
-
     <div class="container">
         <!-- Login Form -->
-        <div class="card" id="login-form">
+        <div class="glass-card" id="loginForm">
             <div class="logo">
-                <h1><i class="fas fa-home"></i> Smart Home Pro</h1>
-                <p>Control Your Home, Anytime, Anywhere</p>
+                <div class="logo-icon">🏠</div>
+                <h1>SmartHome Pro</h1>
+                <p>Welcome back to your smart home</p>
             </div>
-            <h2>Welcome Back</h2>
-            <div class="message" id="login-message"></div>
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="login-email">Email Address</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="login-email" placeholder="Enter your email" required>
-                    </div>
+
+            <div class="alert" id="loginAlert"></div>
+
+            <form id="loginFormElement">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="glass-input" id="loginUsername" placeholder="Enter your username" required>
                 </div>
-                <div class="input-group">
-                    <label for="login-password">Password</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="login-password" placeholder="Enter your password" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="glass-input" id="loginPassword" placeholder="Enter your password" required>
                 </div>
-                <button type="submit">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Login to Control Panel
-                </button>
+                <button type="submit" class="btn btn-primary">Sign In</button>
             </form>
-            <div class="toggle-form">
-                Don't have an account? <a href="#" id="show-signup">Sign up</a>
+
+            <div class="form-footer">
+                Don't have an account? <a href="#" onclick="showSignup()">Sign up</a>
+            </div>
+
+            <!-- Access Logs -->
+            <div class="access-logs">
+                <h3>Recent Access</h3>
+                <div id="accessLogs"></div>
             </div>
         </div>
 
         <!-- Signup Form -->
-        <div class="card" id="signup-form" style="display: none;">
+        <div class="glass-card hidden" id="signupForm">
             <div class="logo">
-                <h1><i class="fas fa-home"></i> SmartHome Pro</h1>
-                <p>Create Your Smart Home Account</p>
+                <div class="logo-icon">✨</div>
+                <h1>Create Account</h1>
+                <p>Join SmartHome Pro today</p>
             </div>
-            <h2>Create Account</h2>
-            <div class="message" id="signup-message"></div>
-            <form id="signupForm">
-                <div class="input-group">
-                    <label for="signup-name">Full Name</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="signup-name" placeholder="Enter your full name" required>
-                    </div>
+
+            <div class="alert" id="signupAlert"></div>
+
+            <form id="signupFormElement">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="glass-input" id="signupName" placeholder="Enter your full name" required>
                 </div>
-                <div class="input-group">
-                    <label for="signup-email">Email Address</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="signup-email" placeholder="Enter your email" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="glass-input" id="signupUsername" placeholder="Choose a username" required>
                 </div>
-                <div class="input-group">
-                    <label for="signup-password">Password</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="signup-password" placeholder="Create a password" required minlength="6">
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="glass-input" id="signupEmail" placeholder="Enter your email" required>
                 </div>
-                <div class="input-group">
-                    <label for="signup-confirm-password">Confirm Password</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="glass-input" id="signupPassword" placeholder="Create a password" required>
                 </div>
-                <button type="submit">
-                    <i class="fas fa-user-plus"></i>
-                    Create Smart Home Account
-                </button>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="glass-input" id="signupConfirmPassword" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
             </form>
-            <div class="toggle-form">
-                Already have an account? <a href="#" id="show-login">Login</a>
+
+            <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
+        </div>
+
+        <!-- Dashboard (Hidden by default) -->
+        <div class="glass-card hidden" id="dashboard">
+            <div class="logo">
+                <div class="logo-icon">🚀</div>
+                <h1>Welcome!</h1>
+                <p id="welcomeMessage">Loading your dashboard...</p>
             </div>
+
+            <div class="access-logs">
+                <h3>Your Access Information</h3>
+                <div id="userInfo"></div>
+                <div id="dashboardLogs"></div>
+            </div>
+
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
         </div>
     </div>
 
     <script>
-        // Database simulation using localStorage
-        const Database = {
-            init: function() {
-                if (!localStorage.getItem('smartHomeUsers')) {
-                    localStorage.setItem('smartHomeUsers', JSON.stringify([]));
-                }
-            },
-
-            addUser: function(user) {
-                const users = this.getUsers();
-                users.push(user);
-                localStorage.setItem('smartHomeUsers', JSON.stringify(users));
-            },
-
-            getUsers: function() {
-                return JSON.parse(localStorage.getItem('smartHomeUsers')) || [];
-            },
-
-            findUserByEmail: function(email) {
-                const users = this.getUsers();
-                return users.find(user => user.email === email);
-            },
-
-            setCurrentUser: function(user) {
-                localStorage.setItem('currentSmartHomeUser', JSON.stringify(user));
-                // Set login timestamp for session management
-                localStorage.setItem('loginTime', Date.now());
-            },
-
-            getCurrentUser: function() {
-                return JSON.parse(localStorage.getItem('currentSmartHomeUser'));
-            },
-
-            clearCurrentUser: function() {
-                localStorage.removeItem('currentSmartHomeUser');
-                localStorage.removeItem('loginTime');
-            },
-
-            isLoggedIn: function() {
-                const user = this.getCurrentUser();
-                const loginTime = localStorage.getItem('loginTime');
-                
-                if (!user || !loginTime) return false;
-                
-                // Check if session is still valid (24 hours)
-                const sessionDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-                return (Date.now() - parseInt(loginTime)) < sessionDuration;
+        // User Management System
+        class UserManager {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('smartHomeUsers')) || [];
+                this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+                this.accessLogs = JSON.parse(localStorage.getItem('accessLogs')) || [];
             }
-        };
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            Database.init();
+            saveUsers() {
+                localStorage.setItem('smartHomeUsers', JSON.stringify(this.users));
+            }
+
+            saveCurrentUser(user) {
+                this.currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+            }
+
+            addAccessLog(username, action, ip = 'Unknown') {
+                const log = {
+                    username,
+                    action,
+                    ip,
+                    timestamp: new Date().toLocaleString(),
+                    userAgent: navigator.userAgent
+                };
+                this.accessLogs.unshift(log);
+                // Keep only last 10 logs
+                this.accessLogs = this.accessLogs.slice(0, 10);
+                localStorage.setItem('accessLogs', JSON.stringify(this.accessLogs));
+            }
+
+            signup(userData) {
+                // Check if username already exists
+                if (this.users.find(user => user.username === userData.username)) {
+                    return { success: false, message: 'Username already exists' };
+                }
+
+                // Check if email already exists
+                if (this.users.find(user => user.email === userData.email)) {
+                    return { success: false, message: 'Email already registered' };
+                }
+
+                // Add new user
+                const newUser = {
+                    id: Date.now().toString(),
+                    ...userData,
+                    createdAt: new Date().toISOString()
+                };
+                this.users.push(newUser);
+                this.saveUsers();
+
+                // Log the signup
+                this.addAccessLog(userData.username, 'signup');
+
+                return { success: true, message: 'Account created successfully' };
+            }
+
+            login(username, password) {
+                const user = this.users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    this.saveCurrentUser(user);
+                    this.addAccessLog(username, 'login');
+                    return { success: true, user };
+                }
+                return { success: false, message: 'Invalid username or password' };
+            }
+
+            logout() {
+                if (this.currentUser) {
+                    this.addAccessLog(this.currentUser.username, 'logout');
+                }
+                this.currentUser = null;
+                localStorage.removeItem('currentUser');
+            }
+
+            getAccessLogs(username = null) {
+                if (username) {
+                    return this.accessLogs.filter(log => log.username === username);
+                }
+                return this.accessLogs;
+            }
+        }
+
+        // Initialize User Manager
+        const userManager = new UserManager();
+
+        // Get Client IP
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'Unknown';
+            }
+        }
+
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const dashboard = document.getElementById('dashboard');
+        const loginAlert = document.getElementById('loginAlert');
+        const signupAlert = document.getElementById('signupAlert');
+        const accessLogs = document.getElementById('accessLogs');
+        const dashboardLogs = document.getElementById('dashboardLogs');
+        const userInfo = document.getElementById('userInfo');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+
+        // Show/Hide Forms
+        function showLogin() {
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            dashboard.classList.add('hidden');
+        }
+
+        function showSignup() {
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+            dashboard.classList.add('hidden');
+        }
+
+        function showDashboard() {
+            loginForm.classList.add('hidden');
+            signupForm.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            updateDashboard();
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            const user = userManager.currentUser;
+            if (user) {
+                welcomeMessage.textContent = `Hello, ${user.name}!`;
+                
+                userInfo.innerHTML = `
+                    <div class="log-entry">
+                        <strong>Username:</strong> ${user.username}
+                    </div>
+                    <div class="log-entry">
+                        <strong>Email:</strong> ${user.email}
+                    </div>
+                    <div class="log-entry">
+                        <strong>Member since:</strong> ${new Date(user.createdAt).toLocaleDateString()}
+                    </div>
+                `;
+
+                const userLogs = userManager.getAccessLogs(user.username);
+                dashboardLogs.innerHTML = userLogs.map(log => `
+                    <div class="log-entry">
+                        <strong>${log.action.toUpperCase()}</strong> - ${log.timestamp}
+                        <br><small>IP: ${log.ip} | ${log.userAgent.split(' ')[0]}</small>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Update Access Logs Display
+        function updateAccessLogs() {
+            const logs = userManager.getAccessLogs().slice(0, 5);
+            accessLogs.innerHTML = logs.map(log => `
+                <div class="log-entry">
+                    <strong>${log.username}</strong> - ${log.action} - ${log.timestamp}
+                    <br><small>IP: ${log.ip}</small>
+                </div>
+            `).join('');
+        }
+
+        // Show Alert
+        function showAlert(alertElement, message, type = 'success') {
+            alertElement.textContent = message;
+            alertElement.className = `alert alert-${type}`;
+            alertElement.style.display = 'block';
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Event Listeners
+        document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            // Check if user is already logged in
-            if (Database.isLoggedIn()) {
-                redirectToDashboard();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const ip = await getClientIP();
+            const result = userManager.login(username, password);
+            
+            if (result.success) {
+                showAlert(loginAlert, 'Login successful!', 'success');
+                setTimeout(() => {
+                    showDashboard();
+                }, 1000);
+            } else {
+                showAlert(loginAlert, result.message, 'error');
+            }
+        });
+
+        document.getElementById('signupFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signupName').value;
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                showAlert(signupAlert, 'Passwords do not match', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert(signupAlert, 'Password must be at least 6 characters', 'error');
                 return;
             }
 
-            // Form toggle functionality
-            document.getElementById('show-signup').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('signup-form').style.display = 'block';
-                clearMessages();
-            });
-
-            document.getElementById('show-login').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('signup-form').style.display = 'none';
-                document.getElementById('login-form').style.display = 'block';
-                clearMessages();
-            });
-
-            // Login form submission
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                
-                const user = Database.findUserByEmail(email);
-                const messageEl = document.getElementById('login-message');
-                
-                if (user && user.password === password) {
-                    Database.setCurrentUser(user);
-                    showMessage(messageEl, 'Login successful! Redirecting to dashboard...', 'success');
-                    
-                    // Redirect to dashboard after 1.5 seconds
-                    setTimeout(() => {
-                        redirectToDashboard();
-                    }, 1500);
-                } else {
-                    showMessage(messageEl, 'Invalid email or password', 'error');
-                }
-            });
-
-            // Signup form submission
-            document.getElementById('signupForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const name = document.getElementById('signup-name').value;
-                const email = document.getElementById('signup-email').value;
-                const password = document.getElementById('signup-password').value;
-                const confirmPassword = document.getElementById('signup-confirm-password').value;
-                
-                const messageEl = document.getElementById('signup-message');
-                
-                // Validation
-                if (password !== confirmPassword) {
-                    showMessage(messageEl, 'Passwords do not match', 'error');
-                    return;
-                }
-                
-                if (Database.findUserByEmail(email)) {
-                    showMessage(messageEl, 'Email already registered', 'error');
-                    return;
-                }
-                
-                // Create new user
-                const newUser = {
-                    id: Date.now(),
-                    name: name,
-                    email: email,
-                    password: password,
-                    created: new Date().toLocaleDateString()
-                };
-                
-                Database.addUser(newUser);
-                showMessage(messageEl, 'Account created successfully! Please login.', 'success');
-                
-                // Clear form
-                document.getElementById('signupForm').reset();
-                
-                // Switch to login form after a delay
+            const ip = await getClientIP();
+            const result = userManager.signup({ name, username, email, password });
+            
+            if (result.success) {
+                showAlert(signupAlert, result.message, 'success');
                 setTimeout(() => {
-                    document.getElementById('signup-form').style.display = 'none';
-                    document.getElementById('login-form').style.display = 'block';
-                    clearMessages();
+                    showLogin();
+                    document.getElementById('signupFormElement').reset();
                 }, 2000);
-            });
+            } else {
+                showAlert(signupAlert, result.message, 'error');
+            }
         });
 
-        // Helper functions
-        function showMessage(element, message, type) {
-            element.textContent = message;
-            element.className = `message ${type}`;
-            element.style.display = 'block';
+        // Logout Function
+        function logout() {
+            userManager.logout();
+            showLogin();
+            document.getElementById('loginFormElement').reset();
         }
 
-        function clearMessages() {
-            document.querySelectorAll('.message').forEach(msg => {
-                msg.style.display = 'none';
-            });
-        }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAccessLogs();
+            
+            // Check if user is already logged in
+            if (userManager.currentUser) {
+                showDashboard();
+            } else {
+                showLogin();
+            }
 
-        function redirectToDashboard() {
-            window.location.href = 'dashboard.html';
-        }
+            // Add some sample users for demonstration
+            if (userManager.users.length === 0) {
+                userManager.signup({
+                    name: 'Demo User',
+                    username: 'demo',
+                    email: 'demo@smarthome.com',
+                    password: 'demo123'
+                });
+            }
+        });
     </script>
 </body>
 </html>

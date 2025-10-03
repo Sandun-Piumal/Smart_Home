@@ -62,6 +62,8 @@
             box-shadow: var(--glass-shadow);
             position: relative;
             overflow: hidden;
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         .glass-card::before {
@@ -129,12 +131,14 @@
             font-size: 14px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            transform: translateZ(0);
         }
 
         .glass-input:focus {
             outline: none;
             border-color: rgba(99, 102, 241, 0.6);
             background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
         }
 
         .glass-input::placeholder {
@@ -156,6 +160,8 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         .btn-primary {
@@ -187,6 +193,10 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
+        .btn:active {
+            transform: translateY(0);
+        }
+
         .form-footer {
             text-align: center;
             margin-top: 25px;
@@ -198,6 +208,11 @@
             color: var(--text-primary);
             text-decoration: none;
             font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .form-footer a:hover {
+            color: rgba(99, 102, 241, 0.8);
         }
 
         .alert {
@@ -208,6 +223,7 @@
             text-align: center;
             backdrop-filter: blur(10px);
             display: none;
+            transform: translateZ(0);
         }
 
         .alert-success {
@@ -222,35 +238,13 @@
             color: #ef4444;
         }
 
-        .access-logs {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .access-logs h3 {
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-        }
-
-        .log-entry {
-            font-size: 12px;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border-left: 3px solid rgba(99, 102, 241, 0.6);
-        }
-
         .ip-section {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
             padding: 20px;
             border-radius: 12px;
             margin: 20px 0;
             border: 1px solid rgba(99, 102, 241, 0.3);
+            transform: translateZ(0);
         }
 
         .ip-display {
@@ -260,6 +254,8 @@
             border-radius: 8px;
             margin: 10px 0;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            transform: translateZ(0);
         }
 
         .ip-actions {
@@ -270,7 +266,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .quick-actions {
@@ -286,6 +282,7 @@
             height: 8px;
             border-radius: 50%;
             margin-right: 8px;
+            animation: pulse 2s infinite;
         }
 
         .status-online {
@@ -295,6 +292,61 @@
 
         .status-offline {
             background: #ef4444;
+        }
+
+        .status-unknown {
+            background: #6b7280;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Performance optimizations */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .glass-card {
+            isolation: isolate;
+        }
+
+        /* Smooth transitions */
+        .transition-all {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
@@ -324,12 +376,6 @@
 
             <div class="form-footer">
                 Don't have an account? <a href="#" onclick="showSignup()">Sign up</a>
-            </div>
-
-            <!-- Access Logs -->
-            <div class="access-logs">
-                <h3>Recent Access</h3>
-                <div id="accessLogs"></div>
             </div>
         </div>
 
@@ -374,7 +420,7 @@
         <div class="glass-card hidden" id="dashboard">
             <div class="logo">
                 <div class="logo-icon">🚀</div>
-                <h1>Welcome!</h1>
+                <h1 id="welcomeTitle">Welcome!</h1>
                 <p id="welcomeMessage">Loading your dashboard...</p>
             </div>
 
@@ -382,7 +428,7 @@
             <div class="ip-section">
                 <h3>🏠 SmartHome Controller</h3>
                 <div class="ip-display" id="espIpDisplay">
-                    <span class="status-indicator" id="espStatus"></span>
+                    <span class="status-indicator status-unknown" id="espStatus"></span>
                     <span id="espIpText">Loading ESP32 IP...</span>
                 </div>
                 
@@ -406,12 +452,22 @@
             </div>
 
             <!-- User Information -->
-            <div class="access-logs">
-                <h3>👤 Your Profile</h3>
-                <div id="userInfo"></div>
-                
-                <h3 style="margin-top: 20px;">📱 Access History</h3>
-                <div id="dashboardLogs"></div>
+            <div class="user-info">
+                <h3 style="margin-bottom: 15px; font-size: 16px;">👤 Your Profile</h3>
+                <div id="userInfo">
+                    <div class="info-item">
+                        <span class="info-label">Username:</span>
+                        <span class="info-value" id="infoUsername">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value" id="infoEmail">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Member since:</span>
+                        <span class="info-value" id="infoJoinDate">-</span>
+                    </div>
+                </div>
             </div>
 
             <button class="btn btn-danger" onclick="logout()">
@@ -421,12 +477,11 @@
     </div>
 
     <script>
-        // User Management System
+        // Performance optimized User Management System
         class UserManager {
             constructor() {
                 this.users = JSON.parse(localStorage.getItem('smartHomeUsers')) || [];
                 this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-                this.accessLogs = JSON.parse(localStorage.getItem('accessLogs')) || [];
                 this.espConfig = JSON.parse(localStorage.getItem('espConfig')) || {
                     ip: '192.168.1.100',
                     port: '80',
@@ -448,26 +503,19 @@
                 localStorage.setItem('espConfig', JSON.stringify(config));
             }
 
-            addAccessLog(username, action, ip = 'Unknown') {
-                const log = {
-                    username,
-                    action,
-                    ip,
-                    timestamp: new Date().toLocaleString(),
-                    userAgent: navigator.userAgent
-                };
-                this.accessLogs.unshift(log);
-                this.accessLogs = this.accessLogs.slice(0, 10);
-                localStorage.setItem('accessLogs', JSON.stringify(this.accessLogs));
-            }
-
             signup(userData) {
-                if (this.users.find(user => user.username === userData.username)) {
-                    return { success: false, message: 'Username already exists' };
-                }
-
-                if (this.users.find(user => user.email === userData.email)) {
-                    return { success: false, message: 'Email already registered' };
+                // Use findIndex for better performance
+                const existingUser = this.users.find(user => 
+                    user.username === userData.username || user.email === userData.email
+                );
+                
+                if (existingUser) {
+                    return { 
+                        success: false, 
+                        message: existingUser.username === userData.username 
+                            ? 'Username already exists' 
+                            : 'Email already registered' 
+                    };
                 }
 
                 const newUser = {
@@ -475,10 +523,9 @@
                     ...userData,
                     createdAt: new Date().toISOString()
                 };
+                
                 this.users.push(newUser);
                 this.saveUsers();
-
-                this.addAccessLog(userData.username, 'signup');
                 return { success: true, message: 'Account created successfully' };
             }
 
@@ -486,25 +533,14 @@
                 const user = this.users.find(u => u.username === username && u.password === password);
                 if (user) {
                     this.saveCurrentUser(user);
-                    this.addAccessLog(username, 'login');
                     return { success: true, user };
                 }
                 return { success: false, message: 'Invalid username or password' };
             }
 
             logout() {
-                if (this.currentUser) {
-                    this.addAccessLog(this.currentUser.username, 'logout');
-                }
                 this.currentUser = null;
                 localStorage.removeItem('currentUser');
-            }
-
-            getAccessLogs(username = null) {
-                if (username) {
-                    return this.accessLogs.filter(log => log.username === username);
-                }
-                return this.accessLogs;
             }
 
             // ESP32 IP Management
@@ -519,19 +555,24 @@
             }
 
             async testEspConnection() {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                
                 try {
                     const response = await fetch(this.getEspUrl(), {
-                        method: 'GET',
+                        method: 'HEAD',
                         mode: 'no-cors',
-                        cache: 'no-cache'
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
                     this.espConfig.status = 'online';
                     this.saveEspConfig(this.espConfig);
                     return { success: true, status: 'online' };
                 } catch (error) {
+                    clearTimeout(timeoutId);
                     this.espConfig.status = 'offline';
                     this.saveEspConfig(this.espConfig);
-                    return { success: false, status: 'offline', error: error.message };
+                    return { success: false, status: 'offline' };
                 }
             }
         }
@@ -539,146 +580,121 @@
         // Initialize User Manager
         const userManager = new UserManager();
 
-        // Get Client IP
-        async function getClientIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                return data.ip;
-            } catch (error) {
-                return 'Unknown';
-            }
-        }
+        // DOM Elements Cache
+        const elements = {
+            loginForm: document.getElementById('loginForm'),
+            signupForm: document.getElementById('signupForm'),
+            dashboard: document.getElementById('dashboard'),
+            loginAlert: document.getElementById('loginAlert'),
+            signupAlert: document.getElementById('signupAlert'),
+            welcomeTitle: document.getElementById('welcomeTitle'),
+            welcomeMessage: document.getElementById('welcomeMessage'),
+            espIpText: document.getElementById('espIpText'),
+            espStatus: document.getElementById('espStatus'),
+            infoUsername: document.getElementById('infoUsername'),
+            infoEmail: document.getElementById('infoEmail'),
+            infoJoinDate: document.getElementById('infoJoinDate')
+        };
 
-        // DOM Elements
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const dashboard = document.getElementById('dashboard');
-        const loginAlert = document.getElementById('loginAlert');
-        const signupAlert = document.getElementById('signupAlert');
-        const accessLogs = document.getElementById('accessLogs');
-        const dashboardLogs = document.getElementById('dashboardLogs');
-        const userInfo = document.getElementById('userInfo');
-        const welcomeMessage = document.getElementById('welcomeMessage');
-        const espIpDisplay = document.getElementById('espIpDisplay');
-        const espIpText = document.getElementById('espIpText');
-        const espStatus = document.getElementById('espStatus');
-
-        // Show/Hide Forms
+        // Show/Hide Forms with smooth transitions
         function showLogin() {
-            loginForm.classList.remove('hidden');
-            signupForm.classList.add('hidden');
-            dashboard.classList.add('hidden');
+            elements.signupForm.classList.add('hidden');
+            elements.dashboard.classList.add('hidden');
+            elements.loginForm.classList.remove('hidden');
         }
 
         function showSignup() {
-            loginForm.classList.add('hidden');
-            signupForm.classList.remove('hidden');
-            dashboard.classList.add('hidden');
+            elements.loginForm.classList.add('hidden');
+            elements.dashboard.classList.add('hidden');
+            elements.signupForm.classList.remove('hidden');
         }
 
         function showDashboard() {
-            loginForm.classList.add('hidden');
-            signupForm.classList.add('hidden');
-            dashboard.classList.remove('hidden');
+            elements.loginForm.classList.add('hidden');
+            elements.signupForm.classList.add('hidden');
+            elements.dashboard.classList.remove('hidden');
             updateDashboard();
-            updateEspStatus();
         }
 
-        // Update ESP32 Status
+        // Update ESP32 Status (debounced)
+        let espUpdateTimeout;
         async function updateEspStatus() {
-            const config = userManager.espConfig;
-            const url = userManager.getEspUrl();
+            clearTimeout(espUpdateTimeout);
+            espUpdateTimeout = setTimeout(async () => {
+                const config = userManager.espConfig;
+                const url = userManager.getEspUrl();
+                
+                elements.espIpText.textContent = `${config.ip}:${config.port}`;
+                
+                const result = await userManager.testEspConnection();
+                updateEspStatusIndicator(result.status);
+            }, 100);
+        }
+
+        function updateEspStatusIndicator(status) {
+            elements.espStatus.className = 'status-indicator';
             
-            espIpText.textContent = `${config.ip}:${config.port}`;
-            
-            // Test connection
-            const result = await userManager.testEspConnection();
-            
-            if (result.status === 'online') {
-                espStatus.className = 'status-indicator status-online';
-                espIpDisplay.style.borderLeft = '3px solid #10b981';
-            } else {
-                espStatus.className = 'status-indicator status-offline';
-                espIpDisplay.style.borderLeft = '3px solid #ef4444';
+            switch(status) {
+                case 'online':
+                    elements.espStatus.classList.add('status-online');
+                    elements.espIpDisplay.style.borderLeft = '3px solid #10b981';
+                    break;
+                case 'offline':
+                    elements.espStatus.classList.add('status-offline');
+                    elements.espIpDisplay.style.borderLeft = '3px solid #ef4444';
+                    break;
+                default:
+                    elements.espStatus.classList.add('status-unknown');
+                    elements.espIpDisplay.style.borderLeft = '3px solid #6b7280';
             }
         }
 
-        // Update Dashboard
+        // Update Dashboard (optimized)
         function updateDashboard() {
             const user = userManager.currentUser;
             if (user) {
-                welcomeMessage.textContent = `Hello, ${user.name}!`;
+                elements.welcomeTitle.textContent = `Hello, ${user.name}!`;
+                elements.welcomeMessage.textContent = 'Ready to control your smart home';
                 
-                userInfo.innerHTML = `
-                    <div class="log-entry">
-                        <strong>Username:</strong> ${user.username}
-                    </div>
-                    <div class="log-entry">
-                        <strong>Email:</strong> ${user.email}
-                    </div>
-                    <div class="log-entry">
-                        <strong>Member since:</strong> ${new Date(user.createdAt).toLocaleDateString()}
-                    </div>
-                `;
-
-                const userLogs = userManager.getAccessLogs(user.username);
-                dashboardLogs.innerHTML = userLogs.map(log => `
-                    <div class="log-entry">
-                        <strong>${log.action.toUpperCase()}</strong> - ${log.timestamp}
-                        <br><small>IP: ${log.ip} | ${log.userAgent.split(' ')[0]}</small>
-                    </div>
-                `).join('');
+                // Update user info directly
+                elements.infoUsername.textContent = user.username;
+                elements.infoEmail.textContent = user.email;
+                elements.infoJoinDate.textContent = new Date(user.createdAt).toLocaleDateString();
+                
+                // Update ESP status
+                updateEspStatus();
             }
-        }
-
-        // Update Access Logs Display
-        function updateAccessLogs() {
-            const logs = userManager.getAccessLogs().slice(0, 5);
-            accessLogs.innerHTML = logs.map(log => `
-                <div class="log-entry">
-                    <strong>${log.username}</strong> - ${log.action} - ${log.timestamp}
-                    <br><small>IP: ${log.ip}</small>
-                </div>
-            `).join('');
         }
 
         // ESP32 Functions
         function openEspApp() {
             const url = userManager.getEspUrl();
             window.open(url, '_blank');
-            
-            // Log the access
-            if (userManager.currentUser) {
-                userManager.addAccessLog(userManager.currentUser.username, 'accessed_esp');
-            }
         }
 
         function copyEspIp() {
             const url = userManager.getEspUrl();
             navigator.clipboard.writeText(url).then(() => {
-                showAlert(loginAlert, 'ESP32 URL copied to clipboard!', 'success');
+                showAlert(elements.loginAlert, 'ESP32 URL copied to clipboard!', 'success');
             });
         }
 
         async function testConnection() {
             const result = await userManager.testEspConnection();
             if (result.status === 'online') {
-                showAlert(loginAlert, '✅ ESP32 is online and accessible!', 'success');
+                showAlert(elements.loginAlert, '✅ ESP32 is online and accessible!', 'success');
             } else {
-                showAlert(loginAlert, '❌ ESP32 is offline or unreachable', 'error');
+                showAlert(elements.loginAlert, '❌ ESP32 is offline or unreachable', 'error');
             }
-            updateEspStatus();
+            updateEspStatusIndicator(result.status);
         }
 
         function refreshIp() {
-            // In a real scenario, you might want to fetch the IP from the ESP32
-            // For now, we'll just refresh the status
             updateEspStatus();
-            showAlert(loginAlert, 'ESP32 status refreshed!', 'success');
+            showAlert(elements.loginAlert, 'ESP32 status refreshed!', 'success');
         }
 
-        // IP Configuration (for manual setup)
+        // IP Configuration
         function configureEspIp() {
             const newIp = prompt('Enter ESP32 IP address:', userManager.espConfig.ip);
             const newPort = prompt('Enter port (default: 80):', userManager.espConfig.port);
@@ -686,70 +702,71 @@
             if (newIp) {
                 userManager.setEspIp(newIp, newPort || '80');
                 updateEspStatus();
-                showAlert(loginAlert, 'ESP32 configuration updated!', 'success');
+                showAlert(elements.loginAlert, 'ESP32 configuration updated!', 'success');
             }
         }
 
-        // Show Alert
+        // Show Alert (optimized)
+        let alertTimeout;
         function showAlert(alertElement, message, type = 'success') {
+            clearTimeout(alertTimeout);
             alertElement.textContent = message;
             alertElement.className = `alert alert-${type}`;
             alertElement.style.display = 'block';
-            setTimeout(() => {
+            
+            alertTimeout = setTimeout(() => {
                 alertElement.style.display = 'none';
-            }, 5000);
+            }, 3000);
         }
 
-        // Event Listeners
+        // Event Listeners (delegated for performance)
         document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
             
-            const ip = await getClientIP();
             const result = userManager.login(username, password);
             
             if (result.success) {
-                showAlert(loginAlert, 'Login successful!', 'success');
-                setTimeout(() => {
-                    showDashboard();
-                }, 1000);
+                showAlert(elements.loginAlert, 'Login successful!', 'success');
+                setTimeout(showDashboard, 500);
             } else {
-                showAlert(loginAlert, result.message, 'error');
+                showAlert(elements.loginAlert, result.message, 'error');
             }
         });
 
         document.getElementById('signupFormElement').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const name = document.getElementById('signupName').value;
-            const username = document.getElementById('signupUsername').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
+            const formData = {
+                name: document.getElementById('signupName').value,
+                username: document.getElementById('signupUsername').value,
+                email: document.getElementById('signupEmail').value,
+                password: document.getElementById('signupPassword').value
+            };
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
             
-            if (password !== confirmPassword) {
-                showAlert(signupAlert, 'Passwords do not match', 'error');
+            if (formData.password !== confirmPassword) {
+                showAlert(elements.signupAlert, 'Passwords do not match', 'error');
                 return;
             }
             
-            if (password.length < 6) {
-                showAlert(signupAlert, 'Password must be at least 6 characters', 'error');
+            if (formData.password.length < 6) {
+                showAlert(elements.signupAlert, 'Password must be at least 6 characters', 'error');
                 return;
             }
 
-            const ip = await getClientIP();
-            const result = userManager.signup({ name, username, email, password });
+            const result = userManager.signup(formData);
             
             if (result.success) {
-                showAlert(signupAlert, result.message, 'success');
+                showAlert(elements.signupAlert, result.message, 'success');
                 setTimeout(() => {
                     showLogin();
                     document.getElementById('signupFormElement').reset();
-                }, 2000);
+                }, 1500);
             } else {
-                showAlert(signupAlert, result.message, 'error');
+                showAlert(elements.signupAlert, result.message, 'error');
             }
         });
 
@@ -760,18 +777,14 @@
             document.getElementById('loginFormElement').reset();
         }
 
-        // Initialize
+        // Initialize (optimized)
         document.addEventListener('DOMContentLoaded', function() {
-            updateAccessLogs();
-            
             // Check if user is already logged in
             if (userManager.currentUser) {
                 showDashboard();
-            } else {
-                showLogin();
             }
 
-            // Add some sample users for demonstration
+            // Add sample user for demo
             if (userManager.users.length === 0) {
                 userManager.signup({
                     name: 'Demo User',
@@ -781,15 +794,20 @@
                 });
             }
 
-            // Add right-click context menu for IP configuration
+            // IP configuration handlers
+            const espIpDisplay = document.getElementById('espIpDisplay');
             espIpDisplay.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
                 configureEspIp();
             });
 
-            // Double-click to configure IP
             espIpDisplay.addEventListener('dblclick', configureEspIp);
         });
+
+        // Prevent form resubmission on page refresh
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
     </script>
 </body>
 </html>

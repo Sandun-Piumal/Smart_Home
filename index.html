@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHome Glass | Firebase Dashboard</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="auth-header">
+                <div class="logo-icon">💎</div>
+                <h2 class="modal-title">Welcome Back</h2>
+                <p class="modal-subtitle">Sign in to your SmartHome Dashboard</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Password" required>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe">
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
+                </div>
+                <div class="action-grid">
+                    <button type="submit" class="btn btn-primary" id="loginBtn">
+                        <span class="btn-spinner" style="display: none;">⏳</span>
+                        <span class="btn-text">Sign In</span>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="#" class="auth-link" onclick="showRegister()">Create Account</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="auth-header">
+                <div class="logo-icon">💎</div>
+                <h2 class="modal-title">Create Account</h2>
+                <p class="modal-subtitle">Join SmartHome Dashboard today</p>
+            </div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <input type="text" id="registerName" class="form-input" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="registerEmail" class="form-input" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" class="form-input" placeholder="Password (min. 6 characters)" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Confirm Password" required>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="acceptTerms" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#" class="link">Terms & Conditions</a>
+                    </label>
+                </div>
+                <div class="action-grid">
+                    <button type="submit" class="btn btn-success" id="registerBtn">
+                        <span class="btn-spinner" style="display: none;">⏳</span>
+                        <span class="btn-text">Create Account</span>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="#" class="auth-link" onclick="showLogin()">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <div class="auth-header">
+                <div class="logo-icon">🔒</div>
+                <h2 class="modal-title">Reset Password</h2>
+                <p class="modal-subtitle">Enter your email to receive reset instructions</p>
+            </div>
+            
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <input type="email" id="resetEmail" class="form-input" placeholder="Email Address" required>
+                </div>
+                <div class="action-grid">
+                    <button type="submit" class="btn btn-primary" id="resetBtn">
+                        <span class="btn-spinner" style="display: none;">⏳</span>
+                        <span class="btn-text">Send Reset Link</span>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Remember your password? <a href="#" class="auth-link" onclick="showLogin()">Back to Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Alert Container -->
+    <div class="alert-container" id="alertContainer"></div>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard" id="dashboard" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-icon">💎</div>
+                    <div class="logo-text">
+                        <h1>SmartHome Glass</h1>
+                        <p>Firebase Connected Dashboard</p>
+                    </div>
+                </div>
+                <div class="status-indicators">
+                    <div class="status-badge">
+                        <span class="loading" id="connectionIndicator"></span>
+                        <span id="connectionStatus">Connected</span>
+                    </div>
+                    <div class="time-display" id="currentTime">--:--:--</div>
+                    <div class="user-menu">
+                        <span class="user-greeting">Hello, <span id="userName">User</span></span>
+                        <button class="btn btn-outline logout-btn" onclick="AuthManager.logout()">
+                            <span>🚪</span>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card glass-primary">
+                    <div class="stat-header">
+                        <div class="stat-icon">🌡️</div>
+                        <div class="stat-trend trend-up" id="tempTrend">+2.1°</div>
+                    </div>
+                    <div class="stat-value" id="temperature">0°C</div>
+                    <div class="stat-label">Current Temperature</div>
+                </div>
+                <div class="stat-card glass-success">
+                    <div class="stat-header">
+                        <div class="stat-icon">💧</div>
+                        <div class="stat-trend" id="humidityTrend">Stable</div>
+                    </div>
+                    <div class="stat-value" id="humidity">0%</div>
+                    <div class="stat-label">Humidity Level</div>
+                </div>
+                <div class="stat-card glass-warning">
+                    <div class="stat-header">
+                        <div class="stat-icon">💡</div>
+                        <div class="stat-trend" id="lightTrend">Normal</div>
+                    </div>
+                    <div class="stat-value" id="ldrValue">0</div>
+                    <div class="stat-label">Light Sensor</div>
+                </div>
+                <div class="stat-card glass-danger">
+                    <div class="stat-header">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-trend trend-down" id="motionTrend">Safe</div>
+                    </div>
+                    <div class="stat-value" id="motionStatus">Inactive</div>
+                    <div class="stat-label">Motion Detection</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Controls Grid -->
+        <div class="controls-grid">
+            <!-- Climate Control -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">🌬️</div>
+                        Climate Control
+                    </div>
+                    <button class="mode-toggle" onclick="DeviceManager.toggleFanMode()">
+                        <span id="fanModeIcon">🔄</span>
+                        <span id="fanModeText">Auto</span>
+                    </button>
+                </div>
+                
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">❄️</div>
+                            <div class="device-details">
+                                <h4>Cooling System</h4>
+                                <p>Temperature controlled fan</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="fanStatusIndicator"></div>
+                            <label class="switch" id="fanSwitch">
+                                <input type="checkbox" id="light7" onchange="DeviceManager.toggleLight(7)">
+                                <span class="slider fan"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-success" onclick="DeviceManager.toggleLight(7)">
+                        <span>⚡</span>
+                        <span id="fanActionText">Start Fan</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="AlertManager.show('Climate settings updated', 'info')">
+                        <span>⚙️</span>
+                        Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security System -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">🚨</div>
+                        Security System
+                    </div>
+                    <button class="mode-toggle" onclick="DeviceManager.toggleSecurityMode()">
+                        <span id="securityModeIcon">🔄</span>
+                        <span id="securityModeText">Auto</span>
+                    </button>
+                </div>
+                
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">💡</div>
+                            <div class="device-details">
+                                <h4>Security Lighting</h4>
+                                <p>Motion-activated protection</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="securityStatusIndicator"></div>
+                            <label class="switch" id="securitySwitch">
+                                <input type="checkbox" id="light6" onchange="DeviceManager.toggleLight(6)">
+                                <span class="slider security"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-danger" onclick="DeviceManager.toggleLight(6)">
+                        <span>🚨</span>
+                        Toggle Security
+                    </button>
+                    <button class="btn btn-outline" onclick="DeviceManager.armSystem()">
+                        <span>🛡️</span>
+                        Arm System
+                    </button>
+                </div>
+            </div>
+
+            <!-- Smart Lighting -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">💡</div>
+                        Smart Lighting
+                    </div>
+                    <button class="mode-toggle" onclick="DeviceManager.toggleGardenMode()">
+                        <span id="gardenModeIcon">🔄</span>
+                        <span id="gardenModeText">Auto</span>
+                    </button>
+                </div>
+                
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🌿</div>
+                            <div class="device-details">
+                                <h4>Garden Lights</h4>
+                                <p>Auto light based on darkness</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="gardenStatusIndicator"></div>
+                            <label class="switch" id="gardenSwitch">
+                                <input type="checkbox" id="light1" onchange="DeviceManager.toggleLight(1)">
+                                <span class="slider garden"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🛏️</div>
+                            <div class="device-details">
+                                <h4>Bedroom Light</h4>
+                                <p>Sleeping area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="bedroomStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light2" onchange="DeviceManager.toggleLight(2)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🍳</div>
+                            <div class="device-details">
+                                <h4>Kitchen Light</h4>
+                                <p>Cooking area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="kitchenStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light3" onchange="DeviceManager.toggleLight(3)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-primary" onclick="DeviceManager.allLightsOn()">
+                        <span>💡</span>
+                        All Lights On
+                    </button>
+                    <button class="btn btn-outline" onclick="DeviceManager.allLightsOff()">
+                        <span>🌙</span>
+                        All Lights Off
+                    </button>
+                </div>
+            </div>
+
+            <!-- Additional Controls -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">🏠</div>
+                        Room Controls
+                    </div>
+                    <div class="mode-toggle" style="background: transparent; cursor: default; border: none;">
+                        <span>Manual Control</span>
+                    </div>
+                </div>
+                
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🛋️</div>
+                            <div class="device-details">
+                                <h4>Living Room</h4>
+                                <p>Entertainment area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="livingroomStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light4" onchange="DeviceManager.toggleLight(4)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🚗</div>
+                            <div class="device-details">
+                                <h4>Garage Light</h4>
+                                <p>Parking area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="garageStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light5" onchange="DeviceManager.toggleLight(5)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-outline" onclick="DeviceManager.createScene('evening')">
+                        <span>🌅</span>
+                        Evening Scene
+                    </button>
+                    <button class="btn btn-outline" onclick="DeviceManager.createScene('night')">
+                        <span>🌃</span>
+                        Night Scene
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-content">
+                <div>SmartHome Glass Dashboard v3.0</div>
+                <div>Connected to: <span id="firebaseStatus">Firebase</span></div>
+                <div>© 2024 SmartHome Systems | Glass Edition</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/devices.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -3,70 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartHome Pro | Login</title>
+    <title>SmartHome Glass | Firebase Dashboard</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
     <style>
         :root {
             --glass-primary: rgba(99, 102, 241, 0.15);
             --glass-secondary: rgba(16, 185, 129, 0.15);
             --glass-danger: rgba(239, 68, 68, 0.15);
+            --glass-warning: rgba(245, 158, 11, 0.15);
+            --glass-info: rgba(6, 182, 212, 0.15);
             --glass-bg: rgba(255, 255, 255, 0.08);
             --glass-border: rgba(255, 255, 255, 0.12);
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            --glass-glow: 0 0 20px rgba(99, 102, 241, 0.3);
             --text-primary: rgba(255, 255, 255, 0.95);
             --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            overflow-x: hidden;
             position: relative;
-            overflow: hidden;
         }
 
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: 
                 radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%);
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
             pointer-events: none;
+            z-index: -1;
         }
 
-        .container {
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-        }
-
-        .glass-card {
+        /* Glass Morphism Base Styles */
+        .glass {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .glass-primary {
+            background: var(--glass-primary);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .glass-success {
+            background: var(--glass-secondary);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .glass-danger {
+            background: var(--glass-danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Layout */
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
-            padding: 40px 30px;
+            padding: 30px;
+            margin-bottom: 30px;
             box-shadow: var(--glass-shadow);
             position: relative;
             overflow: hidden;
-            transform: translateZ(0);
-            will-change: transform;
         }
 
-        .glass-card::before {
+        .header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -76,738 +132,1470 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
         }
 
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 8s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
         .logo {
-            text-align: center;
-            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         .logo-icon {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            margin: 0 auto 20px;
+            font-size: 28px;
+            color: white;
             backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
-        .logo h1 {
-            font-size: 32px;
+        .logo-text h1 {
+            font-size: 36px;
             font-weight: 800;
             background: linear-gradient(135deg, #fff, #e2e8ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .logo p {
+        .logo-text p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .status-badge {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .time-display {
             color: var(--text-secondary);
             font-size: 14px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                var(--glass-shadow),
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                var(--glass-glow);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #e2e8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Main Controls Grid */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .control-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+        }
+
+        .control-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                var(--glass-shadow),
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                var(--glass-glow);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .title-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Device Controls */
+        .device-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .device-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            backdrop-filter: blur(10px);
+        }
+
+        .device-control:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(8px);
+        }
+
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+        }
+
+        .device-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .device-control:hover .device-icon {
+            transform: scale(1.15);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .device-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .device-details p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: inherit;
+            opacity: 0.4;
+            animation: pulse 2s infinite;
+        }
+
+        .status-on { 
+            background: #10b981; 
+        }
+        .status-off { 
+            background: var(--text-muted); 
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.5); opacity: 0.2; }
+        }
+
+        /* Glass Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 62px;
+            height: 32px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: .4s;
+            border-radius: 34px;
+            backdrop-filter: blur(10px);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 3px;
+            background: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(139, 92, 246, 0.4));
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+
+        input:checked + .slider.security {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.4));
+            border-color: rgba(239, 68, 68, 0.6);
+        }
+
+        input:checked + .slider.fan {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
+            border-color: rgba(16, 185, 129, 0.6);
+        }
+
+        input:checked + .slider.garden {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.4));
+            border-color: rgba(245, 158, 11, 0.6);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .switch.disabled {
+            opacity: 0.6;
+        }
+
+        .switch.disabled .slider {
+            cursor: not-allowed;
+        }
+
+        /* Glass Buttons */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 16px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            color: white;
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            color: white;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            color: white;
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(99, 102, 241, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Glass Alert System */
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 18px 22px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--glass-shadow);
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .alert-warning {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(30, 41, 59, 0.8));
+        }
+
+        .alert-info {
+            border-left: 4px solid #06b6d4;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(30, 41, 59, 0.8));
+        }
+
+        .alert-danger {
+            border-left: 4px solid #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(30, 41, 59, 0.8));
+        }
+
+        .alert-success {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(30, 41, 59, 0.8));
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--glass-shadow);
+            animation: modalSlideIn 0.4s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #e2e8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .form-group {
             margin-bottom: 20px;
         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .glass-input {
+        .form-input {
             width: 100%;
             padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 14px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
-            transform: translateZ(0);
         }
 
-        .glass-input:focus {
+        .form-input:focus {
             outline: none;
             border-color: rgba(99, 102, 241, 0.6);
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        .glass-input::placeholder {
-            color: var(--text-secondary);
+        .form-input::placeholder {
+            color: var(--text-muted);
         }
 
-        .btn {
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                padding: 15px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .status-indicators {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Floating Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transform: translateZ(0);
-            will-change: transform;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-            color: white;
-            border: 1px solid rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
-            color: white;
-            border: 1px solid rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
-            color: white;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .form-footer {
-            text-align: center;
-            margin-top: 25px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .form-footer a {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .form-footer a:hover {
-            color: rgba(99, 102, 241, 0.8);
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            display: none;
-            transform: translateZ(0);
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(30, 41, 59, 0.8));
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #10b981;
-        }
-
-        .alert-error {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(30, 41, 59, 0.8));
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-        }
-
-        .ip-section {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            transform: translateZ(0);
-        }
-
-        .ip-display {
-            font-family: 'Courier New', monospace;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin: 10px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 14px;
-            transform: translateZ(0);
-        }
-
-        .ip-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
+            animation: float 6s infinite ease-in-out;
         }
 
-        .status-online {
-            background: #10b981;
-            box-shadow: 0 0 10px #10b981;
-        }
-
-        .status-offline {
-            background: #ef4444;
-        }
-
-        .status-unknown {
-            background: #6b7280;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .user-info {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .info-value {
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* Performance optimizations */
-        * {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .glass-card {
-            isolation: isolate;
-        }
-
-        /* Smooth transitions */
-        .transition-all {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Login Form -->
-        <div class="glass-card" id="loginForm">
-            <div class="logo">
-                <div class="logo-icon">🏠</div>
-                <h1>SmartHome Pro</h1>
-                <p>Welcome back to your smart home</p>
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2 class="modal-title">SmartHome Login</h2>
+            <div class="form-group">
+                <input type="email" id="loginEmail" class="form-input" placeholder="Email" required>
             </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" class="form-input" placeholder="Password" required>
+            </div>
+            <div class="action-grid">
+                <button class="btn btn-primary" onclick="login()">Login</button>
+                <button class="btn btn-outline" onclick="showRegister()">Register</button>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-outline" onclick="loginAnonymously()">Continue as Guest</button>
+            </div>
+        </div>
+    </div>
 
-            <div class="alert" id="loginAlert"></div>
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Create Account</h2>
+            <div class="form-group">
+                <input type="text" id="registerName" class="form-input" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="registerEmail" class="form-input" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="registerPassword" class="form-input" placeholder="Password" required>
+            </div>
+            <div class="action-grid">
+                <button class="btn btn-success" onclick="register()">Register</button>
+                <button class="btn btn-outline" onclick="showLogin()">Back to Login</button>
+            </div>
+        </div>
+    </div>
 
-            <form id="loginFormElement">
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="glass-input" id="loginUsername" placeholder="Enter your username" required>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Alert Container -->
+    <div class="alert-container" id="alertContainer"></div>
+
+    <div class="dashboard" id="dashboard" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-icon">💎</div>
+                    <div class="logo-text">
+                        <h1>SmartHome Glass</h1>
+                        <p>Firebase Connected Dashboard</p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="glass-input" id="loginPassword" placeholder="Enter your password" required>
+                <div class="status-indicators">
+                    <div class="status-badge">
+                        <span class="loading" id="connectionIndicator"></span>
+                        <span id="connectionStatus">Connected</span>
+                    </div>
+                    <div class="time-display" id="currentTime">--:--:--</div>
+                    <button class="btn btn-outline" onclick="logout()" style="padding: 10px 15px;">
+                        <span>🚪</span>
+                        Logout
+                    </button>
                 </div>
-                <button type="submit" class="btn btn-primary">Sign In</button>
-            </form>
-
-            <div class="form-footer">
-                Don't have an account? <a href="#" onclick="showSignup()">Sign up</a>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card glass-primary">
+                    <div class="stat-header">
+                        <div class="stat-icon">🌡️</div>
+                        <div class="stat-trend trend-up" id="tempTrend">+2.1°</div>
+                    </div>
+                    <div class="stat-value" id="temperature">0°C</div>
+                    <div class="stat-label">Current Temperature</div>
+                </div>
+                <div class="stat-card glass-success">
+                    <div class="stat-header">
+                        <div class="stat-icon">💧</div>
+                        <div class="stat-trend" id="humidityTrend">Stable</div>
+                    </div>
+                    <div class="stat-value" id="humidity">0%</div>
+                    <div class="stat-label">Humidity Level</div>
+                </div>
+                <div class="stat-card glass-warning">
+                    <div class="stat-header">
+                        <div class="stat-icon">💡</div>
+                        <div class="stat-trend" id="lightTrend">Normal</div>
+                    </div>
+                    <div class="stat-value" id="ldrValue">0</div>
+                    <div class="stat-label">Light Sensor</div>
+                </div>
+                <div class="stat-card glass-danger">
+                    <div class="stat-header">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-trend trend-down" id="motionTrend">Safe</div>
+                    </div>
+                    <div class="stat-value" id="motionStatus">Inactive</div>
+                    <div class="stat-label">Motion Detection</div>
+                </div>
             </div>
         </div>
 
-        <!-- Signup Form -->
-        <div class="glass-card hidden" id="signupForm">
-            <div class="logo">
-                <div class="logo-icon">✨</div>
-                <h1>Create Account</h1>
-                <p>Join SmartHome Pro today</p>
-            </div>
-
-            <div class="alert" id="signupAlert"></div>
-
-            <form id="signupFormElement">
-                <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" class="glass-input" id="signupName" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="glass-input" id="signupUsername" placeholder="Choose a username" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="glass-input" id="signupEmail" placeholder="Enter your email" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="glass-input" id="signupPassword" placeholder="Create a password" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Confirm Password</label>
-                    <input type="password" class="glass-input" id="signupConfirmPassword" placeholder="Confirm your password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Create Account</button>
-            </form>
-
-            <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
-        </div>
-
-        <!-- Dashboard -->
-        <div class="glass-card hidden" id="dashboard">
-            <div class="logo">
-                <div class="logo-icon">🚀</div>
-                <h1 id="welcomeTitle">Welcome!</h1>
-                <p id="welcomeMessage">Loading your dashboard...</p>
-            </div>
-
-            <!-- ESP32 IP Section -->
-            <div class="ip-section">
-                <h3>🏠 SmartHome Controller</h3>
-                <div class="ip-display" id="espIpDisplay">
-                    <span class="status-indicator status-unknown" id="espStatus"></span>
-                    <span id="espIpText">Loading ESP32 IP...</span>
+        <!-- Main Controls Grid -->
+        <div class="controls-grid">
+            <!-- Climate Control -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">🌬️</div>
+                        Climate Control
+                    </div>
+                    <button class="mode-toggle" onclick="toggleFanMode()">
+                        <span id="fanModeIcon">🔄</span>
+                        <span id="fanModeText">Auto</span>
+                    </button>
                 </div>
                 
-                <div class="ip-actions">
-                    <button class="btn btn-success" onclick="openEspApp()">
-                        <span>🔗</span> Open Control Panel
-                    </button>
-                    <button class="btn btn-secondary" onclick="copyEspIp()">
-                        <span>📋</span> Copy IP
-                    </button>
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">❄️</div>
+                            <div class="device-details">
+                                <h4>Cooling System</h4>
+                                <p>Temperature controlled fan</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="fanStatusIndicator"></div>
+                            <label class="switch" id="fanSwitch">
+                                <input type="checkbox" id="light7" onchange="toggleLight(7)">
+                                <span class="slider fan"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="quick-actions">
-                    <button class="btn btn-primary" onclick="testConnection()">
-                        <span>🔍</span> Test Connection
+                <div class="action-grid">
+                    <button class="btn btn-success" onclick="toggleLight(7)">
+                        <span>⚡</span>
+                        <span id="fanActionText">Start Fan</span>
                     </button>
-                    <button class="btn btn-secondary" onclick="refreshIp()">
-                        <span>🔄</span> Refresh
+                    <button class="btn btn-outline" onclick="showAlert('Climate settings updated', 'info')">
+                        <span>⚙️</span>
+                        Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security System -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">🚨</div>
+                        Security System
+                    </div>
+                    <button class="mode-toggle" onclick="toggleSecurityMode()">
+                        <span id="securityModeIcon">🔄</span>
+                        <span id="securityModeText">Auto</span>
+                    </button>
+                </div>
+                
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">💡</div>
+                            <div class="device-details">
+                                <h4>Security Lighting</h4>
+                                <p>Motion-activated protection</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="securityStatusIndicator"></div>
+                            <label class="switch" id="securitySwitch">
+                                <input type="checkbox" id="light6" onchange="toggleLight(6)">
+                                <span class="slider security"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-danger" onclick="toggleLight(6)">
+                        <span>🚨</span>
+                        Toggle Security
+                    </button>
+                    <button class="btn btn-outline" onclick="armSystem()">
+                        <span>🛡️</span>
+                        Arm System
                     </button>
                 </div>
             </div>
 
-            <!-- User Information -->
-            <div class="user-info">
-                <h3 style="margin-bottom: 15px; font-size: 16px;">👤 Your Profile</h3>
-                <div id="userInfo">
-                    <div class="info-item">
-                        <span class="info-label">Username:</span>
-                        <span class="info-value" id="infoUsername">-</span>
+            <!-- Smart Lighting -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">💡</div>
+                        Smart Lighting
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">Email:</span>
-                        <span class="info-value" id="infoEmail">-</span>
+                    <button class="mode-toggle" onclick="toggleGardenMode()">
+                        <span id="gardenModeIcon">🔄</span>
+                        <span id="gardenModeText">Auto</span>
+                    </button>
+                </div>
+                
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🌿</div>
+                            <div class="device-details">
+                                <h4>Garden Lights</h4>
+                                <p>Auto light based on darkness</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="gardenStatusIndicator"></div>
+                            <label class="switch" id="gardenSwitch">
+                                <input type="checkbox" id="light1" onchange="toggleLight(1)">
+                                <span class="slider garden"></span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">Member since:</span>
-                        <span class="info-value" id="infoJoinDate">-</span>
+
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🛏️</div>
+                            <div class="device-details">
+                                <h4>Bedroom Light</h4>
+                                <p>Sleeping area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="bedroomStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light2" onchange="toggleLight(2)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
+
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🍳</div>
+                            <div class="device-details">
+                                <h4>Kitchen Light</h4>
+                                <p>Cooking area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="kitchenStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light3" onchange="toggleLight(3)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-primary" onclick="allLightsOn()">
+                        <span>💡</span>
+                        All Lights On
+                    </button>
+                    <button class="btn btn-outline" onclick="allLightsOff()">
+                        <span>🌙</span>
+                        All Lights Off
+                    </button>
                 </div>
             </div>
 
-            <button class="btn btn-danger" onclick="logout()">
-                <span>🚪</span> Logout
-            </button>
+            <!-- Additional Controls -->
+            <div class="control-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="title-icon">🏠</div>
+                        Room Controls
+                    </div>
+                    <div class="mode-toggle" style="background: transparent; cursor: default; border: none;">
+                        <span>Manual Control</span>
+                    </div>
+                </div>
+                
+                <div class="device-grid">
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🛋️</div>
+                            <div class="device-details">
+                                <h4>Living Room</h4>
+                                <p>Entertainment area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="livingroomStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light4" onchange="toggleLight(4)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="device-control">
+                        <div class="device-info">
+                            <div class="device-icon">🚗</div>
+                            <div class="device-details">
+                                <h4>Garage Light</h4>
+                                <p>Parking area lighting</p>
+                            </div>
+                        </div>
+                        <div class="device-status">
+                            <div class="status-indicator" id="garageStatusIndicator"></div>
+                            <label class="switch">
+                                <input type="checkbox" id="light5" onchange="toggleLight(5)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-outline" onclick="createScene('evening')">
+                        <span>🌅</span>
+                        Evening Scene
+                    </button>
+                    <button class="btn btn-outline" onclick="createScene('night')">
+                        <span>🌃</span>
+                        Night Scene
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-content">
+                <div>SmartHome Glass Dashboard v3.0</div>
+                <div>Connected to: <span id="firebaseStatus">Firebase</span></div>
+                <div>© 2024 SmartHome Systems | Glass Edition</div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Performance optimized User Management System
-        class UserManager {
-            constructor() {
-                this.users = JSON.parse(localStorage.getItem('smartHomeUsers')) || [];
-                this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-                this.espConfig = JSON.parse(localStorage.getItem('espConfig')) || {
-                    ip: '192.168.1.100',
-                    port: '80',
-                    status: 'unknown'
-                };
-            }
-
-            saveUsers() {
-                localStorage.setItem('smartHomeUsers', JSON.stringify(this.users));
-            }
-
-            saveCurrentUser(user) {
-                this.currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(user));
-            }
-
-            saveEspConfig(config) {
-                this.espConfig = config;
-                localStorage.setItem('espConfig', JSON.stringify(config));
-            }
-
-            signup(userData) {
-                // Use findIndex for better performance
-                const existingUser = this.users.find(user => 
-                    user.username === userData.username || user.email === userData.email
-                );
-                
-                if (existingUser) {
-                    return { 
-                        success: false, 
-                        message: existingUser.username === userData.username 
-                            ? 'Username already exists' 
-                            : 'Email already registered' 
-                    };
-                }
-
-                const newUser = {
-                    id: Date.now().toString(),
-                    ...userData,
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.users.push(newUser);
-                this.saveUsers();
-                return { success: true, message: 'Account created successfully' };
-            }
-
-            login(username, password) {
-                const user = this.users.find(u => u.username === username && u.password === password);
-                if (user) {
-                    this.saveCurrentUser(user);
-                    return { success: true, user };
-                }
-                return { success: false, message: 'Invalid username or password' };
-            }
-
-            logout() {
-                this.currentUser = null;
-                localStorage.removeItem('currentUser');
-            }
-
-            // ESP32 IP Management
-            setEspIp(ip, port = '80') {
-                this.espConfig.ip = ip;
-                this.espConfig.port = port;
-                this.saveEspConfig(this.espConfig);
-            }
-
-            getEspUrl() {
-                return `http://${this.espConfig.ip}:${this.espConfig.port}`;
-            }
-
-            async testEspConnection() {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
-                
-                try {
-                    const response = await fetch(this.getEspUrl(), {
-                        method: 'HEAD',
-                        mode: 'no-cors',
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-                    this.espConfig.status = 'online';
-                    this.saveEspConfig(this.espConfig);
-                    return { success: true, status: 'online' };
-                } catch (error) {
-                    clearTimeout(timeoutId);
-                    this.espConfig.status = 'offline';
-                    this.saveEspConfig(this.espConfig);
-                    return { success: false, status: 'offline' };
-                }
-            }
-        }
-
-        // Initialize User Manager
-        const userManager = new UserManager();
-
-        // DOM Elements Cache
-        const elements = {
-            loginForm: document.getElementById('loginForm'),
-            signupForm: document.getElementById('signupForm'),
-            dashboard: document.getElementById('dashboard'),
-            loginAlert: document.getElementById('loginAlert'),
-            signupAlert: document.getElementById('signupAlert'),
-            welcomeTitle: document.getElementById('welcomeTitle'),
-            welcomeMessage: document.getElementById('welcomeMessage'),
-            espIpText: document.getElementById('espIpText'),
-            espStatus: document.getElementById('espStatus'),
-            infoUsername: document.getElementById('infoUsername'),
-            infoEmail: document.getElementById('infoEmail'),
-            infoJoinDate: document.getElementById('infoJoinDate')
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        // Show/Hide Forms with smooth transitions
-        function showLogin() {
-            elements.signupForm.classList.add('hidden');
-            elements.dashboard.classList.add('hidden');
-            elements.loginForm.classList.remove('hidden');
-        }
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
 
-        function showSignup() {
-            elements.loginForm.classList.add('hidden');
-            elements.dashboard.classList.add('hidden');
-            elements.signupForm.classList.remove('hidden');
-        }
-
-        function showDashboard() {
-            elements.loginForm.classList.add('hidden');
-            elements.signupForm.classList.add('hidden');
-            elements.dashboard.classList.remove('hidden');
-            updateDashboard();
-        }
-
-        // Update ESP32 Status (debounced)
-        let espUpdateTimeout;
-        async function updateEspStatus() {
-            clearTimeout(espUpdateTimeout);
-            espUpdateTimeout = setTimeout(async () => {
-                const config = userManager.espConfig;
-                const url = userManager.getEspUrl();
-                
-                elements.espIpText.textContent = `${config.ip}:${config.port}`;
-                
-                const result = await userManager.testEspConnection();
-                updateEspStatusIndicator(result.status);
-            }, 100);
-        }
-
-        function updateEspStatusIndicator(status) {
-            elements.espStatus.className = 'status-indicator';
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
             
-            switch(status) {
-                case 'online':
-                    elements.espStatus.classList.add('status-online');
-                    elements.espIpDisplay.style.borderLeft = '3px solid #10b981';
-                    break;
-                case 'offline':
-                    elements.espStatus.classList.add('status-offline');
-                    elements.espIpDisplay.style.borderLeft = '3px solid #ef4444';
-                    break;
-                default:
-                    elements.espStatus.classList.add('status-unknown');
-                    elements.espIpDisplay.style.borderLeft = '3px solid #6b7280';
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 60 + 20;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 6;
+                const duration = Math.random() * 4 + 4;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = Math.random() * 0.1 + 0.05;
+                
+                particlesContainer.appendChild(particle);
             }
         }
 
-        // Update Dashboard (optimized)
-        function updateDashboard() {
-            const user = userManager.currentUser;
-            if (user) {
-                elements.welcomeTitle.textContent = `Hello, ${user.name}!`;
-                elements.welcomeMessage.textContent = 'Ready to control your smart home';
-                
-                // Update user info directly
-                elements.infoUsername.textContent = user.username;
-                elements.infoEmail.textContent = user.email;
-                elements.infoJoinDate.textContent = new Date(user.createdAt).toLocaleDateString();
-                
-                // Update ESP status
-                updateEspStatus();
-            }
+        // Utility Functions
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span>${getAlertIcon(type)}</span>
+                <span>${message}</span>
+            `;
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.animation = 'slideInRight 0.4s reverse';
+                setTimeout(() => alert.remove(), 400);
+            }, 4000);
         }
 
-        // ESP32 Functions
-        function openEspApp() {
-            const url = userManager.getEspUrl();
-            window.open(url, '_blank');
+        function getAlertIcon(type) {
+            const icons = {
+                'warning': '⚠️',
+                'info': '💎',
+                'danger': '🚨',
+                'success': '✨'
+            };
+            return icons[type] || '💎';
         }
 
-        function copyEspIp() {
-            const url = userManager.getEspUrl();
-            navigator.clipboard.writeText(url).then(() => {
-                showAlert(elements.loginAlert, 'ESP32 URL copied to clipboard!', 'success');
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            document.getElementById('currentTime').textContent = `${dateString} ${timeString}`;
+        }
+
+        // Authentication Functions
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('registerModal').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('registerModal').style.display = 'flex';
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    showAlert('Login successful!', 'success');
+                    document.getElementById('loginModal').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                })
+                .catch((error) => {
+                    showAlert('Login failed: ' + error.message, 'danger');
+                });
+        }
+
+        function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Save user profile
+                    return userCredential.user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    showAlert('Registration successful!', 'success');
+                    showLogin();
+                })
+                .catch((error) => {
+                    showAlert('Registration failed: ' + error.message, 'danger');
+                });
+        }
+
+        function loginAnonymously() {
+            auth.signInAnonymously()
+                .then(() => {
+                    showAlert('Guest access granted', 'info');
+                    document.getElementById('loginModal').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                })
+                .catch((error) => {
+                    showAlert('Guest login failed: ' + error.message, 'danger');
+                });
+        }
+
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    showAlert('Logged out successfully', 'info');
+                    document.getElementById('dashboard').style.display = 'none';
+                    document.getElementById('loginModal').style.display = 'flex';
+                })
+                .catch((error) => {
+                    showAlert('Logout failed: ' + error.message, 'danger');
+                });
+        }
+
+        // Firebase Data Functions
+        function toggleLight(lightNumber) {
+            const checkbox = document.getElementById('light' + lightNumber);
+            const newState = checkbox.checked;
+            
+            // Update Firebase
+            database.ref('devices/light' + lightNumber).set({
+                state: newState,
+                lastUpdated: firebase.database.ServerValue.TIMESTAMP
+            })
+            .then(() => {
+                showAlert(`Light ${lightNumber} ${newState ? 'ON' : 'OFF'}`, 'success');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                checkbox.checked = !checkbox.checked;
+                showAlert('Failed to toggle device', 'danger');
             });
         }
 
-        async function testConnection() {
-            const result = await userManager.testEspConnection();
-            if (result.status === 'online') {
-                showAlert(elements.loginAlert, '✅ ESP32 is online and accessible!', 'success');
-            } else {
-                showAlert(elements.loginAlert, '❌ ESP32 is offline or unreachable', 'error');
-            }
-            updateEspStatusIndicator(result.status);
+        function toggleSecurityMode() {
+            const currentMode = document.getElementById('securityModeText').textContent;
+            const newMode = currentMode === 'Auto' ? 'Manual' : 'Auto';
+            
+            database.ref('modes/security').set(newMode)
+            .then(() => {
+                showAlert('Security mode updated', 'info');
+            })
+            .catch((error) => {
+                showAlert('Failed to update security mode', 'danger');
+            });
         }
 
-        function refreshIp() {
-            updateEspStatus();
-            showAlert(elements.loginAlert, 'ESP32 status refreshed!', 'success');
+        function toggleGardenMode() {
+            const currentMode = document.getElementById('gardenModeText').textContent;
+            const newMode = currentMode === 'Auto' ? 'Manual' : 'Auto';
+            
+            database.ref('modes/garden').set(newMode)
+            .then(() => {
+                showAlert('Garden mode updated', 'info');
+            })
+            .catch((error) => {
+                showAlert('Failed to update garden mode', 'danger');
+            });
         }
 
-        // IP Configuration
-        function configureEspIp() {
-            const newIp = prompt('Enter ESP32 IP address:', userManager.espConfig.ip);
-            const newPort = prompt('Enter port (default: 80):', userManager.espConfig.port);
+        function toggleFanMode() {
+            const currentMode = document.getElementById('fanModeText').textContent;
+            const newMode = currentMode === 'Auto' ? 'Manual' : 'Auto';
             
-            if (newIp) {
-                userManager.setEspIp(newIp, newPort || '80');
-                updateEspStatus();
-                showAlert(elements.loginAlert, 'ESP32 configuration updated!', 'success');
-            }
+            database.ref('modes/fan').set(newMode)
+            .then(() => {
+                showAlert('Fan mode updated', 'info');
+            });
         }
 
-        // Show Alert (optimized)
-        let alertTimeout;
-        function showAlert(alertElement, message, type = 'success') {
-            clearTimeout(alertTimeout);
-            alertElement.textContent = message;
-            alertElement.className = `alert alert-${type}`;
-            alertElement.style.display = 'block';
+        function allLightsOn() {
+            const updates = {};
+            for (let i = 1; i <= 7; i++) {
+                updates['devices/light' + i + '/state'] = true;
+            }
             
-            alertTimeout = setTimeout(() => {
-                alertElement.style.display = 'none';
-            }, 3000);
+            database.ref().update(updates)
+            .then(() => {
+                showAlert('All lights turned on', 'success');
+            });
         }
 
-        // Event Listeners (delegated for performance)
-        document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            const result = userManager.login(username, password);
-            
-            if (result.success) {
-                showAlert(elements.loginAlert, 'Login successful!', 'success');
-                setTimeout(showDashboard, 500);
-            } else {
-                showAlert(elements.loginAlert, result.message, 'error');
-            }
-        });
-
-        document.getElementById('signupFormElement').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('signupName').value,
-                username: document.getElementById('signupUsername').value,
-                email: document.getElementById('signupEmail').value,
-                password: document.getElementById('signupPassword').value
-            };
-            const confirmPassword = document.getElementById('signupConfirmPassword').value;
-            
-            if (formData.password !== confirmPassword) {
-                showAlert(elements.signupAlert, 'Passwords do not match', 'error');
-                return;
+        function allLightsOff() {
+            const updates = {};
+            for (let i = 1; i <= 7; i++) {
+                updates['devices/light' + i + '/state'] = false;
             }
             
-            if (formData.password.length < 6) {
-                showAlert(elements.signupAlert, 'Password must be at least 6 characters', 'error');
-                return;
-            }
-
-            const result = userManager.signup(formData);
-            
-            if (result.success) {
-                showAlert(elements.signupAlert, result.message, 'success');
-                setTimeout(() => {
-                    showLogin();
-                    document.getElementById('signupFormElement').reset();
-                }, 1500);
-            } else {
-                showAlert(elements.signupAlert, result.message, 'error');
-            }
-        });
-
-        // Logout Function
-        function logout() {
-            userManager.logout();
-            showLogin();
-            document.getElementById('loginFormElement').reset();
+            database.ref().update(updates)
+            .then(() => {
+                showAlert('All lights turned off', 'success');
+            });
         }
 
-        // Initialize (optimized)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already logged in
-            if (userManager.currentUser) {
-                showDashboard();
-            }
+        function armSystem() {
+            database.ref('security/armed').set(true)
+            .then(() => {
+                showAlert('Security system armed', 'warning');
+            });
+        }
 
-            // Add sample user for demo
-            if (userManager.users.length === 0) {
-                userManager.signup({
-                    name: 'Demo User',
-                    username: 'demo',
-                    email: 'demo@smarthome.com',
-                    password: 'demo123'
+        function createScene(scene) {
+            database.ref('scenes/active').set(scene)
+            .then(() => {
+                showAlert(`Scene "${scene}" activated`, 'info');
+            });
+        }
+
+        // Real-time Data Listeners
+        function setupFirebaseListeners() {
+            // Listen for device states
+            for (let i = 1; i <= 7; i++) {
+                database.ref('devices/light' + i).on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const element = document.getElementById('light' + i);
+                        const indicator = document.getElementById(getLightIndicator(i));
+                        if (element && indicator) {
+                            element.checked = data.state;
+                            indicator.className = `status-indicator ${data.state ? 'status-on' : 'status-off'}`;
+                        }
+                    }
                 });
             }
 
-            // IP configuration handlers
-            const espIpDisplay = document.getElementById('espIpDisplay');
-            espIpDisplay.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                configureEspIp();
+            // Listen for sensor data
+            database.ref('sensors').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById('temperature').textContent = data.temperature.toFixed(1) + '°C';
+                    document.getElementById('humidity').textContent = data.humidity.toFixed(1) + '%';
+                    document.getElementById('ldrValue').textContent = data.ldrValue;
+                    document.getElementById('motionStatus').textContent = data.motionDetected ? 'Active' : 'Inactive';
+
+                    // Show alerts based on conditions
+                    if (data.motionDetected) {
+                        showAlert('Motion detected in secured area', 'warning');
+                    }
+                    if (data.temperature >= 25.0) {
+                        showAlert('High temperature detected', 'danger');
+                    }
+                }
             });
 
-            espIpDisplay.addEventListener('dblclick', configureEspIp);
+            // Listen for mode changes
+            database.ref('modes').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    updateModeIndicator('security', data.security === 'Auto');
+                    updateModeIndicator('garden', data.garden === 'Auto');
+                    updateModeIndicator('fan', data.fan === 'Auto');
+                }
+            });
+
+            // Update connection status
+            database.ref('.info/connected').on('value', (snapshot) => {
+                const connected = snapshot.val();
+                document.getElementById('connectionIndicator').style.background = connected ? '#10b981' : '#ef4444';
+                document.getElementById('connectionStatus').textContent = connected ? 'Connected' : 'Disconnected';
+                document.getElementById('firebaseStatus').textContent = connected ? 'Firebase (Online)' : 'Firebase (Offline)';
+                
+                if (!connected) {
+                    showAlert('Connection lost - attempting to reconnect...', 'danger');
+                }
+            });
+        }
+
+        function getLightIndicator(num) {
+            const indicators = {
+                '1': 'gardenStatusIndicator',
+                '2': 'bedroomStatusIndicator', 
+                '3': 'kitchenStatusIndicator',
+                '4': 'livingroomStatusIndicator',
+                '5': 'garageStatusIndicator',
+                '6': 'securityStatusIndicator',
+                '7': 'fanStatusIndicator'
+            };
+            return indicators[num] || '';
+        }
+
+        function updateModeIndicator(type, isAuto) {
+            const modeText = document.getElementById(type + 'ModeText');
+            const modeIcon = document.getElementById(type + 'ModeIcon');
+            const switchElem = document.getElementById(type + 'Switch');
+
+            if (isAuto) {
+                modeText.textContent = 'Auto';
+                modeIcon.textContent = '🔄';
+                switchElem.classList.add('disabled');
+            } else {
+                modeText.textContent = 'Manual';
+                modeIcon.textContent = '✋';
+                switchElem.classList.remove('disabled');
+            }
+        }
+
+        // Initialize dashboard
+        createParticles();
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Authentication state observer
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                setupFirebaseListeners();
+                showAlert(`Welcome ${user.displayName || 'Guest'}!`, 'success');
+            } else {
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('loginModal').style.display = 'flex';
+            }
         });
 
-        // Prevent form resubmission on page refresh
-        if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
-        }
+        // Add glass morphism effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click ripple effect to glass elements
+            const glassElements = document.querySelectorAll('.btn, .mode-toggle, .device-control');
+            glassElements.forEach(element => {
+                element.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = element.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255,255,255,0.3);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        pointer-events: none;
+                    `;
+                    
+                    element.style.position = 'relative';
+                    element.style.overflow = 'hidden';
+                    element.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Add style for ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
     </script>
 </body>
-</html>
+    </html>

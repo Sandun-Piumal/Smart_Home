@@ -410,6 +410,19 @@
             border-radius: 8px;
         }
 
+        /* Manual Override Indicator */
+        .override-indicator {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
         /* Group Controls */
         .group-controls {
             background: white;
@@ -634,6 +647,11 @@
                     </div>
                 </div>
 
+                <!-- Manual Override Indicator -->
+                <div id="overrideIndicator" class="override-indicator">
+                    🕒 Manual Override Active - Window control for 30 seconds
+                </div>
+
                 <!-- Sensor Info -->
                 <div id="sensorInfo" class="sensor-info" style="display: none;">
                     <strong>LDR Sensor Value:</strong> <span id="ldrValue">0</span><br>
@@ -647,6 +665,9 @@
                     <div class="switch-container">
                         <button id="windowBtn" class="switch-btn off" onclick="toggleWindow()">CLOSE</button>
                         <div id="windowStatus" class="status-indicator">✗ CLOSED</div>
+                        <div id="windowInfo" style="font-size: 12px; margin-top: 5px;">
+                            Click to manually open/close window
+                        </div>
                     </div>
                 </div>
                 
@@ -712,6 +733,7 @@
         };
         let autoMode = false;
         let windowState = false;
+        let manualOverrideActive = false;
 
         // DOM Elements
         const authSection = document.getElementById('authSection');
@@ -728,6 +750,7 @@
         const newDeviceIdInput = document.getElementById('newDeviceId');
         const sensorInfo = document.getElementById('sensorInfo');
         const ldrValueSpan = document.getElementById('ldrValue');
+        const overrideIndicator = document.getElementById('overrideIndicator');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -900,6 +923,11 @@
             windowRef.on('value', (snapshot) => {
                 windowState = snapshot.val() || false;
                 updateWindowUI();
+                
+                // Show manual override indicator when window state changes in auto mode
+                if (autoMode) {
+                    showManualOverrideIndicator();
+                }
             });
 
             // Listen to LDR value for monitoring
@@ -1049,23 +1077,24 @@
             
             // Re-render LED controls to update disabled states
             renderLEDControls();
+            updateWindowUI();
         }
 
-        // Window control functions
+        // Window control functions - ALWAYS ALLOW MANUAL CONTROL
         async function toggleWindow() {
             if (!currentDeviceId) {
                 alert('Please select a device first');
                 return;
             }
 
-            if (autoMode) {
-                alert('Auto mode is enabled. Disable auto mode to control window manually.');
-                return;
-            }
-
             try {
                 const newWindowState = !windowState;
                 await database.ref(`devices/${currentDeviceId}/window`).set(newWindowState);
+                
+                // Show manual override message if in auto mode
+                if (autoMode) {
+                    showManualOverrideIndicator();
+                }
             } catch (error) {
                 console.error('Error toggling window:', error);
                 alert('Error toggling window: ' + error.message);
@@ -1075,6 +1104,7 @@
         function updateWindowUI() {
             const windowBtn = document.getElementById('windowBtn');
             const windowStatus = document.getElementById('windowStatus');
+            const windowInfo = document.getElementById('windowInfo');
             
             if (windowState) {
                 windowBtn.textContent = 'OPEN';
@@ -1086,13 +1116,27 @@
                 windowStatus.textContent = '✗ CLOSED';
             }
             
-            // Disable window button in auto mode
-            windowBtn.disabled = autoMode;
+            // Always enable window button
+            windowBtn.disabled = false;
+            
+            // Update info text based on mode
             if (autoMode) {
-                windowBtn.title = 'Window is in auto mode';
+                windowInfo.innerHTML = 'Manual override - 30 seconds control';
+                windowInfo.style.color = '#e67e22';
             } else {
-                windowBtn.title = '';
+                windowInfo.innerHTML = 'Click to manually open/close window';
+                windowInfo.style.color = '#666';
             }
+        }
+
+        // Manual override indicator
+        function showManualOverrideIndicator() {
+            overrideIndicator.style.display = 'block';
+            
+            // Hide after 30 seconds (matching ESP32 timeout)
+            setTimeout(() => {
+                overrideIndicator.style.display = 'none';
+            }, 30000);
         }
 
         // Device Modal Functions

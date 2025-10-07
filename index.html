@@ -526,7 +526,7 @@
 
         .auto-connect-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
@@ -678,7 +678,7 @@
                 <div>
                     <i class="fas fa-user-circle"></i> Welcome, <span id="userName">User</span>!
                 </div>
-                <button class="btn-outline action-btn" onclick="logout()">
+                <button class="btn-outline action-btn" id="logoutBtn">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
@@ -848,6 +848,11 @@
         let currentUser = null;
         let currentLEDState = false;
 
+        // Add event listener for logout button
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        });
+
         // Auth State Listener
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -1001,10 +1006,28 @@
         }
 
         async function logout() {
-            if (statusListener) {
-                statusListener();
+            try {
+                // Stop device monitoring if active
+                if (statusListener) {
+                    statusListener();
+                    statusListener = null;
+                }
+                
+                // Sign out from Firebase
+                await auth.signOut();
+                
+                // Clear any current device data
+                currentDeviceId = '';
+                currentUser = null;
+                
+                // Show success message
+                showNotification('Logged out successfully', 'success');
+                
+                // The auth state listener will automatically handle screen change
+            } catch (error) {
+                console.error('Logout error:', error);
+                showNotification('Error during logout', 'error');
             }
-            await auth.signOut();
         }
 
         // User Profile Functions

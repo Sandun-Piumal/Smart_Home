@@ -525,6 +525,116 @@
             color: white;
         }
 
+        /* Sensor Info Section */
+        .sensor-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .sensor-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .sensor-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .sensor-icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        .sensor-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .sensor-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .sensor-unit {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Fan Control */
+        .fan-control {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: #333;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .fan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .fan-title {
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fan-auto-status {
+            background: rgba(255,255,255,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .fan-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .fan-info {
+            text-align: left;
+            flex: 1;
+        }
+
+        .fan-stats {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .fan-threshold {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .app-header {
@@ -552,6 +662,19 @@
 
             .auto-control-content {
                 flex-direction: column;
+            }
+
+            .sensor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fan-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .fan-info {
+                text-align: center;
             }
         }
 
@@ -626,6 +749,60 @@
                 </div>
             </section>
 
+            <!-- Sensor Data Section -->
+            <section class="sensor-section">
+                <h2>📊 Environmental Sensors</h2>
+                <div class="sensor-grid">
+                    <div class="sensor-card">
+                        <div class="sensor-icon">🌡️</div>
+                        <div class="sensor-name">Temperature</div>
+                        <div class="sensor-value" id="temperatureValue">--</div>
+                        <div class="sensor-unit">°C</div>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">💧</div>
+                        <div class="sensor-name">Humidity</div>
+                        <div class="sensor-value" id="humidityValue">--</div>
+                        <div class="sensor-unit">%</div>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">🔆</div>
+                        <div class="sensor-name">Light Level</div>
+                        <div class="sensor-value" id="ldrValue">--</div>
+                        <div class="sensor-unit">LUX</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fan Control Section -->
+            <div class="fan-control">
+                <div class="fan-header">
+                    <div class="fan-title">
+                        🌀 Fan Control
+                    </div>
+                    <div id="fanAutoStatus" class="fan-auto-status">
+                        Auto: 25°C
+                    </div>
+                </div>
+                <div class="fan-content">
+                    <div class="fan-info">
+                        <div class="fan-stats">
+                            <strong>Current Status:</strong> <span id="fanStatusText">OFF</span>
+                        </div>
+                        <div class="fan-stats">
+                            <strong>Mode:</strong> <span id="fanModeText">Auto</span>
+                        </div>
+                        <div class="fan-threshold">
+                            Auto mode: Turns ON when temperature ≥ 25°C
+                        </div>
+                    </div>
+                    <div class="switch-container">
+                        <button id="fanBtn" class="switch-btn off" onclick="toggleFan()">OFF</button>
+                        <div id="fanStatus" class="status-indicator">✗ OFF</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- LED Controls -->
             <section class="leds-section">
                 <h2>💡 Smart Controls - <span id="currentDeviceId">Select a Device</span></h2>
@@ -650,12 +827,6 @@
                 <!-- Manual Override Indicator -->
                 <div id="overrideIndicator" class="override-indicator">
                     🕒 Manual Override Active - Window control for 30 seconds
-                </div>
-
-                <!-- Sensor Info -->
-                <div id="sensorInfo" class="sensor-info" style="display: none;">
-                    <strong>LDR Sensor Value:</strong> <span id="ldrValue">0</span><br>
-                    <small>Higher values mean darker environment</small>
                 </div>
                 
                 <!-- Window Control -->
@@ -733,6 +904,11 @@
         };
         let autoMode = false;
         let windowState = false;
+        let fanState = false;
+        let fanAutoMode = true;
+        let temperature = 0;
+        let humidity = 0;
+        let ldrValue = 0;
         let manualOverrideActive = false;
 
         // DOM Elements
@@ -748,9 +924,19 @@
         const currentDeviceIdSpan = document.getElementById('currentDeviceId');
         const addDeviceModal = document.getElementById('addDeviceModal');
         const newDeviceIdInput = document.getElementById('newDeviceId');
-        const sensorInfo = document.getElementById('sensorInfo');
-        const ldrValueSpan = document.getElementById('ldrValue');
         const overrideIndicator = document.getElementById('overrideIndicator');
+        
+        // Sensor elements
+        const temperatureValue = document.getElementById('temperatureValue');
+        const humidityValue = document.getElementById('humidityValue');
+        const ldrValueSpan = document.getElementById('ldrValue');
+        
+        // Fan elements
+        const fanBtn = document.getElementById('fanBtn');
+        const fanStatus = document.getElementById('fanStatus');
+        const fanStatusText = document.getElementById('fanStatusText');
+        const fanModeText = document.getElementById('fanModeText');
+        const fanAutoStatus = document.getElementById('fanAutoStatus');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -893,6 +1079,8 @@
             renderDevices();
             listenToDeviceStatus();
             listenToLEDStates();
+            listenToSensorData();
+            listenToFanState();
         }
 
         function listenToDeviceStatus() {
@@ -929,14 +1117,54 @@
                     showManualOverrideIndicator();
                 }
             });
+        }
 
-            // Listen to LDR value for monitoring
+        function listenToSensorData() {
+            if (!currentDeviceId) return;
+            
+            // Listen to temperature
+            const tempRef = database.ref(`devices/${currentDeviceId}/sensors/temperature`);
+            tempRef.on('value', (snapshot) => {
+                const temp = snapshot.val();
+                if (temp !== null) {
+                    temperature = temp;
+                    temperatureValue.textContent = temp.toFixed(1);
+                    updateFanAutoStatus();
+                }
+            });
+
+            // Listen to humidity
+            const humidityRef = database.ref(`devices/${currentDeviceId}/sensors/humidity`);
+            humidityRef.on('value', (snapshot) => {
+                const hum = snapshot.val();
+                if (hum !== null) {
+                    humidity = hum;
+                    humidityValue.textContent = hum.toFixed(1);
+                }
+            });
+
+            // Listen to LDR value
             const ldrRef = database.ref(`devices/${currentDeviceId}/sensors/ldr`);
             ldrRef.on('value', (snapshot) => {
-                const ldrValue = snapshot.val();
-                if (ldrValue !== null) {
-                    sensorInfo.style.display = 'block';
-                    ldrValueSpan.textContent = ldrValue;
+                const ldr = snapshot.val();
+                if (ldr !== null) {
+                    ldrValue = ldr;
+                    ldrValueSpan.textContent = ldr;
+                }
+            });
+        }
+
+        function listenToFanState() {
+            if (!currentDeviceId) return;
+            
+            // Listen to fan state
+            const fanRef = database.ref(`devices/${currentDeviceId}/fan`);
+            fanRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    fanState = data.state || false;
+                    fanAutoMode = data.autoMode !== undefined ? data.autoMode : true;
+                    updateFanUI();
                 }
             });
         }
@@ -1126,6 +1354,74 @@
             } else {
                 windowInfo.innerHTML = 'Click to manually open/close window';
                 windowInfo.style.color = '#666';
+            }
+        }
+
+        // Fan control functions
+        async function toggleFan() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                // Toggle manual fan state and disable auto mode temporarily
+                const newFanState = !fanState;
+                await database.ref(`devices/${currentDeviceId}/fan`).set({
+                    state: newFanState,
+                    autoMode: false,
+                    manualOverride: true
+                });
+            } catch (error) {
+                console.error('Error toggling fan:', error);
+                alert('Error toggling fan: ' + error.message);
+            }
+        }
+
+        async function enableFanAutoMode() {
+            if (!currentDeviceId) return;
+            
+            try {
+                await database.ref(`devices/${currentDeviceId}/fan`).update({
+                    autoMode: true,
+                    manualOverride: false
+                });
+            } catch (error) {
+                console.error('Error enabling fan auto mode:', error);
+            }
+        }
+
+        function updateFanUI() {
+            // Update fan button and status
+            if (fanState) {
+                fanBtn.textContent = 'ON';
+                fanBtn.className = 'switch-btn on';
+                fanStatus.textContent = '✓ ON';
+                fanStatusText.textContent = 'ON';
+            } else {
+                fanBtn.textContent = 'OFF';
+                fanBtn.className = 'switch-btn off';
+                fanStatus.textContent = '✗ OFF';
+                fanStatusText.textContent = 'OFF';
+            }
+
+            // Update mode text
+            if (fanAutoMode) {
+                fanModeText.textContent = 'Auto';
+                fanModeText.style.color = '#2e7d32';
+            } else {
+                fanModeText.textContent = 'Manual';
+                fanModeText.style.color = '#e67e22';
+            }
+        }
+
+        function updateFanAutoStatus() {
+            if (temperature >= 25) {
+                fanAutoStatus.textContent = 'Auto: ON (≥25°C)';
+                fanAutoStatus.style.background = 'rgba(76, 175, 80, 0.3)';
+            } else {
+                fanAutoStatus.textContent = 'Auto: OFF (<25°C)';
+                fanAutoStatus.style.background = 'rgba(244, 67, 54, 0.3)';
             }
         }
 

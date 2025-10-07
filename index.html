@@ -561,12 +561,38 @@
             </section>
 
             <!-- LED Controls -->
-            <section class="leds-section">
-                <h2>💡 LED Controls - <span id="currentDeviceId">Select a Device</span></h2>
-                <div class="leds-grid" id="ledsGrid">
-                    <!-- LED controls will be loaded here -->
-                </div>
-            </section>
+          <section class="leds-section">
+    <h2>💡 LED Controls - <span id="currentDeviceId">Select a Device</span></h2>
+    
+    <!-- Auto Mode Control -->
+    <div class="auto-control" style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+        <h3>🤖 Auto Mode Control</h3>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px;">
+            <span style="font-weight: bold;">Auto Mode:</span>
+            <button id="autoModeBtn" class="switch-btn off" onclick="toggleAutoMode()">OFF</button>
+            <span id="autoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
+                Manual Control
+            </span>
+        </div>
+        <div style="margin-top: 10px; font-size: 14px; color: #666;">
+            Auto Mode: කළුවර වැටුනහම ජනෙල් ස්වයංක්රීයව වසා garden light ON, එළිය වැටුනහම ජනෙල් විවෘත කර garden light OFF
+        </div>
+    </div>
+    
+    <!-- Window Control -->
+    <div class="led-control" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <div class="led-icon">🪟</div>
+        <div class="led-name">🏠 ජනෙල් පාලනය</div>
+        <div class="switch-container">
+            <button id="windowBtn" class="switch-btn off" onclick="toggleWindow()">CLOSE</button>
+            <div id="windowStatus" class="status-indicator">✗ CLOSED</div>
+        </div>
+    </div>
+    
+    <div class="leds-grid" id="ledsGrid">
+        <!-- Existing LED controls will be loaded here -->
+    </div>
+</section>
 
             <!-- Group Controls -->
             <section class="group-controls">

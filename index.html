@@ -526,7 +526,7 @@
 
         .auto-connect-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: between;
             align-items: center;
             margin-bottom: 10px;
         }
@@ -678,7 +678,7 @@
                 <div>
                     <i class="fas fa-user-circle"></i> Welcome, <span id="userName">User</span>!
                 </div>
-                <button class="btn-outline action-btn" id="logoutBtn">
+                <button class="btn-outline action-btn" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
@@ -848,11 +848,6 @@
         let currentUser = null;
         let currentLEDState = false;
 
-        // Add event listener for logout button
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('logoutBtn').addEventListener('click', logout);
-        });
-
         // Auth State Listener
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -1005,9 +1000,10 @@
             }
         }
 
+        // FIXED: Logout function
         async function logout() {
             try {
-                // Stop device monitoring if active
+                // Stop listening to device status updates
                 if (statusListener) {
                     statusListener();
                     statusListener = null;
@@ -1016,17 +1012,23 @@
                 // Sign out from Firebase
                 await auth.signOut();
                 
-                // Clear any current device data
-                currentDeviceId = '';
+                // Clear any stored device data
+                if (currentUser) {
+                    localStorage.removeItem(`autoConnectDevice_${currentUser.uid}`);
+                }
+                
+                // Reset user state
                 currentUser = null;
+                currentDeviceId = '';
                 
-                // Show success message
-                showNotification('Logged out successfully', 'success');
+                // Show notification
+                showNotification('Successfully logged out', 'success');
                 
-                // The auth state listener will automatically handle screen change
+                // Navigate to welcome screen
+                showScreen('welcomeScreen');
             } catch (error) {
                 console.error('Logout error:', error);
-                showNotification('Error during logout', 'error');
+                showNotification('Error during logout: ' + error.message, 'error');
             }
         }
 

@@ -594,6 +594,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .fan-title {
@@ -602,6 +604,35 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .fan-mode-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .mode-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .mode-btn.inactive {
+            background: rgba(255,255,255,0.5);
+            color: #666;
         }
 
         .fan-auto-status {
@@ -674,6 +705,11 @@
             }
 
             .fan-info {
+                text-align: center;
+            }
+
+            .fan-header {
+                flex-direction: column;
                 text-align: center;
             }
         }
@@ -779,6 +815,11 @@
                 <div class="fan-header">
                     <div class="fan-title">
                         🌀 Fan Control
+                    </div>
+                    <div class="fan-mode-control">
+                        <span style="font-size: 14px; font-weight: bold;">Mode:</span>
+                        <button id="fanAutoModeBtn" class="mode-btn active" onclick="setFanMode(true)">Auto</button>
+                        <button id="fanManualModeBtn" class="mode-btn inactive" onclick="setFanMode(false)">Manual</button>
                     </div>
                     <div id="fanAutoStatus" class="fan-auto-status">
                         Auto: 25°C
@@ -937,6 +978,8 @@
         const fanStatusText = document.getElementById('fanStatusText');
         const fanModeText = document.getElementById('fanModeText');
         const fanAutoStatus = document.getElementById('fanAutoStatus');
+        const fanAutoModeBtn = document.getElementById('fanAutoModeBtn');
+        const fanManualModeBtn = document.getElementById('fanManualModeBtn');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -1365,29 +1408,36 @@
             }
 
             try {
-                // Toggle manual fan state and disable auto mode temporarily
+                // Only allow manual control if in manual mode
+                if (fanAutoMode) {
+                    alert('Fan is in auto mode. Switch to manual mode to control the fan directly.');
+                    return;
+                }
+
                 const newFanState = !fanState;
-                await database.ref(`devices/${currentDeviceId}/fan`).set({
-                    state: newFanState,
-                    autoMode: false,
-                    manualOverride: true
-                });
+                await database.ref(`devices/${currentDeviceId}/fan/state`).set(newFanState);
             } catch (error) {
                 console.error('Error toggling fan:', error);
                 alert('Error toggling fan: ' + error.message);
             }
         }
 
-        async function enableFanAutoMode() {
-            if (!currentDeviceId) return;
-            
+        async function setFanMode(isAutoMode) {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
             try {
-                await database.ref(`devices/${currentDeviceId}/fan`).update({
-                    autoMode: true,
-                    manualOverride: false
-                });
+                await database.ref(`devices/${currentDeviceId}/fan/autoMode`).set(isAutoMode);
+                
+                // If switching to auto mode, let the ESP32 control the fan based on temperature
+                if (isAutoMode) {
+                    await database.ref(`devices/${currentDeviceId}/fan/manualOverride`).set(false);
+                }
             } catch (error) {
-                console.error('Error enabling fan auto mode:', error);
+                console.error('Error setting fan mode:', error);
+                alert('Error setting fan mode: ' + error.message);
             }
         }
 
@@ -1398,30 +1448,45 @@
                 fanBtn.className = 'switch-btn on';
                 fanStatus.textContent = '✓ ON';
                 fanStatusText.textContent = 'ON';
+                fanStatusText.style.color = '#2e7d32';
             } else {
                 fanBtn.textContent = 'OFF';
                 fanBtn.className = 'switch-btn off';
                 fanStatus.textContent = '✗ OFF';
                 fanStatusText.textContent = 'OFF';
+                fanStatusText.style.color = '#c62828';
             }
 
-            // Update mode text
+            // Update mode buttons
             if (fanAutoMode) {
+                fanAutoModeBtn.className = 'mode-btn active';
+                fanManualModeBtn.className = 'mode-btn inactive';
                 fanModeText.textContent = 'Auto';
                 fanModeText.style.color = '#2e7d32';
+                fanBtn.disabled = true;
+                fanBtn.title = 'Switch to manual mode to control fan';
             } else {
+                fanAutoModeBtn.className = 'mode-btn inactive';
+                fanManualModeBtn.className = 'mode-btn active';
                 fanModeText.textContent = 'Manual';
                 fanModeText.style.color = '#e67e22';
+                fanBtn.disabled = false;
+                fanBtn.title = 'Click to toggle fan';
             }
         }
 
         function updateFanAutoStatus() {
-            if (temperature >= 25) {
-                fanAutoStatus.textContent = 'Auto: ON (≥25°C)';
-                fanAutoStatus.style.background = 'rgba(76, 175, 80, 0.3)';
+            if (fanAutoMode) {
+                if (temperature >= 25) {
+                    fanAutoStatus.textContent = 'Auto: ON (≥25°C)';
+                    fanAutoStatus.style.background = 'rgba(76, 175, 80, 0.3)';
+                } else {
+                    fanAutoStatus.textContent = 'Auto: OFF (<25°C)';
+                    fanAutoStatus.style.background = 'rgba(244, 67, 54, 0.3)';
+                }
             } else {
-                fanAutoStatus.textContent = 'Auto: OFF (<25°C)';
-                fanAutoStatus.style.background = 'rgba(244, 67, 54, 0.3)';
+                fanAutoStatus.textContent = 'Manual Control';
+                fanAutoStatus.style.background = 'rgba(255, 193, 7, 0.3)';
             }
         }
 

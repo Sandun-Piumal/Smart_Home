@@ -3,1597 +3,947 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP32 Controller - Secure Device Management</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>LED Control System</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #6C63FF;
-            --primary-dark: #5a52d5;
-            --primary-light: #a29bfe;
-            --secondary: #FF6584;
-            --secondary-light: #ff8fa3;
-            --success: #00b894;
-            --success-light: #55efc4;
-            --danger: #e74c3c;
-            --danger-light: #ff7675;
-            --warning: #fdcb6e;
-            --warning-light: #ffeaa7;
-            --info: #0984e3;
-            --info-light: #74b9ff;
-            --light: #f8f9fa;
-            --dark: #2d3436;
-            --gray: #636e72;
-            --light-gray: #dfe6e9;
-            --white: #ffffff;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --shadow-light: 0 5px 15px rgba(0, 0, 0, 0.05);
-            --radius: 16px;
-            --radius-small: 10px;
-            --transition: all 0.3s ease;
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            --gradient-success: linear-gradient(135deg, var(--success), #00a085);
-            --gradient-danger: linear-gradient(135deg, var(--danger), #c0392b);
-            --gradient-warning: linear-gradient(135deg, var(--warning), #f39c12);
         }
 
         body {
-            background: var(--gradient);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Auth Styles */
+        .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--dark);
-            position: relative;
-            overflow-x: hidden;
+            min-height: 80vh;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.05"><polygon fill="%236C63FF" points="0,1000 1000,0 1000,1000"/></svg>');
-            background-size: cover;
-            z-index: -1;
-        }
-
-        .container {
-            background: var(--white);
-            border-radius: var(--radius);
+        .auth-form {
+            background: white;
             padding: 40px;
-            box-shadow: var(--shadow);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
+        }
+
+        .auth-form h2 {
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--gradient-primary);
-        }
-
-        .logo {
-            font-size: 3.5em;
-            margin-bottom: 10px;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-            filter: drop-shadow(0 3px 5px rgba(108, 99, 255, 0.3));
-        }
-
-        h1 {
-            color: var(--dark);
-            margin-bottom: 10px;
-            font-size: 2.2em;
-            font-weight: 700;
-            position: relative;
-            display: inline-block;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 3px;
-            background: var(--gradient-primary);
-            border-radius: 3px;
-        }
-
-        .subtitle {
-            color: var(--gray);
             margin-bottom: 30px;
-            font-size: 1.1em;
-            line-height: 1.5;
-        }
-
-        .screen {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .active {
-            display: block;
+            color: #333;
+            font-size: 28px;
         }
 
         .form-group {
-            margin: 20px 0;
-            text-align: left;
-            position: relative;
+            margin-bottom: 20px;
         }
 
-        label {
+        .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.95em;
-        }
-
-        .input-with-icon {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-            z-index: 1;
-        }
-
-        input {
-            width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: 2px solid var(--light-gray);
-            border-radius: var(--radius-small);
-            font-size: 16px;
-            transition: var(--transition);
-            background: var(--light);
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
-            background: var(--white);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            padding: 0;
-            accent-color: var(--primary);
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: var(--radius-small);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
-        }
-
-        button:focus:not(:active)::after {
-            animation: ripple 1s ease-out;
-        }
-
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(20, 20);
-                opacity: 0;
-            }
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(108, 99, 255, 0.4);
-        }
-
-        .btn-success {
-            background: var(--gradient-success);
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(0, 184, 148, 0.4);
-        }
-
-        .btn-danger {
-            background: var(--gradient-danger);
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(231, 76, 60, 0.4);
-        }
-
-        .btn-warning {
-            background: var(--gradient-warning);
-            color: var(--dark);
-            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(253, 203, 110, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--gray);
-            color: var(--white);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .control-buttons {
-            display: flex;
-            gap: 15px;
-            margin: 25px 0;
-        }
-
-        .control-buttons button {
-            flex: 1;
-            padding: 20px;
-            font-size: 18px;
-        }
-
-        .device-id-display {
-            background: var(--light);
-            border: 2px dashed var(--light-gray);
-            padding: 15px;
-            border-radius: var(--radius-small);
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--dark);
-            word-break: break-all;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .device-id-display::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-primary);
-            opacity: 0.05;
-            z-index: 0;
-        }
-
-        .status-card {
-            background: var(--light);
-            border-radius: var(--radius-small);
-            padding: 20px;
-            margin: 20px 0;
-            text-align: left;
-            box-shadow: var(--shadow-light);
-            border-left: 4px solid var(--primary);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .status-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-primary);
-            opacity: 0.03;
-            z-index: 0;
-        }
-
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 12px 0;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--light-gray);
-            position: relative;
-            z-index: 1;
-        }
-
-        .status-label {
-            font-weight: 600;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status-value {
-            font-family: 'Courier New', monospace;
-            color: var(--dark);
+            margin-bottom: 5px;
+            color: #555;
             font-weight: 500;
         }
 
-        .online {
-            color: var(--success);
-            font-weight: bold;
-        }
-
-        .offline {
-            color: var(--danger);
-            font-weight: bold;
-        }
-
-        .info-box {
-            background: rgba(116, 185, 255, 0.1);
-            color: var(--info);
-            padding: 15px;
-            border-radius: var(--radius-small);
-            margin: 20px 0;
-            font-size: 14px;
-            text-align: left;
-            border-left: 4px solid var(--info);
-        }
-
-        .instructions {
-            background: rgba(253, 203, 110, 0.1);
-            color: #856404;
-            padding: 15px;
-            border-radius: var(--radius-small);
-            margin: 20px 0;
-            font-size: 14px;
-            text-align: left;
-            border-left: 4px solid var(--warning);
-        }
-
-        .user-info {
-            background: rgba(116, 185, 255, 0.1);
-            color: var(--info);
+        .form-group input {
+            width: 100%;
             padding: 12px 15px;
-            border-radius: var(--radius-small);
-            margin: 15px 0;
-            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .auth-btn:disabled {
+            background: #ccc;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .auth-toggle span {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        /* Main App Styles */
+        .app-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid var(--info);
         }
 
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 20px;
-            border-radius: var(--radius-small);
-            overflow: hidden;
-            border: 2px solid var(--primary);
-            background: var(--light);
-            box-shadow: var(--shadow-light);
+        .app-title {
+            color: #333;
+            font-size: 32px;
+            font-weight: 700;
         }
 
-        .tab-button {
-            flex: 1;
-            padding: 15px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            color: var(--dark);
+        .user-section {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
+            gap: 20px;
         }
 
-        .tab-button::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 0;
-            background: var(--gradient-primary);
-            transition: var(--transition);
-            z-index: -1;
+        .user-email {
+            color: #666;
+            font-weight: 500;
         }
 
-        .tab-button.active {
-            background: var(--primary);
-            color: var(--white);
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
         }
 
-        .tab-button.active::before {
-            height: 100%;
+        .logout-btn:hover {
+            background: #ff5252;
         }
 
-        .tab-button:hover:not(.active) {
-            background: rgba(108, 99, 255, 0.1);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .error-message {
-            background: rgba(231, 76, 60, 0.1);
-            color: var(--danger);
-            padding: 12px;
-            border-radius: var(--radius-small);
-            margin: 10px 0;
-            font-size: 14px;
-            display: none;
-            border-left: 4px solid var(--danger);
-        }
-
-        .success-message {
-            background: rgba(0, 184, 148, 0.1);
-            color: var(--success);
-            padding: 12px;
-            border-radius: var(--radius-small);
-            margin: 10px 0;
-            font-size: 14px;
-            display: none;
-            border-left: 4px solid var(--success);
-        }
-
-        .heartbeat {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        .device-card {
-            background: var(--white);
-            border-radius: var(--radius-small);
-            padding: 15px;
-            margin: 15px 0;
-            box-shadow: var(--shadow-light);
-            border-left: 4px solid var(--primary);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .device-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-primary);
-            opacity: 0.03;
-            z-index: 0;
-        }
-
-        .device-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        /* Device Management */
+        .device-management {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
 
         .device-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 20px;
         }
 
-        .device-name {
-            font-weight: 600;
-            color: var(--dark);
+        .device-header h2 {
+            color: #333;
+            font-size: 24px;
         }
 
-        .device-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .device-id {
-            font-family: 'Courier New', monospace;
-            color: var(--gray);
-            font-size: 0.9em;
-            position: relative;
-            z-index: 1;
-        }
-
-        .action-btn {
-            padding: 8px 12px;
-            font-size: 0.85em;
-            width: auto;
-            margin: 0;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
-        .status-online {
-            background: var(--success);
-            box-shadow: 0 0 5px var(--success);
-        }
-
-        .status-offline {
-            background: var(--danger);
-            box-shadow: 0 0 5px var(--danger);
-        }
-
-        .status-unknown {
-            background: var(--gray);
-            box-shadow: 0 0 5px var(--gray);
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--success);
+        .add-device-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 15px 25px;
-            border-radius: var(--radius-small);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideInRight 0.3s ease, slideOutRight 0.3s ease 2.7s forwards;
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        .power-button {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            margin: 20px auto;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
+            font-weight: 600;
+            transition: transform 0.2s;
         }
 
-        .power-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: var(--transition);
-            border-radius: 50%;
+        .add-device-btn:hover {
+            transform: translateY(-2px);
         }
 
-        .power-on {
-            background: var(--gradient-success);
-            color: white;
+        .device-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
         }
 
-        .power-off {
-            background: var(--gradient-danger);
-            color: white;
+        .device-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+            cursor: pointer;
         }
 
-        .power-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        .device-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
         }
 
-        .power-button:hover::before {
-            opacity: 0.1;
+        .device-card.active {
+            border-color: #667eea;
+            background: #f0f4ff;
         }
 
-        .auto-connect-section {
-            background: rgba(116, 185, 255, 0.1);
-            border-radius: var(--radius-small);
-            padding: 15px;
-            margin: 20px 0;
-            border-left: 4px solid var(--info);
-        }
-
-        .auto-connect-header {
+        .device-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
         }
 
-        .auto-connect-title {
+        .device-id {
             font-weight: 600;
-            color: var(--dark);
+            color: #333;
+            font-size: 18px;
+        }
+
+        .device-status {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 14px;
         }
 
-        .floating-shapes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-            pointer-events: none;
+        .status-online {
+            color: #28a745;
+            font-weight: 600;
         }
 
-        .shape {
-            position: absolute;
-            opacity: 0.1;
+        .status-offline {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
         }
 
-        .shape-1 {
-            width: 100px;
-            height: 100px;
-            background: var(--primary);
-            top: 10%;
-            left: 10%;
-            animation: float 15s infinite linear;
+        .status-dot.online {
+            background: #28a745;
         }
 
-        .shape-2 {
-            width: 150px;
-            height: 150px;
-            background: var(--secondary);
-            top: 60%;
-            right: 10%;
-            animation: float 20s infinite linear reverse;
+        .status-dot.offline {
+            background: #dc3545;
         }
 
-        .shape-3 {
-            width: 70px;
-            height: 70px;
-            background: var(--success);
-            bottom: 20%;
-            left: 20%;
-            animation: float 12s infinite linear;
+        .device-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
         }
 
-        @keyframes float {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            50% {
-                transform: translate(10px, 10px) rotate(180deg);
-            }
-            100% {
-                transform: translate(0, 0) rotate(360deg);
-            }
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px;
-                margin: 10px;
-            }
-            
-            .control-buttons {
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        /* LED Controls */
+        .leds-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .leds-section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .leds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .led-control {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .led-control:hover {
+            transform: translateY(-5px);
+        }
+
+        .led-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .led-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .switch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .switch-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            background: white;
+            color: #333;
+        }
+
+        .switch-btn.on {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .switch-btn.off {
+            background: #f44336;
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .switch-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .status-indicator {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Group Controls */
+        .group-controls {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .group-controls h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .group-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .group-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .all-on {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .all-off {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+        }
+
+        .group-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modal-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-header {
                 flex-direction: column;
+                gap: 15px;
+                text-align: center;
             }
 
-            .user-info {
+            .user-section {
                 flex-direction: column;
                 gap: 10px;
-                align-items: flex-start;
             }
 
-            .device-header {
+            .leds-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .group-buttons {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
             }
 
-            .device-actions {
-                width: 100%;
-                justify-content: space-between;
+            .device-list {
+                grid-template-columns: 1fr;
             }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="floating-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-    </div>
-    
-    <div class="container">
-        <!-- Welcome Screen -->
-        <div id="welcomeScreen" class="screen active">
-            <div class="logo"><i class="fas fa-microchip"></i></div>
-            <h1>ESP32 Controller</h1>
-            <p class="subtitle">Secure Device Management System</p>
-            
-            <button class="btn-primary" onclick="showScreen('loginScreen')">
-                <i class="fas fa-key"></i> Login
-            </button>
-            <button class="btn-outline" onclick="showScreen('registerScreen')">
-                <i class="fas fa-user-plus"></i> Create Account
-            </button>
-
-            <div class="info-box">
-                <strong><i class="fas fa-info-circle"></i> New User?</strong> Create an account to start controlling your ESP32 devices securely.
-            </div>
-        </div>
-
-        <!-- Login Screen -->
-        <div id="loginScreen" class="screen">
-            <div class="logo"><i class="fas fa-key"></i></div>
-            <h1>Login</h1>
-            
-            <div class="error-message" id="loginError"></div>
-            
-            <div class="form-group">
-                <label for="loginEmail">Email Address</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="loginEmail" placeholder="Enter your email">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="loginPassword">Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="loginPassword" placeholder="Enter your password">
-                </div>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="rememberDevice">
-                <label for="rememberDevice">Remember my device and auto-connect</label>
-            </div>
-            
-            <button class="btn-primary" onclick="login()">
-                <i class="fas fa-sign-in-alt"></i> Login to Account
-            </button>
-            <button class="btn-outline" onclick="showScreen('welcomeScreen')">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-        </div>
-
-        <!-- Register Screen -->
-        <div id="registerScreen" class="screen">
-            <div class="logo"><i class="fas fa-user-plus"></i></div>
-            <h1>Create Account</h1>
-            
-            <div class="error-message" id="registerError"></div>
-            <div class="success-message" id="registerSuccess"></div>
-            
-            <div class="form-group">
-                <label for="registerName">Full Name</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="registerName" placeholder="Enter your full name">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="registerEmail">Email Address</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="registerEmail" placeholder="Enter your email">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="registerPassword">Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="registerPassword" placeholder="Create a password (min. 6 characters)">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="registerConfirmPassword">Confirm Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="registerConfirmPassword" placeholder="Confirm your password">
-                </div>
-            </div>
-            
-            <button class="btn-primary" onclick="register()">
-                <i class="fas fa-user-plus"></i> Create Account
-            </button>
-            <button class="btn-outline" onclick="showScreen('welcomeScreen')">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-        </div>
-
-        <!-- Dashboard Screen -->
-        <div id="dashboardScreen" class="screen">
-            <div class="user-info">
-                <div>
-                    <i class="fas fa-user-circle"></i> Welcome, <span id="userName">User</span>!
-                </div>
-                <button class="btn-outline action-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </div>
-
-            <div class="tab-buttons">
-                <button class="tab-button active" onclick="showTab('controlTab')">
-                    <i class="fas fa-gamepad"></i> Control
-                </button>
-                <button class="tab-button" onclick="showTab('devicesTab')">
-                    <i class="fas fa-microchip"></i> My Devices
-                </button>
-                <button class="tab-button" onclick="showTab('profileTab')">
-                    <i class="fas fa-user"></i> Profile
-                </button>
-            </div>
-
-            <!-- Control Tab -->
-            <div id="controlTab" class="tab-content active">
-                <h2>Device Control</h2>
-                
-                <!-- Auto-connect Section -->
-                <div id="autoConnectSection" class="auto-connect-section" style="display: none;">
-                    <div class="auto-connect-header">
-                        <div class="auto-connect-title">
-                            <i class="fas fa-bolt"></i> Auto-Connect Ready
-                        </div>
-                        <button class="btn-outline action-btn" onclick="disableAutoConnect()">
-                            <i class="fas fa-times"></i> Disable
-                        </button>
+    <div class="app-container">
+        <!-- Auth Section -->
+        <div id="authSection" class="auth-container">
+            <div class="auth-form">
+                <h2>LED Control System</h2>
+                <div id="authError" class="error" style="display: none;"></div>
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
                     </div>
-                    <p>Your device <strong id="savedDeviceId"></strong> will auto-connect. Click below to connect now.</p>
-                    <button class="btn-success" onclick="connectToSavedDevice()">
-                        <i class="fas fa-plug"></i> Connect to Saved Device
-                    </button>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" id="authBtn" class="auth-btn">Login</button>
+                </form>
+                <div class="auth-toggle">
+                    <span id="authToggle">Don't have an account? Sign Up</span>
                 </div>
+            </div>
+        </div>
 
+        <!-- Main App Section -->
+        <div id="appSection" style="display: none;">
+            <!-- Header -->
+            <header class="app-header">
+                <h1 class="app-title">🚀 LED Control System</h1>
+                <div class="user-section">
+                    <span class="user-email" id="userEmail"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <!-- Device Management -->
+            <section class="device-management">
+                <div class="device-header">
+                    <h2>📱 Your Devices</h2>
+                    <button class="add-device-btn" onclick="showAddDeviceModal()">+ Add Device</button>
+                </div>
+                <div id="deviceList" class="device-list">
+                    <!-- Devices will be loaded here -->
+                </div>
+            </section>
+
+            <!-- LED Controls -->
+            <section class="leds-section">
+                <h2>💡 LED Controls - <span id="currentDeviceId">Select a Device</span></h2>
+                <div class="leds-grid" id="ledsGrid">
+                    <!-- LED controls will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Group Controls -->
+            <section class="group-controls">
+                <h3>🎛️ Group Controls</h3>
+                <div class="group-buttons">
+                    <button class="group-btn all-on" onclick="controlAllLeds(true)">All ON</button>
+                    <button class="group-btn all-off" onclick="controlAllLeds(false)">All OFF</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Add Device Modal -->
+        <div id="addDeviceModal" class="modal-overlay" style="display: none;">
+            <div class="modal">
+                <h3>➕ Add New Device</h3>
                 <div class="form-group">
-                    <label for="deviceIdInput">Device ID</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-microchip input-icon"></i>
-                        <input type="text" id="deviceIdInput" placeholder="Enter Device ID (e.g., ESP32_1234ABCD)">
-                    </div>
+                    <label for="newDeviceId">Device ID</label>
+                    <input type="text" id="newDeviceId" placeholder="Enter device ID">
                 </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="rememberThisDevice">
-                    <label for="rememberThisDevice">Remember this device for auto-connect</label>
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" onclick="hideAddDeviceModal()">Cancel</button>
+                    <button class="modal-btn primary" onclick="addDevice()">Add Device</button>
                 </div>
-                
-                <button class="btn-primary" onclick="connectToDevice()">
-                    <i class="fas fa-plug"></i> Connect to Device
-                </button>
-
-                <div id="deviceControlSection" style="display: none;">
-                    <div class="device-id-display">
-                        <i class="fas fa-microchip"></i>
-                        <span id="currentDeviceId"></span>
-                    </div>
-                    
-                    <div class="status-card">
-                        <div class="status-item">
-                            <span class="status-label">
-                                <span class="status-indicator" id="connectionIndicator"></span>
-                                Status:
-                            </span>
-                            <span class="status-value" id="connectionStatus">Connecting...</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="status-label"><i class="fas fa-lightbulb"></i> LED State:</span>
-                            <span class="status-value" id="ledStatus">Unknown</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="status-label"><i class="fas fa-network-wired"></i> IP Address:</span>
-                            <span class="status-value" id="ipAddress">-</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="status-label"><i class="fas fa-clock"></i> Last Update:</span>
-                            <span class="status-value" id="lastUpdate">-</span>
-                        </div>
-                    </div>
-
-                    <div class="power-button power-off" id="powerButton" onclick="toggleLED()">
-                        <i class="fas fa-power-off"></i>
-                    </div>
-
-                    <button class="btn-secondary" onclick="disconnectDevice()">
-                        <i class="fas fa-unplug"></i> Disconnect Device
-                    </button>
-                </div>
-            </div>
-
-            <!-- My Devices Tab -->
-            <div id="devicesTab" class="tab-content">
-                <h2>My Registered Devices</h2>
-                
-                <div class="form-group">
-                    <label for="newDeviceId">Register New Device</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-microchip input-icon"></i>
-                        <input type="text" id="newDeviceId" placeholder="Enter Device ID to register">
-                    </div>
-                    <button class="btn-primary action-btn" onclick="registerDevice()" style="margin-top: 10px;">
-                        <i class="fas fa-plus"></i> Register Device
-                    </button>
-                </div>
-
-                <div id="devicesList" class="status-card">
-                    <p>No devices registered yet.</p>
-                </div>
-            </div>
-
-            <!-- Profile Tab -->
-            <div id="profileTab" class="tab-content">
-                <h2>User Profile</h2>
-                
-                <div class="status-card">
-                    <div class="status-item">
-                        <span class="status-label"><i class="fas fa-user"></i> Name:</span>
-                        <span class="status-value" id="profileName">-</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label"><i class="fas fa-envelope"></i> Email:</span>
-                        <span class="status-value" id="profileEmail">-</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label"><i class="fas fa-id-card"></i> User ID:</span>
-                        <span class="status-value" id="profileUserId">-</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label"><i class="fas fa-microchip"></i> Registered Devices:</span>
-                        <span class="status-value" id="profileDeviceCount">0</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label"><i class="fas fa-memory"></i> Auto-Connect Device:</span>
-                        <span class="status-value" id="autoConnectDevice">None</span>
-                    </div>
-                </div>
-
-                <button class="btn-danger" onclick="deleteAccount()">
-                    <i class="fas fa-trash-alt"></i> Delete Account
-                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAnaSf9C37jPD2P3gb22hJm1OkkU2pIZyQ",
-            authDomain: "smart-home-5c100.firebaseapp.com",
-            databaseURL: "https://smart-home-5c100-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "smart-home-5c100",
-            storageBucket: "smart-home-5c100.firebasestorage.app",
-            messagingSenderId: "630239699447",
-            appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
-            measurementId: "G-V9FXP74CBZ"
-        };
+        // Firebase Configuration - Replace with your config
+            const firebaseConfig = {
+    apiKey: "AIzaSyAnaSf9C37jPD2P3gb22hJm1OkkU2pIZyQ",
+    authDomain: "smart-home-5c100.firebaseapp.com",
+    databaseURL: "https://smart-home-5c100-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "smart-home-5c100",
+    storageBucket: "smart-home-5c100.firebasestorage.app",
+    messagingSenderId: "630239699447",
+    appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
+    measurementId: "G-V9FXP74CBZ"
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
         const auth = firebase.auth();
+        const database = firebase.database();
 
-        let currentDeviceId = '';
-        let statusListener = null;
-        let lastUpdateTime = null;
+        // Global variables
         let currentUser = null;
-        let currentLEDState = false;
+        let currentDeviceId = null;
+        let devices = [];
+        let ledStates = {
+            garden: false,
+            bedroom: false,
+            kitchen: false,
+            livingroom: false,
+            garage: false
+        };
 
-        // Auth State Listener
+        // DOM Elements
+        const authSection = document.getElementById('authSection');
+        const appSection = document.getElementById('appSection');
+        const authForm = document.getElementById('authForm');
+        const authBtn = document.getElementById('authBtn');
+        const authToggle = document.getElementById('authToggle');
+        const authError = document.getElementById('authError');
+        const userEmail = document.getElementById('userEmail');
+        const deviceList = document.getElementById('deviceList');
+        const ledsGrid = document.getElementById('ledsGrid');
+        const currentDeviceIdSpan = document.getElementById('currentDeviceId');
+        const addDeviceModal = document.getElementById('addDeviceModal');
+        const newDeviceIdInput = document.getElementById('newDeviceId');
+
+        // Auth state listener
         auth.onAuthStateChanged((user) => {
+            currentUser = user;
             if (user) {
-                currentUser = user;
-                showScreen('dashboardScreen');
-                loadUserProfile();
+                showApp();
                 loadUserDevices();
-                checkAutoConnect();
             } else {
-                currentUser = null;
-                showScreen('welcomeScreen');
+                showAuth();
             }
         });
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
+        // Auth form handler
+        let isLogin = true;
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function showError(elementId, message) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.style.display = 'block';
-            setTimeout(() => element.style.display = 'none', 5000);
-        }
-
-        function showSuccess(elementId, message) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.style.display = 'block';
-            setTimeout(() => element.style.display = 'none', 5000);
-        }
-
-        // Check if auto-connect is enabled
-        function checkAutoConnect() {
-            if (!currentUser) return;
-            
-            const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
-            if (savedDevice) {
-                const deviceData = JSON.parse(savedDevice);
-                document.getElementById('savedDeviceId').textContent = deviceData.deviceId;
-                document.getElementById('autoConnectSection').style.display = 'block';
-                document.getElementById('autoConnectDevice').textContent = deviceData.deviceId;
-                
-                // Auto-connect after a short delay
-                setTimeout(() => {
-                    connectToSavedDevice();
-                }, 1000);
-            }
-        }
-
-        // Connect to saved device
-        function connectToSavedDevice() {
-            if (!currentUser) return;
-            
-            const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
-            if (savedDevice) {
-                const deviceData = JSON.parse(savedDevice);
-                currentDeviceId = deviceData.deviceId;
-                document.getElementById('currentDeviceId').textContent = currentDeviceId;
-                document.getElementById('deviceControlSection').style.display = 'block';
-                startDeviceMonitoring();
-                showNotification('Auto-connected to saved device!', 'success');
-            }
-        }
-
-        // Disable auto-connect
-        function disableAutoConnect() {
-            if (!currentUser) return;
-            
-            localStorage.removeItem(`autoConnectDevice_${currentUser.uid}`);
-            document.getElementById('autoConnectSection').style.display = 'none';
-            document.getElementById('autoConnectDevice').textContent = 'None';
-            showNotification('Auto-connect disabled', 'info');
-        }
-
-        // Authentication Functions
-        async function register() {
-            const name = document.getElementById('registerName').value.trim();
-            const email = document.getElementById('registerEmail').value.trim();
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-
-            if (!name || !email || !password) {
-                showError('registerError', 'Please fill in all fields');
-                return;
-            }
-
-            if (password.length < 6) {
-                showError('registerError', 'Password must be at least 6 characters');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showError('registerError', 'Passwords do not match');
-                return;
-            }
+            authBtn.disabled = true;
+            authBtn.textContent = 'Processing...';
 
             try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                
-                // Save user profile in database
-                await database.ref('users/' + user.uid).set({
-                    name: name,
-                    email: email,
-                    createdAt: Date.now(),
-                    devices: {}
-                });
-
-                showSuccess('registerSuccess', 'Account created successfully!');
-                setTimeout(() => showScreen('dashboardScreen'), 2000);
-            } catch (error) {
-                showError('registerError', error.message);
-            }
-        }
-
-        async function login() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const rememberDevice = document.getElementById('rememberDevice').checked;
-
-            if (!email || !password) {
-                showError('loginError', 'Please enter email and password');
-                return;
-            }
-
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                
-                // If remember device is checked, we'll handle it after successful login
-                if (rememberDevice) {
-                    // This will be handled in the auth state listener
-                }
-            } catch (error) {
-                showError('loginError', error.message);
-            }
-        }
-
-        // FIXED: Logout function
-        async function logout() {
-            try {
-                // Stop listening to device status updates
-                if (statusListener) {
-                    statusListener();
-                    statusListener = null;
-                }
-                
-                // Sign out from Firebase
-                await auth.signOut();
-                
-                // Clear any stored device data
-                if (currentUser) {
-                    localStorage.removeItem(`autoConnectDevice_${currentUser.uid}`);
-                }
-                
-                // Reset user state
-                currentUser = null;
-                currentDeviceId = '';
-                
-                // Show notification
-                showNotification('Successfully logged out', 'success');
-                
-                // Navigate to welcome screen
-                showScreen('welcomeScreen');
-            } catch (error) {
-                console.error('Logout error:', error);
-                showNotification('Error during logout: ' + error.message, 'error');
-            }
-        }
-
-        // User Profile Functions
-        async function loadUserProfile() {
-            if (!currentUser) return;
-
-            const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
-            const userData = userSnapshot.val();
-
-            if (userData) {
-                document.getElementById('userName').textContent = userData.name;
-                document.getElementById('profileName').textContent = userData.name;
-                document.getElementById('profileEmail').textContent = userData.email;
-                document.getElementById('profileUserId').textContent = currentUser.uid;
-                
-                // Count devices
-                const deviceCount = userData.devices ? Object.keys(userData.devices).length : 0;
-                document.getElementById('profileDeviceCount').textContent = deviceCount;
-                
-                // Show auto-connect device if exists
-                const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
-                if (savedDevice) {
-                    const deviceData = JSON.parse(savedDevice);
-                    document.getElementById('autoConnectDevice').textContent = deviceData.deviceId;
+                if (isLogin) {
+                    await auth.signInWithEmailAndPassword(email, password);
                 } else {
-                    document.getElementById('autoConnectDevice').textContent = 'None';
+                    await auth.createUserWithEmailAndPassword(email, password);
                 }
+                hideError();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                authBtn.disabled = false;
+                authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
             }
+        });
+
+        // Auth toggle
+        authToggle.addEventListener('click', () => {
+            isLogin = !isLogin;
+            authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
+            authToggle.textContent = isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login";
+        });
+
+        // Show/hide sections
+        function showApp() {
+            authSection.style.display = 'none';
+            appSection.style.display = 'block';
+            userEmail.textContent = currentUser.email;
         }
 
+        function showAuth() {
+            authSection.style.display = 'flex';
+            appSection.style.display = 'none';
+            authForm.reset();
+        }
+
+        // Error handling
+        function showError(message) {
+            authError.textContent = message;
+            authError.style.display = 'block';
+        }
+
+        function hideError() {
+            authError.style.display = 'none';
+        }
+
+        // Logout
+        function logout() {
+            auth.signOut();
+        }
+
+        // Device Management
         async function loadUserDevices() {
-            if (!currentUser) return;
-
-            const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
-            const userData = userSnapshot.val();
-            const devicesList = document.getElementById('devicesList');
-
-            if (userData.devices && Object.keys(userData.devices).length > 0) {
-                let html = '';
-                for (const deviceId in userData.devices) {
-                    html += `
-                        <div class="device-card">
-                            <div class="device-header">
-                                <div class="device-name">${userData.devices[deviceId].name || 'ESP32 Device'}</div>
-                                <div class="device-actions">
-                                    <button onclick="setDeviceId('${deviceId}')" class="btn-outline action-btn">
-                                        <i class="fas fa-plug"></i> Use
-                                    </button>
-                                    <button onclick="removeDevice('${deviceId}')" class="btn-danger action-btn">
-                                        <i class="fas fa-trash"></i> Remove
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="device-id">${deviceId}</div>
-                        </div>
-                    `;
+            const userDevicesRef = database.ref(`users/${currentUser.uid}/devices`);
+            
+            userDevicesRef.on('value', (snapshot) => {
+                devices = [];
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.keys(data).forEach(deviceId => {
+                        devices.push({
+                            id: deviceId,
+                            ...data[deviceId]
+                        });
+                    });
                 }
-                devicesList.innerHTML = html;
-            } else {
-                devicesList.innerHTML = '<p>No devices registered yet.</p>';
+                
+                renderDevices();
+                
+                // Auto-select first device
+                if (devices.length > 0 && !currentDeviceId) {
+                    selectDevice(devices[0].id);
+                }
+            });
+        }
+
+        function renderDevices() {
+            if (devices.length === 0) {
+                deviceList.innerHTML = '<div class="loading">No devices found. Add your first device!</div>';
+                return;
+            }
+
+            deviceList.innerHTML = devices.map(device => `
+                <div class="device-card ${currentDeviceId === device.id ? 'active' : ''}" 
+                     onclick="selectDevice('${device.id}')">
+                    <div class="device-info">
+                        <div class="device-id">${device.id}</div>
+                        <div class="device-status">
+                            <div class="status-dot ${device.online ? 'online' : 'offline'}"></div>
+                            <span class="${device.online ? 'status-online' : 'status-offline'}">
+                                ${device.online ? 'Online' : 'Offline'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="device-actions">
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeDevice('${device.id}')">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function selectDevice(deviceId) {
+            currentDeviceId = deviceId;
+            currentDeviceIdSpan.textContent = deviceId;
+            renderDevices();
+            listenToDeviceStatus();
+            listenToLEDStates();
+        }
+
+        function listenToDeviceStatus() {
+            if (!currentDeviceId) return;
+            
+            const statusRef = database.ref(`devices/${currentDeviceId}/online`);
+            statusRef.on('value', (snapshot) => {
+                const online = snapshot.val() || false;
+                
+                // Update in devices array
+                const deviceIndex = devices.findIndex(d => d.id === currentDeviceId);
+                if (deviceIndex !== -1) {
+                    devices[deviceIndex].online = online;
+                    renderDevices();
+                }
+            });
+        }
+
+        function listenToLEDStates() {
+            if (!currentDeviceId) return;
+            
+            const ledRef = database.ref(`devices/${currentDeviceId}/leds`);
+            ledRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    ledStates = data;
+                    renderLEDControls();
+                }
+            });
+        }
+
+        function renderLEDControls() {
+            const ledConfigs = [
+                { name: 'garden', label: '🌿 Garden Light', icon: '🌿' },
+                { name: 'bedroom', label: '🛏️ Bed Room Light', icon: '🛏️' },
+                { name: 'kitchen', label: '👨‍🍳 Kitchen Light', icon: '👨‍🍳' },
+                { name: 'livingroom', label: '🛋️ Living Room Light', icon: '🛋️' },
+                { name: 'garage', label: '🚗 Garage Light', icon: '🚗' }
+            ];
+
+            ledsGrid.innerHTML = ledConfigs.map(led => {
+                const isOn = ledStates[led.name];
+                return `
+                    <div class="led-control">
+                        <div class="led-icon">${led.icon}</div>
+                        <div class="led-name">${led.label}</div>
+                        <div class="switch-container">
+                            <button class="switch-btn ${isOn ? 'on' : 'off'}" 
+                                    onclick="toggleLED('${led.name}', ${!isOn})">
+                                ${isOn ? 'ON' : 'OFF'}
+                            </button>
+                            <div class="status-indicator">
+                                ${isOn ? '✓ ON' : '✗ OFF'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // LED Control Functions
+        async function toggleLED(ledName, state) {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
+            } catch (error) {
+                alert('Error controlling LED: ' + error.message);
             }
         }
 
-        async function registerDevice() {
-            const deviceId = document.getElementById('newDeviceId').value.trim();
+        async function controlAllLeds(state) {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const updates = {};
+                Object.keys(ledStates).forEach(ledName => {
+                    updates[ledName] = state;
+                });
+                await database.ref(`devices/${currentDeviceId}/leds`).update(updates);
+            } catch (error) {
+                alert('Error controlling LEDs: ' + error.message);
+            }
+        }
+
+        // Device Modal Functions
+        function showAddDeviceModal() {
+            addDeviceModal.style.display = 'flex';
+            newDeviceIdInput.value = '';
+            newDeviceIdInput.focus();
+        }
+
+        function hideAddDeviceModal() {
+            addDeviceModal.style.display = 'none';
+        }
+
+        async function addDevice() {
+            const deviceId = newDeviceIdInput.value.trim();
             
             if (!deviceId) {
-                showNotification('Please enter a Device ID', 'warning');
+                alert('Please enter a device ID');
                 return;
             }
 
-            if (!currentUser) return;
-
             try {
-                await database.ref('users/' + currentUser.uid + '/devices/' + deviceId).set({
-                    name: 'ESP32 Device',
-                    registeredAt: Date.now()
+                // Add to user's devices
+                await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).set({
+                    addedAt: Date.now(),
+                    online: false
                 });
 
-                document.getElementById('newDeviceId').value = '';
-                loadUserDevices();
-                loadUserProfile();
-                showNotification('Device registered successfully!', 'success');
-            } catch (error) {
-                showNotification('Error registering device: ' + error.message, 'error');
-            }
-        }
+                // Initialize device in database if not exists
+                const deviceRef = database.ref(`devices/${deviceId}`);
+                const snapshot = await deviceRef.once('value');
+                
+                if (!snapshot.exists()) {
+                    await deviceRef.set({
+                        online: false,
+                        leds: {
+                            garden: false,
+                            bedroom: false,
+                            kitchen: false,
+                            livingroom: false,
+                            garage: false
+                        },
+                        createdAt: Date.now()
+                    });
+                }
 
-        function setDeviceId(deviceId) {
-            document.getElementById('deviceIdInput').value = deviceId;
-            showTab('controlTab');
+                hideAddDeviceModal();
+                selectDevice(deviceId);
+            } catch (error) {
+                alert('Error adding device: ' + error.message);
+            }
         }
 
         async function removeDevice(deviceId) {
-            if (confirm('Are you sure you want to remove this device?')) {
-                await database.ref('users/' + currentUser.uid + '/devices/' + deviceId).remove();
-                loadUserDevices();
-                loadUserProfile();
-                
-                // Check if this was the auto-connect device
-                const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
-                if (savedDevice) {
-                    const deviceData = JSON.parse(savedDevice);
-                    if (deviceData.deviceId === deviceId) {
-                        disableAutoConnect();
-                    }
-                }
-                
-                showNotification('Device removed successfully', 'success');
-            }
-        }
-
-        async function deleteAccount() {
-            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                try {
-                    // Remove user data from database
-                    await database.ref('users/' + currentUser.uid).remove();
-                    // Remove from localStorage
-                    localStorage.removeItem(`autoConnectDevice_${currentUser.uid}`);
-                    // Delete user from authentication
-                    await currentUser.delete();
-                    showNotification('Account deleted successfully', 'success');
-                } catch (error) {
-                    showNotification('Error deleting account: ' + error.message, 'error');
-                }
-            }
-        }
-
-        // Device Control Functions
-        function connectToDevice() {
-            const deviceId = document.getElementById('deviceIdInput').value.trim();
-            const rememberThisDevice = document.getElementById('rememberThisDevice').checked;
-            
-            if (deviceId) {
-                currentDeviceId = deviceId;
-                document.getElementById('currentDeviceId').textContent = deviceId;
-                document.getElementById('deviceControlSection').style.display = 'block';
-                
-                // Save device for auto-connect if checkbox is checked
-                if (rememberThisDevice && currentUser) {
-                    const deviceData = {
-                        deviceId: deviceId,
-                        savedAt: Date.now()
-                    };
-                    localStorage.setItem(`autoConnectDevice_${currentUser.uid}`, JSON.stringify(deviceData));
-                    document.getElementById('autoConnectSection').style.display = 'block';
-                    document.getElementById('savedDeviceId').textContent = deviceId;
-                    document.getElementById('autoConnectDevice').textContent = deviceId;
-                    showNotification('Device saved for auto-connect!', 'success');
-                }
-                
-                startDeviceMonitoring();
-                showNotification('Connecting to device...', 'info');
-            } else {
-                showNotification('Please enter a valid Device ID', 'warning');
-            }
-        }
-
-        function disconnectDevice() {
-            if (statusListener) {
-                statusListener();
-                statusListener = null;
-            }
-            document.getElementById('deviceControlSection').style.display = 'none';
-            resetStatusDisplay();
-            showNotification('Disconnected from device', 'info');
-        }
-
-        function startDeviceMonitoring() {
-            const statusPath = 'devices/' + currentDeviceId + '/status';
-            
-            statusListener = database.ref(statusPath).on('value', (snapshot) => {
-                const data = snapshot.val();
-                updateStatusDisplay(data);
-            }, (error) => {
-                console.error('Firebase error:', error);
-                document.getElementById('connectionStatus').textContent = 'Error connecting';
-                document.getElementById('connectionStatus').className = 'status-value offline';
-                document.getElementById('connectionIndicator').className = 'status-indicator status-offline';
-            });
-        }
-
-        function updateStatusDisplay(data) {
-            const connectionStatus = document.getElementById('connectionStatus');
-            const connectionIndicator = document.getElementById('connectionIndicator');
-            const ledStatus = document.getElementById('ledStatus');
-            const ipAddress = document.getElementById('ipAddress');
-            const lastUpdate = document.getElementById('lastUpdate');
-            const powerButton = document.getElementById('powerButton');
-
-            if (data && data.online) {
-                connectionStatus.textContent = 'ONLINE';
-                connectionStatus.className = 'status-value online';
-                connectionIndicator.className = 'status-indicator status-online';
-                
-                ledStatus.textContent = data.led_status ? 'ON 🔴' : 'OFF ⚫';
-                ledStatus.className = 'status-value ' + (data.led_status ? 'online' : 'offline');
-                
-                ipAddress.textContent = data.ip_address || 'Unknown';
-                
-                lastUpdateTime = new Date();
-                lastUpdate.textContent = lastUpdateTime.toLocaleTimeString();
-                
-                // Update power button state
-                currentLEDState = data.led_status;
-                if (currentLEDState) {
-                    powerButton.className = 'power-button power-on';
-                } else {
-                    powerButton.className = 'power-button power-off';
-                }
-            } else {
-                connectionStatus.textContent = 'OFFLINE';
-                connectionStatus.className = 'status-value offline';
-                connectionIndicator.className = 'status-indicator status-offline';
-                ledStatus.textContent = 'Unknown';
-                ipAddress.textContent = '-';
-                lastUpdate.textContent = '-';
-                powerButton.className = 'power-button power-off';
-            }
-        }
-
-        function toggleLED() {
-            if (!currentDeviceId) {
-                showNotification('Please connect to a device first', 'warning');
+            if (!confirm(`Are you sure you want to remove device ${deviceId}?`)) {
                 return;
             }
 
-            const newState = !currentLEDState;
-            controlLED(newState);
-        }
-
-        function controlLED(state) {
-            if (!currentDeviceId) {
-                showNotification('Please connect to a device first', 'warning');
-                return;
-            }
-
-            const commandData = {
-                led: state,
-                timestamp: Date.now(),
-                command_by: currentUser.email
-            };
-
-            database.ref('devices/' + currentDeviceId + '/control').set(commandData)
-                .then(() => {
-                    console.log('Command sent: LED ' + (state ? 'ON' : 'OFF'));
-                    showNotification('Command sent successfully!', 'success');
-                })
-                .catch((error) => {
-                    console.error('Error sending command:', error);
-                    showNotification('Error sending command to device', 'error');
-                });
-        }
-
-        function resetStatusDisplay() {
-            document.getElementById('connectionStatus').textContent = 'Connecting...';
-            document.getElementById('connectionIndicator').className = 'status-indicator status-unknown';
-            document.getElementById('ledStatus').textContent = 'Unknown';
-            document.getElementById('ipAddress').textContent = '-';
-            document.getElementById('lastUpdate').textContent = '-';
-            document.getElementById('powerButton').className = 'power-button power-off';
-        }
-
-        function showNotification(message, type = 'success') {
-            // Remove any existing notifications
-            const existingNotifications = document.querySelectorAll('.notification');
-            existingNotifications.forEach(notification => {
-                document.body.removeChild(notification);
-            });
-
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            
-            // Set background color based on type
-            if (type === 'success') {
-                notification.style.background = 'var(--success)';
-            } else if (type === 'error') {
-                notification.style.background = 'var(--danger)';
-            } else if (type === 'warning') {
-                notification.style.background = 'var(--warning)';
-            } else if (type === 'info') {
-                notification.style.background = 'var(--info)';
-            }
-            
-            // Set icon based on type
-            let icon = 'fas fa-check-circle';
-            if (type === 'error') icon = 'fas fa-exclamation-circle';
-            if (type === 'warning') icon = 'fas fa-exclamation-triangle';
-            if (type === 'info') icon = 'fas fa-info-circle';
-            
-            notification.innerHTML = `<i class="${icon}"></i> ${message}`;
-            document.body.appendChild(notification);
-            
-            // Auto remove after 3 seconds
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
+            try {
+                await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).remove();
+                
+                // If removed device was current device, select another one
+                if (currentDeviceId === deviceId) {
+                    currentDeviceId = null;
+                    currentDeviceIdSpan.textContent = 'Select a Device';
+                    ledsGrid.innerHTML = '<div class="loading">Please select a device</div>';
                 }
-            }, 3000);
+            } catch (error) {
+                alert('Error removing device: ' + error.message);
+            }
         }
 
-        // Enter key support
-        document.getElementById('loginPassword')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') login();
+        // Close modal when clicking outside
+        addDeviceModal.addEventListener('click', (e) => {
+            if (e.target === addDeviceModal) {
+                hideAddDeviceModal();
+            }
         });
 
-        document.getElementById('registerConfirmPassword')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') register();
+        // Enter key support for modals
+        newDeviceIdInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addDevice();
+            }
         });
 
-        document.getElementById('deviceIdInput')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') connectToDevice();
-        });
-
-        // Auto-focus on first input
-        document.getElementById('loginEmail')?.focus();
+        // Initial render
+        renderLEDControls();
     </script>
 </body>
 </html>

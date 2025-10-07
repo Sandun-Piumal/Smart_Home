@@ -444,6 +444,40 @@
             border-radius: 8px;
         }
 
+        /* Door Auto Mode Control */
+        .door-auto-control {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .door-auto-control h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .door-auto-control-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .door-auto-mode-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
         /* Manual Override Indicator */
         .override-indicator {
             background: #fff3cd;
@@ -710,6 +744,70 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
+        /* RFID Section */
+        .rfid-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .rfid-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .rfid-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .rfid-control-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .rfid-access-log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .rfid-access-log h4 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .access-log {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .app-header {
@@ -743,6 +841,10 @@
                 flex-direction: column;
             }
 
+            .door-auto-control-content {
+                flex-direction: column;
+            }
+
             .sensor-grid {
                 grid-template-columns: 1fr;
             }
@@ -759,6 +861,10 @@
             .fan-header {
                 flex-direction: column;
                 text-align: center;
+            }
+
+            .rfid-controls {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -784,6 +890,38 @@
             margin: 10px 0;
             text-align: center;
             font-size: 14px;
+        }
+
+        .rfid-key-list {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .rfid-key-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .rfid-key-item:last-child {
+            border-bottom: none;
+        }
+
+        .remove-rfid-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
         }
     </style>
 </head>
@@ -860,6 +998,63 @@
                         <div class="sensor-name">Motion Sensor</div>
                         <div class="sensor-value" id="motionValue">--</div>
                         <div class="sensor-unit">Status</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RFID Door Control Section -->
+            <section class="rfid-section">
+                <h2>🔑 RFID Door Control</h2>
+                <div class="rfid-controls">
+                    <div class="rfid-control-card">
+                        <div class="led-icon">🚪</div>
+                        <div class="led-name">Main Door Control</div>
+                        <div class="switch-container">
+                            <button id="doorBtn" class="switch-btn off" onclick="toggleDoor()">CLOSE</button>
+                            <div id="doorStatus" class="status-indicator">✗ CLOSED</div>
+                        </div>
+                    </div>
+                    
+                    <div class="rfid-control-card">
+                        <div class="led-icon">🔐</div>
+                        <div class="led-name">Add RFID Key</div>
+                        <div class="switch-container">
+                            <input type="text" id="newRFIDKey" placeholder="Enter RFID UID" style="padding: 10px; border: none; border-radius: 8px; width: 100%; margin-bottom: 10px;">
+                            <button class="switch-btn" onclick="addRFIDKey()" style="background: #4CAF50; color: white;">Add Key</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Door Auto Mode Control -->
+                <div class="door-auto-control">
+                    <h3>🚪 Door Auto Mode</h3>
+                    <div class="door-auto-control-content">
+                        <span style="font-weight: bold;">Door Auto Mode:</span>
+                        <button id="doorAutoModeBtn" class="switch-btn off" onclick="toggleDoorAutoMode()">OFF</button>
+                        <span id="doorAutoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
+                            Manual Control
+                        </span>
+                    </div>
+                    <div class="door-auto-mode-info">
+                        <strong>Door Control Modes:</strong><br>
+                        <strong>Auto Mode:</strong> Door can only be opened with authorized RFID cards<br>
+                        <strong>Manual Mode:</strong> Door can be controlled manually from the app and with RFID
+                    </div>
+                </div>
+
+                <!-- Authorized RFID Keys -->
+                <div class="rfid-access-log">
+                    <h4>Authorized RFID Keys</h4>
+                    <div id="rfidKeysList" class="rfid-key-list">
+                        <!-- RFID keys will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- RFID Access Log -->
+                <div class="rfid-access-log">
+                    <h4>RFID Access Log</h4>
+                    <div id="accessLog" class="access-log">
+                        <!-- Access logs will be loaded here -->
                     </div>
                 </div>
             </section>
@@ -1017,7 +1212,9 @@
         };
         let autoMode = false;
         let securityAutoMode = false;
+        let doorAutoMode = false;
         let windowState = false;
+        let doorState = false;
         let fanState = false;
         let fanAutoMode = true;
         let temperature = 0;
@@ -1025,6 +1222,8 @@
         let ldrValue = 0;
         let motionDetected = false;
         let manualOverrideActive = false;
+        let authorizedRFIDs = [];
+        let lastRFIDAccess = "";
 
         // DOM Elements
         const authSection = document.getElementById('authSection');
@@ -1059,6 +1258,15 @@
         // Security auto mode elements
         const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
         const securityAutoModeStatus = document.getElementById('securityAutoModeStatus');
+
+        // Door elements
+        const doorBtn = document.getElementById('doorBtn');
+        const doorStatus = document.getElementById('doorStatus');
+        const doorAutoModeBtn = document.getElementById('doorAutoModeBtn');
+        const doorAutoModeStatus = document.getElementById('doorAutoModeStatus');
+        const newRFIDKeyInput = document.getElementById('newRFIDKey');
+        const rfidKeysList = document.getElementById('rfidKeysList');
+        const accessLog = document.getElementById('accessLog');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -1203,6 +1411,8 @@
             listenToLEDStates();
             listenToSensorData();
             listenToFanState();
+            listenToDoorState();
+            listenToRFIDData();
         }
 
         function listenToDeviceStatus() {
@@ -1233,6 +1443,13 @@
             securityAutoModeRef.on('value', (snapshot) => {
                 securityAutoMode = snapshot.val() || false;
                 updateSecurityAutoModeUI();
+            });
+
+            // Listen to door auto mode
+            const doorAutoModeRef = database.ref(`devices/${currentDeviceId}/doorAutoMode`);
+            doorAutoModeRef.on('value', (snapshot) => {
+                doorAutoMode = snapshot.val() || false;
+                updateDoorAutoModeUI();
             });
 
             // Listen to window state
@@ -1309,6 +1526,52 @@
             });
         }
 
+        function listenToDoorState() {
+            if (!currentDeviceId) return;
+            
+            // Listen to door state
+            const doorRef = database.ref(`devices/${currentDeviceId}/door`);
+            doorRef.on('value', (snapshot) => {
+                const state = snapshot.val();
+                if (state !== null) {
+                    doorState = state;
+                    updateDoorUI();
+                }
+            });
+        }
+
+        function listenToRFIDData() {
+            if (!currentDeviceId) return;
+            
+            // Listen to authorized RFID keys
+            const rfidRef = database.ref(`devices/${currentDeviceId}/authorizedRFIDs`);
+            rfidRef.on('value', (snapshot) => {
+                authorizedRFIDs = [];
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.keys(data).forEach(rfid => {
+                        authorizedRFIDs.push({
+                            uid: rfid,
+                            authorized: data[rfid]
+                        });
+                    });
+                }
+                
+                renderRFIDKeys();
+            });
+
+            // Listen to RFID access log
+            const accessLogRef = database.ref(`devices/${currentDeviceId}/lastRFIDAccess`);
+            accessLogRef.on('value', (snapshot) => {
+                const log = snapshot.val();
+                if (log && log !== lastRFIDAccess) {
+                    lastRFIDAccess = log;
+                    updateAccessLog(log);
+                }
+            });
+        }
+
         function listenToLEDStates() {
             if (!currentDeviceId) return;
             
@@ -1364,6 +1627,80 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // RFID Functions
+        function renderRFIDKeys() {
+            if (authorizedRFIDs.length === 0) {
+                rfidKeysList.innerHTML = '<div class="loading">No RFID keys added yet</div>';
+                return;
+            }
+
+            rfidKeysList.innerHTML = authorizedRFIDs.map(rfid => `
+                <div class="rfid-key-item">
+                    <span>${rfid.uid}</span>
+                    <button class="remove-rfid-btn" onclick="removeRFIDKey('${rfid.uid}')">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function updateAccessLog(log) {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = log;
+            accessLog.insertBefore(logEntry, accessLog.firstChild);
+            
+            // Keep only last 10 entries
+            while (accessLog.children.length > 10) {
+                accessLog.removeChild(accessLog.lastChild);
+            }
+        }
+
+        async function addRFIDKey() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            const rfidKey = newRFIDKeyInput.value.trim().toUpperCase();
+            
+            if (!rfidKey) {
+                alert('Please enter an RFID UID');
+                return;
+            }
+
+            // Validate RFID format (should be in hex format with spaces)
+            if (!rfidKey.match(/^([0-9A-F]{2}\s?){4,10}$/)) {
+                alert('Please enter a valid RFID UID in hex format (e.g., "12 AB 34 CD")');
+                return;
+            }
+
+            try {
+                await database.ref(`devices/${currentDeviceId}/authorizedRFIDs/${rfidKey}`).set(true);
+                newRFIDKeyInput.value = '';
+                alert('RFID key added successfully!');
+            } catch (error) {
+                console.error('Error adding RFID key:', error);
+                alert('Error adding RFID key: ' + error.message);
+            }
+        }
+
+        async function removeRFIDKey(rfidUID) {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to remove RFID key ${rfidUID}?`)) {
+                return;
+            }
+
+            try {
+                await database.ref(`devices/${currentDeviceId}/authorizedRFIDs/${rfidUID}`).remove();
+            } catch (error) {
+                console.error('Error removing RFID key:', error);
+                alert('Error removing RFID key: ' + error.message);
+            }
         }
 
         // LED Control Functions
@@ -1449,6 +1786,21 @@
             }
         }
 
+        async function toggleDoorAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const newDoorAutoMode = !doorAutoMode;
+                await database.ref(`devices/${currentDeviceId}/doorAutoMode`).set(newDoorAutoMode);
+            } catch (error) {
+                console.error('Error toggling door auto mode:', error);
+                alert('Error toggling door auto mode: ' + error.message);
+            }
+        }
+
         function updateAutoModeUI() {
             const autoModeBtn = document.getElementById('autoModeBtn');
             const autoModeStatus = document.getElementById('autoModeStatus');
@@ -1489,6 +1841,60 @@
             
             // Re-render LED controls to update disabled states
             renderLEDControls();
+        }
+
+        function updateDoorAutoModeUI() {
+            if (doorAutoMode) {
+                doorAutoModeBtn.textContent = 'ON';
+                doorAutoModeBtn.className = 'switch-btn on';
+                doorAutoModeStatus.textContent = 'RFID Only Mode';
+                doorAutoModeStatus.style.background = '#e8f5e8';
+                doorAutoModeStatus.style.color = '#2e7d32';
+                doorBtn.disabled = true;
+                doorBtn.title = 'Switch to manual mode to control door from app';
+            } else {
+                doorAutoModeBtn.textContent = 'OFF';
+                doorAutoModeBtn.className = 'switch-btn off';
+                doorAutoModeStatus.textContent = 'Manual Control';
+                doorAutoModeStatus.style.background = '#ffebee';
+                doorAutoModeStatus.style.color = '#c62828';
+                doorBtn.disabled = false;
+                doorBtn.title = 'Click to toggle door';
+            }
+        }
+
+        // Door control functions
+        async function toggleDoor() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            // Check if door is in auto mode
+            if (doorAutoMode) {
+                alert('Door is in RFID only mode. Switch to manual mode to control door from app.');
+                return;
+            }
+
+            try {
+                const newDoorState = !doorState;
+                await database.ref(`devices/${currentDeviceId}/door`).set(newDoorState);
+            } catch (error) {
+                console.error('Error toggling door:', error);
+                alert('Error toggling door: ' + error.message);
+            }
+        }
+
+        function updateDoorUI() {
+            if (doorState) {
+                doorBtn.textContent = 'OPEN';
+                doorBtn.className = 'switch-btn on';
+                doorStatus.textContent = '✓ OPEN';
+            } else {
+                doorBtn.textContent = 'CLOSE';
+                doorBtn.className = 'switch-btn off';
+                doorStatus.textContent = '✗ CLOSED';
+            }
         }
 
         // Window control functions - ALWAYS ALLOW MANUAL CONTROL
@@ -1726,6 +2132,13 @@
         newDeviceIdInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 addDevice();
+            }
+        });
+
+        // Enter key support for RFID input
+        newRFIDKeyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addRFIDKey();
             }
         });
 

@@ -908,6 +908,137 @@
             }
         }
 
+
+        // JavaScript functions අතරට අමතරව ජනෙල් සහ ස්වයංක්රීය පාලන functions එක් කරන්න
+// Global variables අතරට අමතරව:
+let autoMode = false;
+let windowState = false;
+
+// Device status listening function යාවත්කාලීන කරන්න
+function listenToDeviceStatus() {
+    if (!currentDeviceId) return;
+    
+    const statusRef = database.ref(devices/${currentDeviceId}/online);
+    statusRef.on('value', (snapshot) => {
+        const online = snapshot.val() || false;
+        
+        // Update in devices array
+        const deviceIndex = devices.findIndex(d => d.id === currentDeviceId);
+        if (deviceIndex !== -1) {
+            devices[deviceIndex].online = online;
+            renderDevices();
+        }
+    });
+
+    // Listen to auto mode
+    const autoModeRef = database.ref(devices/${currentDeviceId}/autoMode);
+    autoModeRef.on('value', (snapshot) => {
+        autoMode = snapshot.val() || false;
+        updateAutoModeUI();
+    });
+
+    // Listen to window state
+    const windowRef = database.ref(devices/${currentDeviceId}/window);
+    windowRef.on('value', (snapshot) => {
+        windowState = snapshot.val() || false;
+        updateWindowUI();
+    });
+
+    // Listen to LDR value for monitoring
+    const ldrRef = database.ref(devices/${currentDeviceId}/ldrValue);
+    ldrRef.on('value', (snapshot) => {
+        const ldrValue = snapshot.val();
+        if (ldrValue !== null) {
+            // Update LDR display if you want to show it
+            console.log("LDR Value:", ldrValue);
+        }
+    });
+}
+
+// Auto Mode functions
+async function toggleAutoMode() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    try {
+        const newAutoMode = !autoMode;
+        await database.ref(devices/${currentDeviceId}/autoMode).set(newAutoMode);
+    } catch (error) {
+        console.error('Error toggling auto mode:', error);
+        alert('Error toggling auto mode: ' + error.message);
+    }
+}
+
+function updateAutoModeUI() {
+    const autoModeBtn = document.getElementById('autoModeBtn');
+    const autoModeStatus = document.getElementById('autoModeStatus');
+    
+    if (autoMode) {
+        autoModeBtn.textContent = 'ON';
+        autoModeBtn.className = 'switch-btn on';
+        autoModeStatus.textContent = 'Auto Mode Active';
+        autoModeStatus.style.background = '#e8f5e8';
+        autoModeStatus.style.color = '#2e7d32';
+    } else {
+        autoModeBtn.textContent = 'OFF';
+        autoModeBtn.className = 'switch-btn off';
+        autoModeStatus.textContent = 'Manual Control';
+        autoModeStatus.style.background = '#ffebee';
+        autoModeStatus.style.color = '#c62828';
+    }
+}
+
+// Window control functions
+async function toggleWindow() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    if (autoMode) {
+        alert('Auto mode is enabled. Disable auto mode to control window manually.');
+        return;
+    }
+
+    try {
+        const newWindowState = !windowState;
+        await database.ref(devices/${currentDeviceId}/window).set(newWindowState);
+    } catch (error) {
+        console.error('Error toggling window:', error);
+        alert('Error toggling window: ' + error.message);
+    }
+}
+
+function updateWindowUI() {
+    const windowBtn = document.getElementById('windowBtn');
+    const windowStatus = document.getElementById('windowStatus');
+    
+    if (windowState) {
+        windowBtn.textContent = 'OPEN';
+        windowBtn.className = 'switch-btn on';
+        windowStatus.textContent = '✓ OPEN';
+    } else {
+        windowBtn.textContent = 'CLOSE';
+        windowBtn.className = 'switch-btn off';
+        windowStatus.textContent = '✗ CLOSED';
+    }
+}
+
+// Initialize UI when device is selected
+function selectDevice(deviceId) {
+    currentDeviceId = deviceId;
+    currentDeviceIdSpan.textContent = deviceId;
+    renderDevices();
+    listenToDeviceStatus();
+    listenToLEDStates();
+    
+    // Initialize UI states
+    updateAutoModeUI();
+    updateWindowUI();
+}
+
         // Device Modal Functions
         function showAddDeviceModal() {
             addDeviceModal.style.display = 'flex';

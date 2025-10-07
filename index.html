@@ -605,6 +605,7 @@
     messagingSenderId: "630239699447",
     appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
     measurementId: "G-V9FXP74CBZ"
+};
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -684,13 +685,16 @@
         function showApp() {
             authSection.style.display = 'none';
             appSection.style.display = 'block';
-            userEmail.textContent = currentUser.email;
+            if (currentUser && currentUser.email) {
+                userEmail.textContent = currentUser.email;
+            }
         }
 
         function showAuth() {
             authSection.style.display = 'flex';
             appSection.style.display = 'none';
             authForm.reset();
+            hideError();
         }
 
         // Error handling
@@ -709,7 +713,9 @@
         }
 
         // Device Management
-        async function loadUserDevices() {
+        function loadUserDevices() {
+            if (!currentUser) return;
+            
             const userDevicesRef = database.ref(`users/${currentUser.uid}/devices`);
             
             userDevicesRef.on('value', (snapshot) => {
@@ -730,7 +736,13 @@
                 // Auto-select first device
                 if (devices.length > 0 && !currentDeviceId) {
                     selectDevice(devices[0].id);
+                } else if (devices.length === 0) {
+                    currentDeviceId = null;
+                    currentDeviceIdSpan.textContent = 'Select a Device';
+                    renderLEDControls();
                 }
+            }, (error) => {
+                console.error('Error loading devices:', error);
             });
         }
 
@@ -761,7 +773,7 @@
             `).join('');
         }
 
-        async function selectDevice(deviceId) {
+        function selectDevice(deviceId) {
             currentDeviceId = deviceId;
             currentDeviceIdSpan.textContent = deviceId;
             renderDevices();
@@ -782,6 +794,8 @@
                     devices[deviceIndex].online = online;
                     renderDevices();
                 }
+            }, (error) => {
+                console.error('Error listening to device status:', error);
             });
         }
 
@@ -792,9 +806,11 @@
             ledRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    ledStates = data;
+                    ledStates = { ...ledStates, ...data };
                     renderLEDControls();
                 }
+            }, (error) => {
+                console.error('Error listening to LED states:', error);
             });
         }
 
@@ -807,8 +823,13 @@
                 { name: 'garage', label: '🚗 Garage Light', icon: '🚗' }
             ];
 
+            if (!currentDeviceId) {
+                ledsGrid.innerHTML = '<div class="loading">Please select a device to control LEDs</div>';
+                return;
+            }
+
             ledsGrid.innerHTML = ledConfigs.map(led => {
-                const isOn = ledStates[led.name];
+                const isOn = ledStates[led.name] || false;
                 return `
                     <div class="led-control">
                         <div class="led-icon">${led.icon}</div>
@@ -837,6 +858,7 @@
             try {
                 await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
             } catch (error) {
+                console.error('Error controlling LED:', error);
                 alert('Error controlling LED: ' + error.message);
             }
         }
@@ -849,11 +871,13 @@
 
             try {
                 const updates = {};
-                Object.keys(ledStates).forEach(ledName => {
+                const ledNames = ['garden', 'bedroom', 'kitchen', 'livingroom', 'garage'];
+                ledNames.forEach(ledName => {
                     updates[ledName] = state;
                 });
                 await database.ref(`devices/${currentDeviceId}/leds`).update(updates);
             } catch (error) {
+                console.error('Error controlling LEDs:', error);
                 alert('Error controlling LEDs: ' + error.message);
             }
         }
@@ -874,6 +898,11 @@
             
             if (!deviceId) {
                 alert('Please enter a device ID');
+                return;
+            }
+
+            if (!currentUser) {
+                alert('Please login first');
                 return;
             }
 
@@ -905,12 +934,18 @@
                 hideAddDeviceModal();
                 selectDevice(deviceId);
             } catch (error) {
+                console.error('Error adding device:', error);
                 alert('Error adding device: ' + error.message);
             }
         }
 
         async function removeDevice(deviceId) {
             if (!confirm(`Are you sure you want to remove device ${deviceId}?`)) {
+                return;
+            }
+
+            if (!currentUser) {
+                alert('Please login first');
                 return;
             }
 
@@ -921,9 +956,21 @@
                 if (currentDeviceId === deviceId) {
                     currentDeviceId = null;
                     currentDeviceIdSpan.textContent = 'Select a Device';
-                    ledsGrid.innerHTML = '<div class="loading">Please select a device</div>';
+                    renderLEDControls();
+                    
+                    // Select another device if available
+                    if (devices.length > 1) {
+                        const otherDevice = devices.find(d => d.id !== deviceId);
+                        if (otherDevice) {
+                            selectDevice(otherDevice.id);
+                        }
+                    }
                 }
+                
+                // Reload devices to update the list
+                loadUserDevices();
             } catch (error) {
+                console.error('Error removing device:', error);
                 alert('Error removing device: ' + error.message);
             }
         }
@@ -942,8 +989,10 @@
             }
         });
 
-        // Initial render
-        renderLEDControls();
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderLEDControls();
+        });
     </script>
 </body>
 </html>

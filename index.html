@@ -146,6 +146,19 @@
             box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
         }
 
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            padding: 0;
+        }
+
         button {
             width: 100%;
             padding: 15px;
@@ -503,25 +516,27 @@
             box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .device-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .device-selector select {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid var(--light-gray);
+        .auto-connect-section {
+            background: #f8f9fa;
             border-radius: 10px;
-            font-size: 16px;
-            background: var(--light);
-            transition: var(--transition);
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid var(--info);
         }
 
-        .device-selector select:focus {
-            outline: none;
-            border-color: var(--primary);
+        .auto-connect-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .auto-connect-title {
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         @media (max-width: 600px) {
@@ -549,10 +564,6 @@
             .device-actions {
                 width: 100%;
                 justify-content: space-between;
-            }
-
-            .device-selector {
-                flex-direction: column;
             }
         }
     </style>
@@ -598,6 +609,11 @@
                     <i class="fas fa-lock input-icon"></i>
                     <input type="password" id="loginPassword" placeholder="Enter your password">
                 </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="rememberDevice">
+                <label for="rememberDevice">Remember my device and auto-connect</label>
             </div>
             
             <button class="btn-primary" onclick="login()">
@@ -683,20 +699,33 @@
             <div id="controlTab" class="tab-content active">
                 <h2>Device Control</h2>
                 
-                <div class="form-group">
-                    <label for="deviceIdInput">Select or Enter Device ID</label>
-                    <div class="device-selector">
-                        <select id="deviceIdSelect">
-                            <option value="">-- Select a saved device --</option>
-                        </select>
-                        <button class="btn-outline action-btn" onclick="clearDeviceSelection()">
-                            <i class="fas fa-times"></i> Clear
+                <!-- Auto-connect Section -->
+                <div id="autoConnectSection" class="auto-connect-section" style="display: none;">
+                    <div class="auto-connect-header">
+                        <div class="auto-connect-title">
+                            <i class="fas fa-bolt"></i> Auto-Connect Ready
+                        </div>
+                        <button class="btn-outline action-btn" onclick="disableAutoConnect()">
+                            <i class="fas fa-times"></i> Disable
                         </button>
                     </div>
+                    <p>Your device <strong id="savedDeviceId"></strong> will auto-connect. Click below to connect now.</p>
+                    <button class="btn-success" onclick="connectToSavedDevice()">
+                        <i class="fas fa-plug"></i> Connect to Saved Device
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="deviceIdInput">Device ID</label>
                     <div class="input-with-icon">
                         <i class="fas fa-microchip input-icon"></i>
-                        <input type="text" id="deviceIdInput" placeholder="Or enter Device ID (e.g., ESP32_1234ABCD)">
+                        <input type="text" id="deviceIdInput" placeholder="Enter Device ID (e.g., ESP32_1234ABCD)">
                     </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberThisDevice">
+                    <label for="rememberThisDevice">Remember this device for auto-connect</label>
                 </div>
                 
                 <button class="btn-primary" onclick="connectToDevice()">
@@ -782,6 +811,10 @@
                         <span class="status-label"><i class="fas fa-microchip"></i> Registered Devices:</span>
                         <span class="status-value" id="profileDeviceCount">0</span>
                     </div>
+                    <div class="status-item">
+                        <span class="status-label"><i class="fas fa-memory"></i> Auto-Connect Device:</span>
+                        <span class="status-value" id="autoConnectDevice">None</span>
+                    </div>
                 </div>
 
                 <button class="btn-danger" onclick="deleteAccount()">
@@ -822,18 +855,7 @@
                 showScreen('dashboardScreen');
                 loadUserProfile();
                 loadUserDevices();
-                loadSavedDeviceIds();
-                
-                // Check if there's a previously connected device and auto-connect
-                const lastDeviceId = localStorage.getItem(`lastDeviceId_${user.uid}`);
-                if (lastDeviceId) {
-                    document.getElementById('deviceIdInput').value = lastDeviceId;
-                    document.getElementById('deviceIdSelect').value = lastDeviceId;
-                    // Auto-connect after a short delay
-                    setTimeout(() => {
-                        connectToDevice();
-                    }, 500);
-                }
+                checkAutoConnect();
             } else {
                 currentUser = null;
                 showScreen('welcomeScreen');
@@ -870,6 +892,49 @@
             element.textContent = message;
             element.style.display = 'block';
             setTimeout(() => element.style.display = 'none', 5000);
+        }
+
+        // Check if auto-connect is enabled
+        function checkAutoConnect() {
+            if (!currentUser) return;
+            
+            const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
+            if (savedDevice) {
+                const deviceData = JSON.parse(savedDevice);
+                document.getElementById('savedDeviceId').textContent = deviceData.deviceId;
+                document.getElementById('autoConnectSection').style.display = 'block';
+                document.getElementById('autoConnectDevice').textContent = deviceData.deviceId;
+                
+                // Auto-connect after a short delay
+                setTimeout(() => {
+                    connectToSavedDevice();
+                }, 1000);
+            }
+        }
+
+        // Connect to saved device
+        function connectToSavedDevice() {
+            if (!currentUser) return;
+            
+            const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
+            if (savedDevice) {
+                const deviceData = JSON.parse(savedDevice);
+                currentDeviceId = deviceData.deviceId;
+                document.getElementById('currentDeviceId').textContent = currentDeviceId;
+                document.getElementById('deviceControlSection').style.display = 'block';
+                startDeviceMonitoring();
+                showNotification('Auto-connected to saved device!', 'success');
+            }
+        }
+
+        // Disable auto-connect
+        function disableAutoConnect() {
+            if (!currentUser) return;
+            
+            localStorage.removeItem(`autoConnectDevice_${currentUser.uid}`);
+            document.getElementById('autoConnectSection').style.display = 'none';
+            document.getElementById('autoConnectDevice').textContent = 'None';
+            showNotification('Auto-connect disabled', 'info');
         }
 
         // Authentication Functions
@@ -916,6 +981,7 @@
         async function login() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
+            const rememberDevice = document.getElementById('rememberDevice').checked;
 
             if (!email || !password) {
                 showError('loginError', 'Please enter email and password');
@@ -924,7 +990,11 @@
 
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-                // Auth state listener will handle the screen change
+                
+                // If remember device is checked, we'll handle it after successful login
+                if (rememberDevice) {
+                    // This will be handled in the auth state listener
+                }
             } catch (error) {
                 showError('loginError', error.message);
             }
@@ -953,6 +1023,15 @@
                 // Count devices
                 const deviceCount = userData.devices ? Object.keys(userData.devices).length : 0;
                 document.getElementById('profileDeviceCount').textContent = deviceCount;
+                
+                // Show auto-connect device if exists
+                const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
+                if (savedDevice) {
+                    const deviceData = JSON.parse(savedDevice);
+                    document.getElementById('autoConnectDevice').textContent = deviceData.deviceId;
+                } else {
+                    document.getElementById('autoConnectDevice').textContent = 'None';
+                }
             }
         }
 
@@ -989,59 +1068,6 @@
             }
         }
 
-        // Load saved device IDs for the dropdown
-        function loadSavedDeviceIds() {
-            if (!currentUser) return;
-            
-            const deviceSelect = document.getElementById('deviceIdSelect');
-            const savedDevices = JSON.parse(localStorage.getItem(`savedDevices_${currentUser.uid}`) || '[]');
-            
-            // Clear existing options except the first one
-            while (deviceSelect.options.length > 1) {
-                deviceSelect.remove(1);
-            }
-            
-            // Add saved devices to the dropdown
-            savedDevices.forEach(deviceId => {
-                const option = document.createElement('option');
-                option.value = deviceId;
-                option.textContent = deviceId;
-                deviceSelect.appendChild(option);
-            });
-        }
-
-        // Save device ID to localStorage
-        function saveDeviceId(deviceId) {
-            if (!currentUser) return;
-            
-            const key = `savedDevices_${currentUser.uid}`;
-            let savedDevices = JSON.parse(localStorage.getItem(key) || '[]');
-            
-            // Add device ID if it doesn't exist
-            if (!savedDevices.includes(deviceId)) {
-                savedDevices.push(deviceId);
-                localStorage.setItem(key, JSON.stringify(savedDevices));
-                loadSavedDeviceIds(); // Refresh the dropdown
-            }
-            
-            // Save as last used device
-            localStorage.setItem(`lastDeviceId_${currentUser.uid}`, deviceId);
-        }
-
-        // Clear device selection
-        function clearDeviceSelection() {
-            document.getElementById('deviceIdSelect').value = '';
-            document.getElementById('deviceIdInput').value = '';
-            localStorage.removeItem(`lastDeviceId_${currentUser.uid}`);
-        }
-
-        // Handle device selection from dropdown
-        document.getElementById('deviceIdSelect').addEventListener('change', function() {
-            if (this.value) {
-                document.getElementById('deviceIdInput').value = this.value;
-            }
-        });
-
         async function registerDevice() {
             const deviceId = document.getElementById('newDeviceId').value.trim();
             
@@ -1061,7 +1087,6 @@
                 document.getElementById('newDeviceId').value = '';
                 loadUserDevices();
                 loadUserProfile();
-                saveDeviceId(deviceId); // Save to localStorage
                 showNotification('Device registered successfully!', 'success');
             } catch (error) {
                 showNotification('Error registering device: ' + error.message, 'error');
@@ -1070,12 +1095,7 @@
 
         function setDeviceId(deviceId) {
             document.getElementById('deviceIdInput').value = deviceId;
-            document.getElementById('deviceIdSelect').value = deviceId;
             showTab('controlTab');
-            // Auto-connect after a short delay
-            setTimeout(() => {
-                connectToDevice();
-            }, 300);
         }
 
         async function removeDevice(deviceId) {
@@ -1084,12 +1104,14 @@
                 loadUserDevices();
                 loadUserProfile();
                 
-                // Remove from localStorage
-                const key = `savedDevices_${currentUser.uid}`;
-                let savedDevices = JSON.parse(localStorage.getItem(key) || '[]');
-                savedDevices = savedDevices.filter(id => id !== deviceId);
-                localStorage.setItem(key, JSON.stringify(savedDevices));
-                loadSavedDeviceIds();
+                // Check if this was the auto-connect device
+                const savedDevice = localStorage.getItem(`autoConnectDevice_${currentUser.uid}`);
+                if (savedDevice) {
+                    const deviceData = JSON.parse(savedDevice);
+                    if (deviceData.deviceId === deviceId) {
+                        disableAutoConnect();
+                    }
+                }
                 
                 showNotification('Device removed successfully', 'success');
             }
@@ -1101,8 +1123,7 @@
                     // Remove user data from database
                     await database.ref('users/' + currentUser.uid).remove();
                     // Remove from localStorage
-                    localStorage.removeItem(`savedDevices_${currentUser.uid}`);
-                    localStorage.removeItem(`lastDeviceId_${currentUser.uid}`);
+                    localStorage.removeItem(`autoConnectDevice_${currentUser.uid}`);
                     // Delete user from authentication
                     await currentUser.delete();
                     showNotification('Account deleted successfully', 'success');
@@ -1114,22 +1135,31 @@
 
         // Device Control Functions
         function connectToDevice() {
-            let deviceId = document.getElementById('deviceIdInput').value.trim();
-            
-            // If no device ID in input, check the dropdown
-            if (!deviceId) {
-                deviceId = document.getElementById('deviceIdSelect').value;
-            }
+            const deviceId = document.getElementById('deviceIdInput').value.trim();
+            const rememberThisDevice = document.getElementById('rememberThisDevice').checked;
             
             if (deviceId) {
                 currentDeviceId = deviceId;
                 document.getElementById('currentDeviceId').textContent = deviceId;
                 document.getElementById('deviceControlSection').style.display = 'block';
-                saveDeviceId(deviceId); // Save to localStorage
+                
+                // Save device for auto-connect if checkbox is checked
+                if (rememberThisDevice && currentUser) {
+                    const deviceData = {
+                        deviceId: deviceId,
+                        savedAt: Date.now()
+                    };
+                    localStorage.setItem(`autoConnectDevice_${currentUser.uid}`, JSON.stringify(deviceData));
+                    document.getElementById('autoConnectSection').style.display = 'block';
+                    document.getElementById('savedDeviceId').textContent = deviceId;
+                    document.getElementById('autoConnectDevice').textContent = deviceId;
+                    showNotification('Device saved for auto-connect!', 'success');
+                }
+                
                 startDeviceMonitoring();
                 showNotification('Connecting to device...', 'info');
             } else {
-                showNotification('Please enter or select a valid Device ID', 'warning');
+                showNotification('Please enter a valid Device ID', 'warning');
             }
         }
 

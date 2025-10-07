@@ -3,441 +3,835 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartHome Glass | Firebase Dashboard</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/auth.css">
-    
+    <title>ESP32 Controller - Secure Login</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .form-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .control-buttons button {
+            flex: 1;
+            padding: 20px;
+            font-size: 18px;
+        }
+
+        .device-id-display {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .status-value {
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+
+        .online {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .offline {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .user-info {
+            background: #e7f3ff;
+            color: #004085;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #667eea;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            display: none;
+        }
+
+        .heartbeat {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
- <!-- Login Modal - Fix button IDs -->
-<div class="modal" id="loginModal">
-    <div class="modal-content">
-        <div class="auth-header">
-            <div class="logo-icon">💎</div>
-            <h2 class="modal-title">Welcome Back</h2>
-            <p class="modal-subtitle">Sign in to your SmartHome Dashboard</p>
-        </div>
-        
-        <form id="loginForm">
-            <div class="form-group">
-                <input type="email" id="loginEmail" class="form-input" placeholder="Email Address" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="loginPassword" class="form-input" placeholder="Password" required>
-            </div>
-            <div class="form-options">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="rememberMe">
-                    <span class="checkmark"></span>
-                    Remember me
-                </label>
-                <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
-            </div>
-            <div class="action-grid">
-                <button type="submit" class="btn btn-primary" id="loginBtn">
-                    <span class="btn-spinner" style="display: none;">⏳</span>
-                    <span class="btn-text">Sign In</span>
-                </button>
-            </div>
-        </form>
-        
-        <div class="auth-footer">
-            <p>Don't have an account? <a href="#" class="auth-link" onclick="showRegister()">Create Account</a></p>
-        </div>
-    </div>
-</div>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="screen active">
+            <div class="logo">🔐</div>
+            <h1>ESP32 Controller</h1>
+            <p class="subtitle">Secure Device Management System</p>
+            
+            <button class="btn-primary" onclick="showScreen('loginScreen')">
+                🔑 Login
+            </button>
+            <button class="btn-outline" onclick="showScreen('registerScreen')">
+                📝 Create Account
+            </button>
 
-<!-- Register Modal - Fix button IDs -->
-<div class="modal" id="registerModal">
-    <div class="modal-content">
-        <div class="auth-header">
-            <div class="logo-icon">💎</div>
-            <h2 class="modal-title">Create Account</h2>
-            <p class="modal-subtitle">Join SmartHome Dashboard today</p>
+            <div class="info-box">
+                <strong>New User?</strong> Create an account to start controlling your ESP32 devices securely.
+            </div>
         </div>
-        
-        <form id="registerForm">
-            <div class="form-group">
-                <input type="text" id="registerName" class="form-input" placeholder="Full Name" required>
-            </div>
-            <div class="form-group">
-                <input type="email" id="registerEmail" class="form-input" placeholder="Email Address" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="registerPassword" class="form-input" placeholder="Password (min. 6 characters)" minlength="6" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Confirm Password" required>
-            </div>
-            <div class="form-options">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="acceptTerms" required>
-                    <span class="checkmark"></span>
-                    I agree to the <a href="#" class="link">Terms & Conditions</a>
-                </label>
-            </div>
-            <div class="action-grid">
-                <button type="submit" class="btn btn-success" id="registerBtn">
-                    <span class="btn-spinner" style="display: none;">⏳</span>
-                    <span class="btn-text">Create Account</span>
-                </button>
-            </div>
-        </form>
-        
-        <div class="auth-footer">
-            <p>Already have an account? <a href="#" class="auth-link" onclick="showLogin()">Sign In</a></p>
-        </div>
-    </div>
-</div>
 
-<!-- Forgot Password Modal - Fix button IDs -->
-<div class="modal" id="forgotPasswordModal">
-    <div class="modal-content">
-        <div class="auth-header">
-            <div class="logo-icon">🔒</div>
-            <h2 class="modal-title">Reset Password</h2>
-            <p class="modal-subtitle">Enter your email to receive reset instructions</p>
-        </div>
-        
-        <form id="forgotPasswordForm">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen">
+            <div class="logo">🔑</div>
+            <h1>Login</h1>
+            
+            <div class="error-message" id="loginError"></div>
+            
             <div class="form-group">
-                <input type="email" id="resetEmail" class="form-input" placeholder="Email Address" required>
-            </div>
-            <div class="action-grid">
-                <button type="submit" class="btn btn-primary" id="resetBtn">
-                    <span class="btn-spinner" style="display: none;">⏳</span>
-                    <span class="btn-text">Send Reset Link</span>
-                </button>
-            </div>
-        </form>
-        
-        <div class="auth-footer">
-            <p>Remember your password? <a href="#" class="auth-link" onclick="showLogin()">Back to Sign In</a></p>
-        </div>
-    </div>
-</div>
-
-    <!-- Floating Particles -->
-    <div class="particles" id="particles"></div>
-
-    <!-- Alert Container -->
-    <div class="alert-container" id="alertContainer"></div>
-
-    <!-- Main Dashboard -->
-    <div class="dashboard" id="dashboard" style="display: none;">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-top">
-                <div class="logo">
-                    <div class="logo-icon">💎</div>
-                    <div class="logo-text">
-                        <h1>SmartHome Glass</h1>
-                        <p>Firebase Connected Dashboard</p>
-                    </div>
-                </div>
-                <div class="status-indicators">
-                    <div class="status-badge">
-                        <span class="loading" id="connectionIndicator"></span>
-                        <span id="connectionStatus">Connected</span>
-                    </div>
-                    <div class="time-display" id="currentTime">--:--:--</div>
-                    <div class="user-menu">
-                        <span class="user-greeting">Hello, <span id="userName">User</span></span>
-                        <button class="btn btn-outline logout-btn" onclick="AuthManager.logout()">
-                            <span>🚪</span>
-                            Logout
-                        </button>
-                    </div>
-                </div>
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email">
             </div>
             
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card glass-primary">
-                    <div class="stat-header">
-                        <div class="stat-icon">🌡️</div>
-                        <div class="stat-trend trend-up" id="tempTrend">+2.1°</div>
-                    </div>
-                    <div class="stat-value" id="temperature">0°C</div>
-                    <div class="stat-label">Current Temperature</div>
-                </div>
-                <div class="stat-card glass-success">
-                    <div class="stat-header">
-                        <div class="stat-icon">💧</div>
-                        <div class="stat-trend" id="humidityTrend">Stable</div>
-                    </div>
-                    <div class="stat-value" id="humidity">0%</div>
-                    <div class="stat-label">Humidity Level</div>
-                </div>
-                <div class="stat-card glass-warning">
-                    <div class="stat-header">
-                        <div class="stat-icon">💡</div>
-                        <div class="stat-trend" id="lightTrend">Normal</div>
-                    </div>
-                    <div class="stat-value" id="ldrValue">0</div>
-                    <div class="stat-label">Light Sensor</div>
-                </div>
-                <div class="stat-card glass-danger">
-                    <div class="stat-header">
-                        <div class="stat-icon">🚨</div>
-                        <div class="stat-trend trend-down" id="motionTrend">Safe</div>
-                    </div>
-                    <div class="stat-value" id="motionStatus">Inactive</div>
-                    <div class="stat-label">Motion Detection</div>
-                </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
             </div>
+            
+            <button class="btn-primary" onclick="login()">Login to Account</button>
+            <button class="btn-outline" onclick="showScreen('welcomeScreen')">← Back</button>
         </div>
 
-        <!-- Main Controls Grid -->
-        <div class="controls-grid">
-            <!-- Climate Control -->
-            <div class="control-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="title-icon">🌬️</div>
-                        Climate Control
-                    </div>
-                    <button class="mode-toggle" onclick="DeviceManager.toggleFanMode()">
-                        <span id="fanModeIcon">🔄</span>
-                        <span id="fanModeText">Auto</span>
-                    </button>
-                </div>
-                
-                <div class="device-grid">
-                    <div class="device-control">
-                        <div class="device-info">
-                            <div class="device-icon">❄️</div>
-                            <div class="device-details">
-                                <h4>Cooling System</h4>
-                                <p>Temperature controlled fan</p>
-                            </div>
-                        </div>
-                        <div class="device-status">
-                            <div class="status-indicator" id="fanStatusIndicator"></div>
-                            <label class="switch" id="fanSwitch">
-                                <input type="checkbox" id="light7" onchange="DeviceManager.toggleLight(7)">
-                                <span class="slider fan"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-grid">
-                    <button class="btn btn-success" onclick="DeviceManager.toggleLight(7)">
-                        <span>⚡</span>
-                        <span id="fanActionText">Start Fan</span>
-                    </button>
-                    <button class="btn btn-outline" onclick="AlertManager.show('Climate settings updated', 'info')">
-                        <span>⚙️</span>
-                        Settings
-                    </button>
-                </div>
+        <!-- Register Screen -->
+        <div id="registerScreen" class="screen">
+            <div class="logo">📝</div>
+            <h1>Create Account</h1>
+            
+            <div class="error-message" id="registerError"></div>
+            <div class="success-message" id="registerSuccess"></div>
+            
+            <div class="form-group">
+                <label for="registerName">Full Name</label>
+                <input type="text" id="registerName" placeholder="Enter your full name">
             </div>
-
-            <!-- Security System -->
-            <div class="control-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="title-icon">🚨</div>
-                        Security System
-                    </div>
-                    <button class="mode-toggle" onclick="DeviceManager.toggleSecurityMode()">
-                        <span id="securityModeIcon">🔄</span>
-                        <span id="securityModeText">Auto</span>
-                    </button>
-                </div>
-                
-                <div class="device-grid">
-                    <div class="device-control">
-                        <div class="device-info">
-                            <div class="device-icon">💡</div>
-                            <div class="device-details">
-                                <h4>Security Lighting</h4>
-                                <p>Motion-activated protection</p>
-                            </div>
-                        </div>
-                        <div class="device-status">
-                            <div class="status-indicator" id="securityStatusIndicator"></div>
-                            <label class="switch" id="securitySwitch">
-                                <input type="checkbox" id="light6" onchange="DeviceManager.toggleLight(6)">
-                                <span class="slider security"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-grid">
-                    <button class="btn btn-danger" onclick="DeviceManager.toggleLight(6)">
-                        <span>🚨</span>
-                        Toggle Security
-                    </button>
-                    <button class="btn btn-outline" onclick="DeviceManager.armSystem()">
-                        <span>🛡️</span>
-                        Arm System
-                    </button>
-                </div>
+            
+            <div class="form-group">
+                <label for="registerEmail">Email Address</label>
+                <input type="email" id="registerEmail" placeholder="Enter your email">
             </div>
-
-            <!-- Smart Lighting -->
-            <div class="control-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="title-icon">💡</div>
-                        Smart Lighting
-                    </div>
-                    <button class="mode-toggle" onclick="DeviceManager.toggleGardenMode()">
-                        <span id="gardenModeIcon">🔄</span>
-                        <span id="gardenModeText">Auto</span>
-                    </button>
-                </div>
-                
-                <div class="device-grid">
-                    <div class="device-control">
-                        <div class="device-info">
-                            <div class="device-icon">🌿</div>
-                            <div class="device-details">
-                                <h4>Garden Lights</h4>
-                                <p>Auto light based on darkness</p>
-                            </div>
-                        </div>
-                        <div class="device-status">
-                            <div class="status-indicator" id="gardenStatusIndicator"></div>
-                            <label class="switch" id="gardenSwitch">
-                                <input type="checkbox" id="light1" onchange="DeviceManager.toggleLight(1)">
-                                <span class="slider garden"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="device-control">
-                        <div class="device-info">
-                            <div class="device-icon">🛏️</div>
-                            <div class="device-details">
-                                <h4>Bedroom Light</h4>
-                                <p>Sleeping area lighting</p>
-                            </div>
-                        </div>
-                        <div class="device-status">
-                            <div class="status-indicator" id="bedroomStatusIndicator"></div>
-                            <label class="switch">
-                                <input type="checkbox" id="light2" onchange="DeviceManager.toggleLight(2)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="device-control">
-                        <div class="device-info">
-                            <div class="device-icon">🍳</div>
-                            <div class="device-details">
-                                <h4>Kitchen Light</h4>
-                                <p>Cooking area lighting</p>
-                            </div>
-                        </div>
-                        <div class="device-status">
-                            <div class="status-indicator" id="kitchenStatusIndicator"></div>
-                            <label class="switch">
-                                <input type="checkbox" id="light3" onchange="DeviceManager.toggleLight(3)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-grid">
-                    <button class="btn btn-primary" onclick="DeviceManager.allLightsOn()">
-                        <span>💡</span>
-                        All Lights On
-                    </button>
-                    <button class="btn btn-outline" onclick="DeviceManager.allLightsOff()">
-                        <span>🌙</span>
-                        All Lights Off
-                    </button>
-                </div>
+            
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Create a password (min. 6 characters)">
             </div>
-
-            <!-- Additional Controls -->
-            <div class="control-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="title-icon">🏠</div>
-                        Room Controls
-                    </div>
-                    <div class="mode-toggle" style="background: transparent; cursor: default; border: none;">
-                        <span>Manual Control</span>
-                    </div>
-                </div>
-                
-                <div class="device-grid">
-                    <div class="device-control">
-                        <div class="device-info">
-                            <div class="device-icon">🛋️</div>
-                            <div class="device-details">
-                                <h4>Living Room</h4>
-                                <p>Entertainment area lighting</p>
-                            </div>
-                        </div>
-                        <div class="device-status">
-                            <div class="status-indicator" id="livingroomStatusIndicator"></div>
-                            <label class="switch">
-                                <input type="checkbox" id="light4" onchange="DeviceManager.toggleLight(4)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="device-control">
-                        <div class="device-info">
-                            <div class="device-icon">🚗</div>
-                            <div class="device-details">
-                                <h4>Garage Light</h4>
-                                <p>Parking area lighting</p>
-                            </div>
-                        </div>
-                        <div class="device-status">
-                            <div class="status-indicator" id="garageStatusIndicator"></div>
-                            <label class="switch">
-                                <input type="checkbox" id="light5" onchange="DeviceManager.toggleLight(5)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-grid">
-                    <button class="btn btn-outline" onclick="DeviceManager.createScene('evening')">
-                        <span>🌅</span>
-                        Evening Scene
-                    </button>
-                    <button class="btn btn-outline" onclick="DeviceManager.createScene('night')">
-                        <span>🌃</span>
-                        Night Scene
-                    </button>
-                </div>
+            
+            <div class="form-group">
+                <label for="registerConfirmPassword">Confirm Password</label>
+                <input type="password" id="registerConfirmPassword" placeholder="Confirm your password">
             </div>
+            
+            <button class="btn-primary" onclick="register()">Create Account</button>
+            <button class="btn-outline" onclick="showScreen('welcomeScreen')">← Back</button>
         </div>
 
-        <div class="footer">
-            <div class="footer-content">
-                <div>SmartHome Glass Dashboard v3.0</div>
-                <div>Connected to: <span id="firebaseStatus">Firebase</span></div>
-                <div>© 2024 SmartHome Systems | Glass Edition</div>
+        <!-- Dashboard Screen -->
+        <div id="dashboardScreen" class="screen">
+            <div class="user-info">
+                👤 Welcome, <span id="userName">User</span>! 
+                <button class="btn-outline" onclick="logout()" style="float: right; padding: 5px 10px; font-size: 12px;">
+                    Logout
+                </button>
+            </div>
+
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showTab('controlTab')">🎮 Control</button>
+                <button class="tab-button" onclick="showTab('devicesTab')">📱 My Devices</button>
+                <button class="tab-button" onclick="showTab('profileTab')">👤 Profile</button>
+            </div>
+
+            <!-- Control Tab -->
+            <div id="controlTab" class="tab-content active">
+                <h2>Device Control</h2>
+                
+                <div class="form-group">
+                    <label for="deviceIdInput">Device ID</label>
+                    <input type="text" id="deviceIdInput" placeholder="Enter Device ID (e.g., ESP32_1234ABCD)">
+                </div>
+                
+                <button class="btn-primary" onclick="connectToDevice()">🔗 Connect to Device</button>
+
+                <div id="deviceControlSection" style="display: none;">
+                    <div class="device-id-display" id="currentDeviceId"></div>
+                    
+                    <div class="status-card">
+                        <div class="status-item">
+                            <span class="status-label">Status:</span>
+                            <span class="status-value" id="connectionStatus">Connecting...</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">LED State:</span>
+                            <span class="status-value" id="ledStatus">Unknown</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">IP Address:</span>
+                            <span class="status-value" id="ipAddress">-</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Last Update:</span>
+                            <span class="status-value" id="lastUpdate">-</span>
+                        </div>
+                    </div>
+
+                    <div class="control-buttons">
+                        <button class="btn-success" onclick="controlLED(true)">
+                            💡 TURN ON
+                        </button>
+                        <button class="btn-danger" onclick="controlLED(false)">
+                            ⚫ TURN OFF
+                        </button>
+                    </div>
+
+                    <button class="btn-secondary" onclick="disconnectDevice()">
+                        🔌 Disconnect Device
+                    </button>
+                </div>
+            </div>
+
+            <!-- My Devices Tab -->
+            <div id="devicesTab" class="tab-content">
+                <h2>My Registered Devices</h2>
+                
+                <div class="form-group">
+                    <label for="newDeviceId">Register New Device</label>
+                    <input type="text" id="newDeviceId" placeholder="Enter Device ID to register">
+                    <button class="btn-primary" onclick="registerDevice()" style="margin-top: 10px;">
+                        ➕ Register Device
+                    </button>
+                </div>
+
+                <div id="devicesList" class="status-card">
+                    <p>No devices registered yet.</p>
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profileTab" class="tab-content">
+                <h2>User Profile</h2>
+                
+                <div class="status-card">
+                    <div class="status-item">
+                        <span class="status-label">Name:</span>
+                        <span class="status-value" id="profileName">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Email:</span>
+                        <span class="status-value" id="profileEmail">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">User ID:</span>
+                        <span class="status-value" id="profileUserId">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Registered Devices:</span>
+                        <span class="status-value" id="profileDeviceCount">0</span>
+                    </div>
+                </div>
+
+                <button class="btn-danger" onclick="deleteAccount()">
+                    🗑️ Delete Account
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Files -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/devices.js"></script>
-    <script src="js/app.js"></script>
+    <script>
+        // Firebase Configuration - REPLACE WITH YOUR CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            authDomain: "your-project-id.firebaseapp.com",
+            databaseURL: "https://your-project-id-default-rtdb.firebaseio.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "123456789000",
+            appId: "1:123456789000:web:aaaaaaaaaaaaaaaaaaaaaa"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        let currentDeviceId = '';
+        let statusListener = null;
+        let lastUpdateTime = null;
+        let currentUser = null;
+
+        // Auth State Listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                showScreen('dashboardScreen');
+                loadUserProfile();
+                loadUserDevices();
+            } else {
+                currentUser = null;
+                showScreen('welcomeScreen');
+            }
+        });
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => element.style.display = 'none', 5000);
+        }
+
+        function showSuccess(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => element.style.display = 'none', 5000);
+        }
+
+        // Authentication Functions
+        async function register() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+            if (!name || !email || !password) {
+                showError('registerError', 'Please fill in all fields');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('registerError', 'Password must be at least 6 characters');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('registerError', 'Passwords do not match');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Save user profile in database
+                await database.ref('users/' + user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: Date.now(),
+                    devices: {}
+                });
+
+                showSuccess('registerSuccess', 'Account created successfully!');
+                setTimeout(() => showScreen('dashboardScreen'), 2000);
+            } catch (error) {
+                showError('registerError', error.message);
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showError('loginError', 'Please enter email and password');
+                return;
+            }
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                // Auth state listener will handle the screen change
+            } catch (error) {
+                showError('loginError', error.message);
+            }
+        }
+
+        async function logout() {
+            if (statusListener) {
+                statusListener();
+            }
+            await auth.signOut();
+        }
+
+        // User Profile Functions
+        async function loadUserProfile() {
+            if (!currentUser) return;
+
+            const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
+            const userData = userSnapshot.val();
+
+            if (userData) {
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('profileName').textContent = userData.name;
+                document.getElementById('profileEmail').textContent = userData.email;
+                document.getElementById('profileUserId').textContent = currentUser.uid;
+                
+                // Count devices
+                const deviceCount = userData.devices ? Object.keys(userData.devices).length : 0;
+                document.getElementById('profileDeviceCount').textContent = deviceCount;
+            }
+        }
+
+        async function loadUserDevices() {
+            if (!currentUser) return;
+
+            const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
+            const userData = userSnapshot.val();
+            const devicesList = document.getElementById('devicesList');
+
+            if (userData.devices && Object.keys(userData.devices).length > 0) {
+                let html = '';
+                for (const deviceId in userData.devices) {
+                    html += `
+                        <div class="status-item">
+                            <span class="status-label">${userData.devices[deviceId].name || deviceId}</span>
+                            <span class="status-value">
+                                <button onclick="setDeviceId('${deviceId}')" class="btn-outline" style="padding: 5px 10px; font-size: 12px;">
+                                    Use
+                                </button>
+                                <button onclick="removeDevice('${deviceId}')" class="btn-danger" style="padding: 5px 10px; font-size: 12px;">
+                                    Remove
+                                </button>
+                            </span>
+                        </div>
+                    `;
+                }
+                devicesList.innerHTML = html;
+            } else {
+                devicesList.innerHTML = '<p>No devices registered yet.</p>';
+            }
+        }
+
+        async function registerDevice() {
+            const deviceId = document.getElementById('newDeviceId').value.trim();
+            
+            if (!deviceId) {
+                alert('Please enter a Device ID');
+                return;
+            }
+
+            if (!currentUser) return;
+
+            try {
+                await database.ref('users/' + currentUser.uid + '/devices/' + deviceId).set({
+                    name: 'ESP32 Device',
+                    registeredAt: Date.now()
+                });
+
+                document.getElementById('newDeviceId').value = '';
+                loadUserDevices();
+                loadUserProfile();
+                alert('Device registered successfully!');
+            } catch (error) {
+                alert('Error registering device: ' + error.message);
+            }
+        }
+
+        function setDeviceId(deviceId) {
+            document.getElementById('deviceIdInput').value = deviceId;
+            showTab('controlTab');
+        }
+
+        async function removeDevice(deviceId) {
+            if (confirm('Are you sure you want to remove this device?')) {
+                await database.ref('users/' + currentUser.uid + '/devices/' + deviceId).remove();
+                loadUserDevices();
+                loadUserProfile();
+            }
+        }
+
+        async function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                try {
+                    // Remove user data from database
+                    await database.ref('users/' + currentUser.uid).remove();
+                    // Delete user from authentication
+                    await currentUser.delete();
+                    alert('Account deleted successfully');
+                } catch (error) {
+                    alert('Error deleting account: ' + error.message);
+                }
+            }
+        }
+
+        // Device Control Functions (same as before)
+        function connectToDevice() {
+            const deviceId = document.getElementById('deviceIdInput').value.trim();
+            if (deviceId) {
+                currentDeviceId = deviceId;
+                document.getElementById('currentDeviceId').textContent = deviceId;
+                document.getElementById('deviceControlSection').style.display = 'block';
+                startDeviceMonitoring();
+            } else {
+                alert('Please enter a valid Device ID');
+            }
+        }
+
+        function disconnectDevice() {
+            if (statusListener) {
+                statusListener();
+                statusListener = null;
+            }
+            document.getElementById('deviceControlSection').style.display = 'none';
+            resetStatusDisplay();
+        }
+
+        function startDeviceMonitoring() {
+            const statusPath = 'devices/' + currentDeviceId + '/status';
+            
+            statusListener = database.ref(statusPath).on('value', (snapshot) => {
+                const data = snapshot.val();
+                updateStatusDisplay(data);
+            }, (error) => {
+                console.error('Firebase error:', error);
+                document.getElementById('connectionStatus').textContent = 'Error connecting';
+                document.getElementById('connectionStatus').className = 'status-value offline';
+            });
+        }
+
+        function updateStatusDisplay(data) {
+            const connectionStatus = document.getElementById('connectionStatus');
+            const ledStatus = document.getElementById('ledStatus');
+            const ipAddress = document.getElementById('ipAddress');
+            const lastUpdate = document.getElementById('lastUpdate');
+
+            if (data && data.online) {
+                connectionStatus.textContent = 'ONLINE';
+                connectionStatus.className = 'status-value online';
+                
+                ledStatus.textContent = data.led_status ? 'ON 🔴' : 'OFF ⚫';
+                ledStatus.className = 'status-value ' + (data.led_status ? 'online' : 'offline');
+                
+                ipAddress.textContent = data.ip_address || 'Unknown';
+                
+                lastUpdateTime = new Date();
+                lastUpdate.textContent = lastUpdateTime.toLocaleTimeString();
+            } else {
+                connectionStatus.textContent = 'OFFLINE';
+                connectionStatus.className = 'status-value offline';
+                ledStatus.textContent = 'Unknown';
+                ipAddress.textContent = '-';
+                lastUpdate.textContent = '-';
+            }
+        }
+
+        function controlLED(state) {
+            if (!currentDeviceId) {
+                alert('Please connect to a device first');
+                return;
+            }
+
+            const commandData = {
+                led: state,
+                timestamp: Date.now(),
+                command_by: currentUser.email
+            };
+
+            database.ref('devices/' + currentDeviceId + '/control').set(commandData)
+                .then(() => {
+                    console.log('Command sent: LED ' + (state ? 'ON' : 'OFF'));
+                    showNotification('Command sent successfully!');
+                })
+                .catch((error) => {
+                    console.error('Error sending command:', error);
+                    alert('Error sending command to device');
+                });
+        }
+
+        function resetStatusDisplay() {
+            document.getElementById('connectionStatus').textContent = 'Connecting...';
+            document.getElementById('ledStatus').textContent = 'Unknown';
+            document.getElementById('ipAddress').textContent = '-';
+            document.getElementById('lastUpdate').textContent = '-';
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: bold;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        // Enter key support
+        document.getElementById('loginPassword')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+
+        document.getElementById('registerConfirmPassword')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') register();
+        });
+
+        document.getElementById('deviceIdInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') connectToDevice();
+        });
+
+        // Auto-focus on first input
+        document.getElementById('loginEmail')?.focus();
+    </script>
 </body>
 </html>

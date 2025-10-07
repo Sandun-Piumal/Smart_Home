@@ -503,6 +503,27 @@
             box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
         }
 
+        .device-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .device-selector select {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 16px;
+            background: var(--light);
+            transition: var(--transition);
+        }
+
+        .device-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 25px;
@@ -528,6 +549,10 @@
             .device-actions {
                 width: 100%;
                 justify-content: space-between;
+            }
+
+            .device-selector {
+                flex-direction: column;
             }
         }
     </style>
@@ -659,10 +684,18 @@
                 <h2>Device Control</h2>
                 
                 <div class="form-group">
-                    <label for="deviceIdInput">Device ID</label>
+                    <label for="deviceIdInput">Select or Enter Device ID</label>
+                    <div class="device-selector">
+                        <select id="deviceIdSelect">
+                            <option value="">-- Select a saved device --</option>
+                        </select>
+                        <button class="btn-outline action-btn" onclick="clearDeviceSelection()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
                     <div class="input-with-icon">
                         <i class="fas fa-microchip input-icon"></i>
-                        <input type="text" id="deviceIdInput" placeholder="Enter Device ID (e.g., ESP32_1234ABCD)">
+                        <input type="text" id="deviceIdInput" placeholder="Or enter Device ID (e.g., ESP32_1234ABCD)">
                     </div>
                 </div>
                 
@@ -789,6 +822,18 @@
                 showScreen('dashboardScreen');
                 loadUserProfile();
                 loadUserDevices();
+                loadSavedDeviceIds();
+                
+                // Check if there's a previously connected device and auto-connect
+                const lastDeviceId = localStorage.getItem(`lastDeviceId_${user.uid}`);
+                if (lastDeviceId) {
+                    document.getElementById('deviceIdInput').value = lastDeviceId;
+                    document.getElementById('deviceIdSelect').value = lastDeviceId;
+                    // Auto-connect after a short delay
+                    setTimeout(() => {
+                        connectToDevice();
+                    }, 500);
+                }
             } else {
                 currentUser = null;
                 showScreen('welcomeScreen');
@@ -944,6 +989,59 @@
             }
         }
 
+        // Load saved device IDs for the dropdown
+        function loadSavedDeviceIds() {
+            if (!currentUser) return;
+            
+            const deviceSelect = document.getElementById('deviceIdSelect');
+            const savedDevices = JSON.parse(localStorage.getItem(`savedDevices_${currentUser.uid}`) || '[]');
+            
+            // Clear existing options except the first one
+            while (deviceSelect.options.length > 1) {
+                deviceSelect.remove(1);
+            }
+            
+            // Add saved devices to the dropdown
+            savedDevices.forEach(deviceId => {
+                const option = document.createElement('option');
+                option.value = deviceId;
+                option.textContent = deviceId;
+                deviceSelect.appendChild(option);
+            });
+        }
+
+        // Save device ID to localStorage
+        function saveDeviceId(deviceId) {
+            if (!currentUser) return;
+            
+            const key = `savedDevices_${currentUser.uid}`;
+            let savedDevices = JSON.parse(localStorage.getItem(key) || '[]');
+            
+            // Add device ID if it doesn't exist
+            if (!savedDevices.includes(deviceId)) {
+                savedDevices.push(deviceId);
+                localStorage.setItem(key, JSON.stringify(savedDevices));
+                loadSavedDeviceIds(); // Refresh the dropdown
+            }
+            
+            // Save as last used device
+            localStorage.setItem(`lastDeviceId_${currentUser.uid}`, deviceId);
+        }
+
+        // Clear device selection
+        function clearDeviceSelection() {
+            document.getElementById('deviceIdSelect').value = '';
+            document.getElementById('deviceIdInput').value = '';
+            localStorage.removeItem(`lastDeviceId_${currentUser.uid}`);
+        }
+
+        // Handle device selection from dropdown
+        document.getElementById('deviceIdSelect').addEventListener('change', function() {
+            if (this.value) {
+                document.getElementById('deviceIdInput').value = this.value;
+            }
+        });
+
         async function registerDevice() {
             const deviceId = document.getElementById('newDeviceId').value.trim();
             
@@ -963,6 +1061,7 @@
                 document.getElementById('newDeviceId').value = '';
                 loadUserDevices();
                 loadUserProfile();
+                saveDeviceId(deviceId); // Save to localStorage
                 showNotification('Device registered successfully!', 'success');
             } catch (error) {
                 showNotification('Error registering device: ' + error.message, 'error');
@@ -971,7 +1070,12 @@
 
         function setDeviceId(deviceId) {
             document.getElementById('deviceIdInput').value = deviceId;
+            document.getElementById('deviceIdSelect').value = deviceId;
             showTab('controlTab');
+            // Auto-connect after a short delay
+            setTimeout(() => {
+                connectToDevice();
+            }, 300);
         }
 
         async function removeDevice(deviceId) {
@@ -979,6 +1083,14 @@
                 await database.ref('users/' + currentUser.uid + '/devices/' + deviceId).remove();
                 loadUserDevices();
                 loadUserProfile();
+                
+                // Remove from localStorage
+                const key = `savedDevices_${currentUser.uid}`;
+                let savedDevices = JSON.parse(localStorage.getItem(key) || '[]');
+                savedDevices = savedDevices.filter(id => id !== deviceId);
+                localStorage.setItem(key, JSON.stringify(savedDevices));
+                loadSavedDeviceIds();
+                
                 showNotification('Device removed successfully', 'success');
             }
         }
@@ -988,6 +1100,9 @@
                 try {
                     // Remove user data from database
                     await database.ref('users/' + currentUser.uid).remove();
+                    // Remove from localStorage
+                    localStorage.removeItem(`savedDevices_${currentUser.uid}`);
+                    localStorage.removeItem(`lastDeviceId_${currentUser.uid}`);
                     // Delete user from authentication
                     await currentUser.delete();
                     showNotification('Account deleted successfully', 'success');
@@ -999,15 +1114,22 @@
 
         // Device Control Functions
         function connectToDevice() {
-            const deviceId = document.getElementById('deviceIdInput').value.trim();
+            let deviceId = document.getElementById('deviceIdInput').value.trim();
+            
+            // If no device ID in input, check the dropdown
+            if (!deviceId) {
+                deviceId = document.getElementById('deviceIdSelect').value;
+            }
+            
             if (deviceId) {
                 currentDeviceId = deviceId;
                 document.getElementById('currentDeviceId').textContent = deviceId;
                 document.getElementById('deviceControlSection').style.display = 'block';
+                saveDeviceId(deviceId); // Save to localStorage
                 startDeviceMonitoring();
                 showNotification('Connecting to device...', 'info');
             } else {
-                showNotification('Please enter a valid Device ID', 'warning');
+                showNotification('Please enter or select a valid Device ID', 'warning');
             }
         }
 

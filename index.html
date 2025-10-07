@@ -410,6 +410,40 @@
             border-radius: 8px;
         }
 
+        /* Security Auto Mode Control */
+        .security-auto-control {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .security-auto-control h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .security-auto-control-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .security-auto-mode-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
         /* Manual Override Indicator */
         .override-indicator {
             background: #fff3cd;
@@ -666,6 +700,16 @@
             opacity: 0.8;
         }
 
+        /* Motion Sensor Card */
+        .motion-sensor-card {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .app-header {
@@ -692,6 +736,10 @@
             }
 
             .auto-control-content {
+                flex-direction: column;
+            }
+
+            .security-auto-control-content {
                 flex-direction: column;
             }
 
@@ -807,6 +855,12 @@
                         <div class="sensor-value" id="ldrValue">--</div>
                         <div class="sensor-unit">LUX</div>
                     </div>
+                    <div class="motion-sensor-card">
+                        <div class="sensor-icon">🚶</div>
+                        <div class="sensor-name">Motion Sensor</div>
+                        <div class="sensor-value" id="motionValue">--</div>
+                        <div class="sensor-unit">Status</div>
+                    </div>
                 </div>
             </section>
 
@@ -862,6 +916,23 @@
                         <strong>Auto Mode Explanation:</strong><br>
                         කළුවර වැටුනහම ජනෙල් ස්වයංක්රීයව වසා garden light ON කරයි.<br>
                         එළිය වැටුනහම ජනෙල් විවෘත කර garden light OFF කරයි.
+                    </div>
+                </div>
+
+                <!-- Security Auto Mode Control -->
+                <div class="security-auto-control">
+                    <h3>🚨 Security Light Auto Mode</h3>
+                    <div class="security-auto-control-content">
+                        <span style="font-weight: bold;">Security Auto Mode:</span>
+                        <button id="securityAutoModeBtn" class="switch-btn off" onclick="toggleSecurityAutoMode()">OFF</button>
+                        <span id="securityAutoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
+                            Manual Control
+                        </span>
+                    </div>
+                    <div class="security-auto-mode-info">
+                        <strong>Security Auto Mode Explanation:</strong><br>
+                        කළුවර වැටී ඇති අවස්ථාවේදී චලනය හඳුනාගත් විට security light ස්වයංක්රීයව ON කරයි.<br>
+                        චලනය නැතිව මිනිත්තු 30ක් ගතවුන පසු security light ස්වයංක්රීයව OFF කරයි.
                     </div>
                 </div>
 
@@ -941,15 +1012,18 @@
             bedroom: false,
             kitchen: false,
             livingroom: false,
-            garage: false
+            garage: false,
+            security: false
         };
         let autoMode = false;
+        let securityAutoMode = false;
         let windowState = false;
         let fanState = false;
         let fanAutoMode = true;
         let temperature = 0;
         let humidity = 0;
         let ldrValue = 0;
+        let motionDetected = false;
         let manualOverrideActive = false;
 
         // DOM Elements
@@ -971,6 +1045,7 @@
         const temperatureValue = document.getElementById('temperatureValue');
         const humidityValue = document.getElementById('humidityValue');
         const ldrValueSpan = document.getElementById('ldrValue');
+        const motionValue = document.getElementById('motionValue');
         
         // Fan elements
         const fanBtn = document.getElementById('fanBtn');
@@ -980,6 +1055,10 @@
         const fanAutoStatus = document.getElementById('fanAutoStatus');
         const fanAutoModeBtn = document.getElementById('fanAutoModeBtn');
         const fanManualModeBtn = document.getElementById('fanManualModeBtn');
+
+        // Security auto mode elements
+        const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
+        const securityAutoModeStatus = document.getElementById('securityAutoModeStatus');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -1149,6 +1228,13 @@
                 updateAutoModeUI();
             });
 
+            // Listen to security auto mode
+            const securityAutoModeRef = database.ref(`devices/${currentDeviceId}/securityAutoMode`);
+            securityAutoModeRef.on('value', (snapshot) => {
+                securityAutoMode = snapshot.val() || false;
+                updateSecurityAutoModeUI();
+            });
+
             // Listen to window state
             const windowRef = database.ref(`devices/${currentDeviceId}/window`);
             windowRef.on('value', (snapshot) => {
@@ -1195,6 +1281,17 @@
                     ldrValueSpan.textContent = ldr;
                 }
             });
+
+            // Listen to motion sensor
+            const motionRef = database.ref(`devices/${currentDeviceId}/sensors/motion`);
+            motionRef.on('value', (snapshot) => {
+                const motion = snapshot.val();
+                if (motion !== null) {
+                    motionDetected = motion;
+                    motionValue.textContent = motion ? 'Motion Detected' : 'No Motion';
+                    motionValue.style.color = motion ? '#4CAF50' : '#f44336';
+                }
+            });
         }
 
         function listenToFanState() {
@@ -1233,7 +1330,8 @@
                 { name: 'bedroom', label: '🛏️ Bed Room Light', icon: '🛏️' },
                 { name: 'kitchen', label: '👨‍🍳 Kitchen Light', icon: '👨‍🍳' },
                 { name: 'livingroom', label: '🛋️ Living Room Light', icon: '🛋️' },
-                { name: 'garage', label: '🚗 Garage Light', icon: '🚗' }
+                { name: 'garage', label: '🚗 Garage Light', icon: '🚗' },
+                { name: 'security', label: '🚨 Security Light', icon: '🚨' }
             ];
 
             if (!currentDeviceId) {
@@ -1243,7 +1341,9 @@
 
             ledsGrid.innerHTML = ledConfigs.map(led => {
                 const isOn = ledStates[led.name] || false;
-                const isDisabled = (led.name === 'garden' && autoMode);
+                const isGardenDisabled = (led.name === 'garden' && autoMode);
+                const isSecurityDisabled = (led.name === 'security' && securityAutoMode);
+                const isDisabled = isGardenDisabled || isSecurityDisabled;
                 
                 return `
                     <div class="led-control">
@@ -1279,6 +1379,12 @@
                 return;
             }
 
+            // Check if security LED is in auto mode
+            if (ledName === 'security' && securityAutoMode) {
+                alert('Security light is in auto mode. Disable security auto mode to control manually.');
+                return;
+            }
+
             try {
                 await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
             } catch (error) {
@@ -1293,15 +1399,15 @@
                 return;
             }
 
-            if (autoMode) {
-                if (!confirm('Auto mode is enabled. This will turn all lights manually. Continue?')) {
+            if (autoMode || securityAutoMode) {
+                if (!confirm('Auto mode is enabled for some lights. This will turn all lights manually. Continue?')) {
                     return;
                 }
             }
 
             try {
                 const updates = {};
-                const ledNames = ['garden', 'bedroom', 'kitchen', 'livingroom', 'garage'];
+                const ledNames = ['garden', 'bedroom', 'kitchen', 'livingroom', 'garage', 'security'];
                 ledNames.forEach(ledName => {
                     updates[ledName] = state;
                 });
@@ -1328,6 +1434,21 @@
             }
         }
 
+        async function toggleSecurityAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const newSecurityAutoMode = !securityAutoMode;
+                await database.ref(`devices/${currentDeviceId}/securityAutoMode`).set(newSecurityAutoMode);
+            } catch (error) {
+                console.error('Error toggling security auto mode:', error);
+                alert('Error toggling security auto mode: ' + error.message);
+            }
+        }
+
         function updateAutoModeUI() {
             const autoModeBtn = document.getElementById('autoModeBtn');
             const autoModeStatus = document.getElementById('autoModeStatus');
@@ -1349,6 +1470,25 @@
             // Re-render LED controls to update disabled states
             renderLEDControls();
             updateWindowUI();
+        }
+
+        function updateSecurityAutoModeUI() {
+            if (securityAutoMode) {
+                securityAutoModeBtn.textContent = 'ON';
+                securityAutoModeBtn.className = 'switch-btn on';
+                securityAutoModeStatus.textContent = 'Security Auto Mode Active';
+                securityAutoModeStatus.style.background = '#e8f5e8';
+                securityAutoModeStatus.style.color = '#2e7d32';
+            } else {
+                securityAutoModeBtn.textContent = 'OFF';
+                securityAutoModeBtn.className = 'switch-btn off';
+                securityAutoModeStatus.textContent = 'Manual Control';
+                securityAutoModeStatus.style.background = '#ffebee';
+                securityAutoModeStatus.style.color = '#c62828';
+            }
+            
+            // Re-render LED controls to update disabled states
+            renderLEDControls();
         }
 
         // Window control functions - ALWAYS ALLOW MANUAL CONTROL

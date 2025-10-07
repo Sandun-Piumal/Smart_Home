@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LED Control System</title>
+    <title>Smart Home Control System</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -362,12 +362,52 @@
             transform: scale(1.05);
         }
 
+        .switch-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .status-indicator {
             font-size: 14px;
             font-weight: bold;
             padding: 5px 15px;
             border-radius: 20px;
             background: rgba(255,255,255,0.2);
+        }
+
+        /* Auto Mode Control */
+        .auto-control {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .auto-control h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .auto-control-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .auto-mode-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
         }
 
         /* Group Controls */
@@ -496,6 +536,10 @@
             .device-list {
                 grid-template-columns: 1fr;
             }
+
+            .auto-control-content {
+                flex-direction: column;
+            }
         }
 
         .loading {
@@ -512,6 +556,15 @@
             margin: 10px 0;
             text-align: center;
         }
+
+        .sensor-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -519,7 +572,7 @@
         <!-- Auth Section -->
         <div id="authSection" class="auth-container">
             <div class="auth-form">
-                <h2>LED Control System</h2>
+                <h2>Smart Home Control</h2>
                 <div id="authError" class="error" style="display: none;"></div>
                 <form id="authForm">
                     <div class="form-group">
@@ -542,7 +595,7 @@
         <div id="appSection" style="display: none;">
             <!-- Header -->
             <header class="app-header">
-                <h1 class="app-title">🚀 LED Control System</h1>
+                <h1 class="app-title">🏠 Smart Home Control</h1>
                 <div class="user-section">
                     <span class="user-email" id="userEmail"></span>
                     <button class="logout-btn" onclick="logout()">Logout</button>
@@ -561,38 +614,46 @@
             </section>
 
             <!-- LED Controls -->
-          <section class="leds-section">
-    <h2>💡 LED Controls - <span id="currentDeviceId">Select a Device</span></h2>
-    
-    <!-- Auto Mode Control -->
-    <div class="auto-control" style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
-        <h3>🤖 Auto Mode Control</h3>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px;">
-            <span style="font-weight: bold;">Auto Mode:</span>
-            <button id="autoModeBtn" class="switch-btn off" onclick="toggleAutoMode()">OFF</button>
-            <span id="autoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
-                Manual Control
-            </span>
-        </div>
-        <div style="margin-top: 10px; font-size: 14px; color: #666;">
-            Auto Mode: කළුවර වැටුනහම ජනෙල් ස්වයංක්රීයව වසා garden light ON, එළිය වැටුනහම ජනෙල් විවෘත කර garden light OFF
-        </div>
-    </div>
-    
-    <!-- Window Control -->
-    <div class="led-control" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-        <div class="led-icon">🪟</div>
-        <div class="led-name">🏠 ජනෙල් පාලනය</div>
-        <div class="switch-container">
-            <button id="windowBtn" class="switch-btn off" onclick="toggleWindow()">CLOSE</button>
-            <div id="windowStatus" class="status-indicator">✗ CLOSED</div>
-        </div>
-    </div>
-    
-    <div class="leds-grid" id="ledsGrid">
-        <!-- Existing LED controls will be loaded here -->
-    </div>
-</section>
+            <section class="leds-section">
+                <h2>💡 Smart Controls - <span id="currentDeviceId">Select a Device</span></h2>
+                
+                <!-- Auto Mode Control -->
+                <div class="auto-control">
+                    <h3>🤖 Auto Mode Control</h3>
+                    <div class="auto-control-content">
+                        <span style="font-weight: bold;">Auto Mode:</span>
+                        <button id="autoModeBtn" class="switch-btn off" onclick="toggleAutoMode()">OFF</button>
+                        <span id="autoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
+                            Manual Control
+                        </span>
+                    </div>
+                    <div class="auto-mode-info">
+                        <strong>Auto Mode Explanation:</strong><br>
+                        කළුවර වැටුනහම ජනෙල් ස්වයංක්රීයව වසා garden light ON කරයි.<br>
+                        එළිය වැටුනහම ජනෙල් විවෘත කර garden light OFF කරයි.
+                    </div>
+                </div>
+
+                <!-- Sensor Info -->
+                <div id="sensorInfo" class="sensor-info" style="display: none;">
+                    <strong>LDR Sensor Value:</strong> <span id="ldrValue">0</span><br>
+                    <small>Higher values mean darker environment</small>
+                </div>
+                
+                <!-- Window Control -->
+                <div class="led-control" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="led-icon">🪟</div>
+                    <div class="led-name">🏠 Window Control</div>
+                    <div class="switch-container">
+                        <button id="windowBtn" class="switch-btn off" onclick="toggleWindow()">CLOSE</button>
+                        <div id="windowStatus" class="status-indicator">✗ CLOSED</div>
+                    </div>
+                </div>
+                
+                <div class="leds-grid" id="ledsGrid">
+                    <!-- LED controls will be loaded here -->
+                </div>
+            </section>
 
             <!-- Group Controls -->
             <section class="group-controls">
@@ -610,7 +671,7 @@
                 <h3>➕ Add New Device</h3>
                 <div class="form-group">
                     <label for="newDeviceId">Device ID</label>
-                    <input type="text" id="newDeviceId" placeholder="Enter device ID">
+                    <input type="text" id="newDeviceId" placeholder="Enter device ID (e.g., ESP32_LED_001)">
                 </div>
                 <div class="modal-actions">
                     <button class="modal-btn secondary" onclick="hideAddDeviceModal()">Cancel</button>
@@ -621,17 +682,17 @@
     </div>
 
     <script>
-        // Firebase Configuration - Replace with your config
-            const firebaseConfig = {
-    apiKey: "AIzaSyAnaSf9C37jPD2P3gb22hJm1OkkU2pIZyQ",
-    authDomain: "smart-home-5c100.firebaseapp.com",
-    databaseURL: "https://smart-home-5c100-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "smart-home-5c100",
-    storageBucket: "smart-home-5c100.firebasestorage.app",
-    messagingSenderId: "630239699447",
-    appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
-    measurementId: "G-V9FXP74CBZ"
-};
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnaSf9C37jPD2P3gb22hJm1OkkU2pIZyQ",
+            authDomain: "smart-home-5c100.firebaseapp.com",
+            databaseURL: "https://smart-home-5c100-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "smart-home-5c100",
+            storageBucket: "smart-home-5c100.firebasestorage.app",
+            messagingSenderId: "630239699447",
+            appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
+            measurementId: "G-V9FXP74CBZ"
+        };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -649,6 +710,8 @@
             livingroom: false,
             garage: false
         };
+        let autoMode = false;
+        let windowState = false;
 
         // DOM Elements
         const authSection = document.getElementById('authSection');
@@ -663,6 +726,8 @@
         const currentDeviceIdSpan = document.getElementById('currentDeviceId');
         const addDeviceModal = document.getElementById('addDeviceModal');
         const newDeviceIdInput = document.getElementById('newDeviceId');
+        const sensorInfo = document.getElementById('sensorInfo');
+        const ldrValueSpan = document.getElementById('ldrValue');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -810,6 +875,7 @@
         function listenToDeviceStatus() {
             if (!currentDeviceId) return;
             
+            // Listen to online status
             const statusRef = database.ref(`devices/${currentDeviceId}/online`);
             statusRef.on('value', (snapshot) => {
                 const online = snapshot.val() || false;
@@ -820,8 +886,30 @@
                     devices[deviceIndex].online = online;
                     renderDevices();
                 }
-            }, (error) => {
-                console.error('Error listening to device status:', error);
+            });
+
+            // Listen to auto mode
+            const autoModeRef = database.ref(`devices/${currentDeviceId}/autoMode`);
+            autoModeRef.on('value', (snapshot) => {
+                autoMode = snapshot.val() || false;
+                updateAutoModeUI();
+            });
+
+            // Listen to window state
+            const windowRef = database.ref(`devices/${currentDeviceId}/window`);
+            windowRef.on('value', (snapshot) => {
+                windowState = snapshot.val() || false;
+                updateWindowUI();
+            });
+
+            // Listen to LDR value for monitoring
+            const ldrRef = database.ref(`devices/${currentDeviceId}/sensors/ldr`);
+            ldrRef.on('value', (snapshot) => {
+                const ldrValue = snapshot.val();
+                if (ldrValue !== null) {
+                    sensorInfo.style.display = 'block';
+                    ldrValueSpan.textContent = ldrValue;
+                }
             });
         }
 
@@ -856,13 +944,18 @@
 
             ledsGrid.innerHTML = ledConfigs.map(led => {
                 const isOn = ledStates[led.name] || false;
+                const isDisabled = (led.name === 'garden' && autoMode);
+                
                 return `
                     <div class="led-control">
                         <div class="led-icon">${led.icon}</div>
-                        <div class="led-name">${led.label}</div>
+                        <div class="led-name">${led.label} 
+                            ${isDisabled ? '<br><small style="font-size: 12px;">(Auto Controlled)</small>' : ''}
+                        </div>
                         <div class="switch-container">
                             <button class="switch-btn ${isOn ? 'on' : 'off'}" 
-                                    onclick="toggleLED('${led.name}', ${!isOn})">
+                                    onclick="toggleLED('${led.name}', ${!isOn})"
+                                    ${isDisabled ? 'disabled' : ''}>
                                 ${isOn ? 'ON' : 'OFF'}
                             </button>
                             <div class="status-indicator">
@@ -881,6 +974,12 @@
                 return;
             }
 
+            // Check if garden LED is in auto mode
+            if (ledName === 'garden' && autoMode) {
+                alert('Garden light is in auto mode. Disable auto mode to control manually.');
+                return;
+            }
+
             try {
                 await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
             } catch (error) {
@@ -893,6 +992,12 @@
             if (!currentDeviceId) {
                 alert('Please select a device first');
                 return;
+            }
+
+            if (autoMode) {
+                if (!confirm('Auto mode is enabled. This will turn all lights manually. Continue?')) {
+                    return;
+                }
             }
 
             try {
@@ -908,136 +1013,87 @@
             }
         }
 
+        // Auto Mode functions
+        async function toggleAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
 
-        // JavaScript functions අතරට අමතරව ජනෙල් සහ ස්වයංක්රීය පාලන functions එක් කරන්න
-// Global variables අතරට අමතරව:
-let autoMode = false;
-let windowState = false;
-
-// Device status listening function යාවත්කාලීන කරන්න
-function listenToDeviceStatus() {
-    if (!currentDeviceId) return;
-    
-    const statusRef = database.ref(devices/${currentDeviceId}/online);
-    statusRef.on('value', (snapshot) => {
-        const online = snapshot.val() || false;
-        
-        // Update in devices array
-        const deviceIndex = devices.findIndex(d => d.id === currentDeviceId);
-        if (deviceIndex !== -1) {
-            devices[deviceIndex].online = online;
-            renderDevices();
+            try {
+                const newAutoMode = !autoMode;
+                await database.ref(`devices/${currentDeviceId}/autoMode`).set(newAutoMode);
+            } catch (error) {
+                console.error('Error toggling auto mode:', error);
+                alert('Error toggling auto mode: ' + error.message);
+            }
         }
-    });
 
-    // Listen to auto mode
-    const autoModeRef = database.ref(devices/${currentDeviceId}/autoMode);
-    autoModeRef.on('value', (snapshot) => {
-        autoMode = snapshot.val() || false;
-        updateAutoModeUI();
-    });
-
-    // Listen to window state
-    const windowRef = database.ref(devices/${currentDeviceId}/window);
-    windowRef.on('value', (snapshot) => {
-        windowState = snapshot.val() || false;
-        updateWindowUI();
-    });
-
-    // Listen to LDR value for monitoring
-    const ldrRef = database.ref(devices/${currentDeviceId}/ldrValue);
-    ldrRef.on('value', (snapshot) => {
-        const ldrValue = snapshot.val();
-        if (ldrValue !== null) {
-            // Update LDR display if you want to show it
-            console.log("LDR Value:", ldrValue);
+        function updateAutoModeUI() {
+            const autoModeBtn = document.getElementById('autoModeBtn');
+            const autoModeStatus = document.getElementById('autoModeStatus');
+            
+            if (autoMode) {
+                autoModeBtn.textContent = 'ON';
+                autoModeBtn.className = 'switch-btn on';
+                autoModeStatus.textContent = 'Auto Mode Active';
+                autoModeStatus.style.background = '#e8f5e8';
+                autoModeStatus.style.color = '#2e7d32';
+            } else {
+                autoModeBtn.textContent = 'OFF';
+                autoModeBtn.className = 'switch-btn off';
+                autoModeStatus.textContent = 'Manual Control';
+                autoModeStatus.style.background = '#ffebee';
+                autoModeStatus.style.color = '#c62828';
+            }
+            
+            // Re-render LED controls to update disabled states
+            renderLEDControls();
         }
-    });
-}
 
-// Auto Mode functions
-async function toggleAutoMode() {
-    if (!currentDeviceId) {
-        alert('Please select a device first');
-        return;
-    }
+        // Window control functions
+        async function toggleWindow() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
 
-    try {
-        const newAutoMode = !autoMode;
-        await database.ref(devices/${currentDeviceId}/autoMode).set(newAutoMode);
-    } catch (error) {
-        console.error('Error toggling auto mode:', error);
-        alert('Error toggling auto mode: ' + error.message);
-    }
-}
+            if (autoMode) {
+                alert('Auto mode is enabled. Disable auto mode to control window manually.');
+                return;
+            }
 
-function updateAutoModeUI() {
-    const autoModeBtn = document.getElementById('autoModeBtn');
-    const autoModeStatus = document.getElementById('autoModeStatus');
-    
-    if (autoMode) {
-        autoModeBtn.textContent = 'ON';
-        autoModeBtn.className = 'switch-btn on';
-        autoModeStatus.textContent = 'Auto Mode Active';
-        autoModeStatus.style.background = '#e8f5e8';
-        autoModeStatus.style.color = '#2e7d32';
-    } else {
-        autoModeBtn.textContent = 'OFF';
-        autoModeBtn.className = 'switch-btn off';
-        autoModeStatus.textContent = 'Manual Control';
-        autoModeStatus.style.background = '#ffebee';
-        autoModeStatus.style.color = '#c62828';
-    }
-}
+            try {
+                const newWindowState = !windowState;
+                await database.ref(`devices/${currentDeviceId}/window`).set(newWindowState);
+            } catch (error) {
+                console.error('Error toggling window:', error);
+                alert('Error toggling window: ' + error.message);
+            }
+        }
 
-// Window control functions
-async function toggleWindow() {
-    if (!currentDeviceId) {
-        alert('Please select a device first');
-        return;
-    }
-
-    if (autoMode) {
-        alert('Auto mode is enabled. Disable auto mode to control window manually.');
-        return;
-    }
-
-    try {
-        const newWindowState = !windowState;
-        await database.ref(devices/${currentDeviceId}/window).set(newWindowState);
-    } catch (error) {
-        console.error('Error toggling window:', error);
-        alert('Error toggling window: ' + error.message);
-    }
-}
-
-function updateWindowUI() {
-    const windowBtn = document.getElementById('windowBtn');
-    const windowStatus = document.getElementById('windowStatus');
-    
-    if (windowState) {
-        windowBtn.textContent = 'OPEN';
-        windowBtn.className = 'switch-btn on';
-        windowStatus.textContent = '✓ OPEN';
-    } else {
-        windowBtn.textContent = 'CLOSE';
-        windowBtn.className = 'switch-btn off';
-        windowStatus.textContent = '✗ CLOSED';
-    }
-}
-
-// Initialize UI when device is selected
-function selectDevice(deviceId) {
-    currentDeviceId = deviceId;
-    currentDeviceIdSpan.textContent = deviceId;
-    renderDevices();
-    listenToDeviceStatus();
-    listenToLEDStates();
-    
-    // Initialize UI states
-    updateAutoModeUI();
-    updateWindowUI();
-}
+        function updateWindowUI() {
+            const windowBtn = document.getElementById('windowBtn');
+            const windowStatus = document.getElementById('windowStatus');
+            
+            if (windowState) {
+                windowBtn.textContent = 'OPEN';
+                windowBtn.className = 'switch-btn on';
+                windowStatus.textContent = '✓ OPEN';
+            } else {
+                windowBtn.textContent = 'CLOSE';
+                windowBtn.className = 'switch-btn off';
+                windowStatus.textContent = '✗ CLOSED';
+            }
+            
+            // Disable window button in auto mode
+            windowBtn.disabled = autoMode;
+            if (autoMode) {
+                windowBtn.title = 'Window is in auto mode';
+            } else {
+                windowBtn.title = '';
+            }
+        }
 
         // Device Modal Functions
         function showAddDeviceModal() {
@@ -1069,24 +1125,6 @@ function selectDevice(deviceId) {
                     addedAt: Date.now(),
                     online: false
                 });
-
-                // Initialize device in database if not exists
-                const deviceRef = database.ref(`devices/${deviceId}`);
-                const snapshot = await deviceRef.once('value');
-                
-                if (!snapshot.exists()) {
-                    await deviceRef.set({
-                        online: false,
-                        leds: {
-                            garden: false,
-                            bedroom: false,
-                            kitchen: false,
-                            livingroom: false,
-                            garage: false
-                        },
-                        createdAt: Date.now()
-                    });
-                }
 
                 hideAddDeviceModal();
                 selectDevice(deviceId);

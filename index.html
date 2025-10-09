@@ -1253,70 +1253,69 @@
             </section>
 
             <!-- Water Tank Control Section -->
-            
-<!-- Water Tank Section - VERIFIED -->
-<section class="water-tank-section">
-    <h2>💧 Water Tank Control System</h2>
-    <div class="water-tank-grid">
-        <!-- Water Level Card -->
-        <div class="water-level-card">
-            <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">💧</div>
-            <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Tank Level</div>
-            <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
-            <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
-            <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
-            <div class="water-progress">
-                <div class="progress-bar">
-                    <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
-                </div>
-            </div>
-        </div>
+            <section class="water-tank-section">
+                <h2>💧 Water Tank Control System</h2>
+                <div class="water-tank-grid">
+                    <!-- Water Level Card -->
+                    <div class="water-level-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">💧</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Tank Level</div>
+                        <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
+                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
+                        <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
+                        <div class="water-progress">
+                            <div class="progress-bar">
+                                <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- Motor Control Card -->
-        <div class="motor-control-card">
-            <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🔧</div>
-            <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Motor Control</div>
-            <div id="motorStatus" class="motor-status">MOTOR OFF</div>
-            <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
-                <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
-                <div style="font-size: 12px;">ON when ≤ 25%</div>
-                <div style="font-size: 12px;">OFF when ≥ 100%</div>
-            </div>
-            <div class="switch-container" style="margin: 20px 0;">
-                <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
-                <div id="motorState" class="status-indicator">AUTO MODE</div>
-            </div>
-        </div>
+                    <!-- Motor Control Card -->
+                    <div class="motor-control-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🔧</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Motor Control</div>
+                        <div id="motorStatus" class="motor-status">MOTOR OFF</div>
+                        <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
+                            <div style="font-size: 12px;">ON when ≤ 25%</div>
+                            <div style="font-size: 12px;">OFF when ≥ 100%</div>
+                        </div>
+                        <div class="switch-container" style="margin: 20px 0;">
+                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
+                            <div id="motorState" class="status-indicator">AUTO MODE</div>
+                        </div>
+                    </div>
 
-        <!-- Water System Info Card -->
-        <div class="water-info-card">
-            <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">ℹ️</div>
-            <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">System Information</div>
-            <div class="info-items">
-                <div class="info-item">
-                    <span class="info-label">Current Level:</span>
-                    <span id="currentLevelText" class="info-value">--%</span>
+                    <!-- Water System Info Card -->
+                    <div class="water-info-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">ℹ️</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">System Information</div>
+                        <div class="info-items">
+                            <div class="info-item">
+                                <span class="info-label">Current Level:</span>
+                                <span id="currentLevelText" class="info-value">--%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Motor Status:</span>
+                                <span id="motorStatusText" class="info-value">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">System Mode:</span>
+                                <span class="info-value">Auto</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Low Level Alert:</span>
+                                <span class="info-value">25%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Full Level:</span>
+                                <span class="info-value">100%</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-item">
-                    <span class="info-label">Motor Status:</span>
-                    <span id="motorStatusText" class="info-value">--</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">System Mode:</span>
-                    <span class="info-value">Auto</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Low Level Alert:</span>
-                    <span class="info-value">25%</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Full Level:</span>
-                    <span class="info-value">100%</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+            </section>
+
             <!-- Sensor Data Section -->
             <section class="sensor-section">
                 <h2>📊 Environmental Sensors</h2>
@@ -1571,7 +1570,7 @@
         let unoConnected = false;
         let unoData = "";
 
-        // Water tank variables
+        // Water tank variables - IMPROVED
         let waterLevel = 0;
         let waterMotorState = false;
         let waterStatus = "UNKNOWN";
@@ -1787,147 +1786,133 @@
             listenToWaterTankData();
         }
 
-        // Water Tank Functions
-        // Water Tank Functions - UPDATED
-function listenToWaterTankData() {
-    if (!currentDeviceId) {
-        console.log('❌ No device selected for water tank');
-        return;
-    }
-    
-    console.log('🔍 Listening to water tank data for:', currentDeviceId);
-    
-    // Listen to water level
-    const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
-    waterLevelRef.on('value', (snapshot) => {
-        const level = snapshot.val();
-        console.log('💧 Water level update:', level);
-        if (level !== null) {
-            waterLevel = level;
-            updateWaterTankUI();
-        } else {
-            console.log('❌ Water level is null');
-        }
-    }, (error) => {
-        console.error('❌ Water level listener error:', error);
-    });
+        // Water Tank Functions - IMPROVED
+        function listenToWaterTankData() {
+            if (!currentDeviceId) {
+                console.log('❌ No device selected for water tank');
+                return;
+            }
+            
+            console.log('🔍 Listening to water tank data for:', currentDeviceId);
+            
+            // Listen to water level
+            const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
+            waterLevelRef.on('value', (snapshot) => {
+                const level = snapshot.val();
+                console.log('💧 Water level update:', level);
+                if (level !== null && level !== undefined) {
+                    waterLevel = parseInt(level);
+                    updateWaterTankUI();
+                } else {
+                    console.log('❌ Water level is null or undefined');
+                    waterLevel = 0;
+                    updateWaterTankUI();
+                }
+            }, (error) => {
+                console.error('❌ Water level listener error:', error);
+            });
 
-    // Listen to motor state
-    const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
-    motorStateRef.on('value', (snapshot) => {
-        const state = snapshot.val();
-        console.log('🔧 Motor state update:', state);
-        if (state !== null) {
-            waterMotorState = state;
-            updateWaterTankUI();
-        } else {
-            console.log('❌ Motor state is null');
-        }
-    }, (error) => {
-        console.error('❌ Motor state listener error:', error);
-    });
+            // Listen to motor state
+            const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
+            motorStateRef.on('value', (snapshot) => {
+                const state = snapshot.val();
+                console.log('🔧 Motor state update:', state);
+                if (state !== null && state !== undefined) {
+                    waterMotorState = Boolean(state);
+                    updateWaterTankUI();
+                } else {
+                    console.log('❌ Motor state is null or undefined');
+                    waterMotorState = false;
+                    updateWaterTankUI();
+                }
+            }, (error) => {
+                console.error('❌ Motor state listener error:', error);
+            });
 
-    // Listen to water status
-    const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
-    waterStatusRef.on('value', (snapshot) => {
-        const status = snapshot.val();
-        console.log('📊 Water status update:', status);
-        if (status) {
-            waterStatus = status;
-            updateWaterTankUI();
-        }
-    });
+            // Listen to water status
+            const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
+            waterStatusRef.on('value', (snapshot) => {
+                const status = snapshot.val();
+                console.log('📊 Water status update:', status);
+                if (status) {
+                    waterStatus = status;
+                    updateWaterTankUI();
+                }
+            });
 
-    console.log('✅ Water tank listeners activated');
-}
+            console.log('✅ Water tank listeners activated');
+        }
 
-function updateWaterTankUI() {
-    console.log('🔄 Updating water tank UI...');
-    console.log('💧 Current water level:', waterLevel);
-    console.log('🔧 Current motor state:', waterMotorState);
-    console.log('📊 Current water status:', waterStatus);
-    
-    // Update water level value
-    const waterLevelValue = document.getElementById('waterLevelValue');
-    if (waterLevelValue) {
-        waterLevelValue.textContent = waterLevel + '%';
-        console.log('✅ Updated water level display:', waterLevel + '%');
-    } else {
-        console.log('❌ waterLevelValue element not found');
-    }
-    
-    // Update progress bar
-    const waterProgress = document.getElementById('waterProgress');
-    if (waterProgress) {
-        waterProgress.style.width = waterLevel + '%';
-        console.log('✅ Updated progress bar width:', waterLevel + '%');
-        
-        // Update progress bar color based on water level
-        if (waterLevel <= 25) {
-            waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
-        } else if (waterLevel >= 100) {
-            waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
-        } else {
-            waterProgress.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+        // Update water tank UI with better error handling
+        function updateWaterTankUI() {
+            console.log('🔄 Updating water tank UI...');
+            console.log('💧 Current water level:', waterLevel);
+            console.log('🔧 Current motor state:', waterMotorState);
+            console.log('📊 Current water status:', waterStatus);
+            
+            // Ensure waterLevel is a valid number
+            if (isNaN(waterLevel) || waterLevel < 0) waterLevel = 0;
+            if (waterLevel > 100) waterLevel = 100;
+            
+            // Update all UI elements with null checks
+            const elements = {
+                'waterLevelValue': waterLevel + '%',
+                'waterProgress': waterLevel + '%',
+                'waterStatus': waterStatus,
+                'currentLevelText': waterLevel + '%',
+                'motorStatusText': waterMotorState ? 'RUNNING' : 'STOPPED'
+            };
+            
+            Object.keys(elements).forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    if (elementId === 'waterProgress') {
+                        element.style.width = elements[elementId];
+                        // Update progress bar color
+                        if (waterLevel <= 25) {
+                            element.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
+                        } else if (waterLevel >= 100) {
+                            element.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
+                        } else {
+                            element.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                        }
+                    } else {
+                        element.textContent = elements[elementId];
+                    }
+                } else {
+                    console.log('❌ Element not found:', elementId);
+                }
+            });
+            
+            // Update motor status display
+            const motorStatus = document.getElementById('motorStatus');
+            const motorState = document.getElementById('motorState');
+            
+            if (motorStatus && motorState) {
+                if (waterMotorState) {
+                    motorStatus.textContent = 'MOTOR ON 🔄';
+                    motorState.textContent = 'MOTOR RUNNING';
+                } else {
+                    motorStatus.textContent = 'MOTOR OFF ⏹️';
+                    motorState.textContent = 'MOTOR STOPPED';
+                }
+            }
+            
+            // Update water status class
+            const waterStatusElement = document.getElementById('waterStatus');
+            if (waterStatusElement) {
+                waterStatusElement.className = 'water-status';
+                if (waterLevel <= 25) {
+                    waterStatusElement.classList.add('low');
+                } else if (waterLevel >= 100) {
+                    waterStatusElement.classList.add('full');
+                } else {
+                    waterStatusElement.classList.add('normal');
+                }
+            }
+            
+            console.log('✅ Water tank UI update completed');
         }
-    } else {
-        console.log('❌ waterProgress element not found');
-    }
-    
-    // Update water status
-    const waterStatusElement = document.getElementById('waterStatus');
-    if (waterStatusElement) {
-        waterStatusElement.textContent = waterStatus;
-        
-        // Update status class based on water level
-        waterStatusElement.className = 'water-status '; // Clear previous classes
-        if (waterLevel <= 25) {
-            waterStatusElement.classList.add('low');
-        } else if (waterLevel >= 100) {
-            waterStatusElement.classList.add('full');
-        } else {
-            waterStatusElement.classList.add('normal');
-        }
-        console.log('✅ Updated water status:', waterStatus);
-    } else {
-        console.log('❌ waterStatus element not found');
-    }
-    
-    // Update motor status
-    const motorStatus = document.getElementById('motorStatus');
-    const motorState = document.getElementById('motorState');
-    const motorStatusText = document.getElementById('motorStatusText');
-    
-    if (motorStatus && motorState && motorStatusText) {
-        if (waterMotorState) {
-            motorStatus.textContent = 'MOTOR ON 🔄';
-            motorState.textContent = 'MOTOR RUNNING';
-            motorStatusText.textContent = 'RUNNING';
-            motorStatusText.style.color = '#4CAF50';
-        } else {
-            motorStatus.textContent = 'MOTOR OFF ⏹️';
-            motorState.textContent = 'MOTOR STOPPED';
-            motorStatusText.textContent = 'STOPPED';
-            motorStatusText.style.color = '#f44336';
-        }
-        console.log('✅ Updated motor status:', waterMotorState ? 'ON' : 'OFF');
-    } else {
-        console.log('❌ Motor status elements not found');
-    }
-    
-    // Update current level text
-    const currentLevelText = document.getElementById('currentLevelText');
-    if (currentLevelText) {
-        currentLevelText.textContent = waterLevel + '%';
-        console.log('✅ Updated current level text');
-    } else {
-        console.log('❌ currentLevelText element not found');
-    }
-    
-    console.log('✅ Water tank UI update completed');
-}
-
-        
 
         // Rain sensor functions
         function listenToRainSensorData() {

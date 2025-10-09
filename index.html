@@ -1253,69 +1253,70 @@
             </section>
 
             <!-- Water Tank Control Section -->
-            <section class="water-tank-section">
-                <h2>💧 Water Tank Control System</h2>
-                <div class="water-tank-grid">
-                    <!-- Water Level Card -->
-                    <div class="water-level-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">💧</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Tank Level</div>
-                        <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
-                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
-                        <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
-                        <div class="water-progress">
-                            <div class="progress-bar">
-                                <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Motor Control Card -->
-                    <div class="motor-control-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🔧</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Motor Control</div>
-                        <div id="motorStatus" class="motor-status">MOTOR OFF</div>
-                        <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
-                            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
-                            <div style="font-size: 12px;">ON when ≤ 25%</div>
-                            <div style="font-size: 12px;">OFF when ≥ 100%</div>
-                        </div>
-                        <div class="switch-container" style="margin: 20px 0;">
-                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
-                            <div id="motorState" class="status-indicator">AUTO MODE</div>
-                        </div>
-                    </div>
-
-                    <!-- Water System Info Card -->
-                    <div class="water-info-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">ℹ️</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">System Information</div>
-                        <div class="info-items">
-                            <div class="info-item">
-                                <span class="info-label">Current Level:</span>
-                                <span id="currentLevelText" class="info-value">--%</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Motor Status:</span>
-                                <span id="motorStatusText" class="info-value">--</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">System Mode:</span>
-                                <span class="info-value">Auto</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Low Level Alert:</span>
-                                <span class="info-value">25%</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Full Level:</span>
-                                <span class="info-value">100%</span>
-                            </div>
-                        </div>
-                    </div>
+            
+<!-- Water Tank Section - VERIFIED -->
+<section class="water-tank-section">
+    <h2>💧 Water Tank Control System</h2>
+    <div class="water-tank-grid">
+        <!-- Water Level Card -->
+        <div class="water-level-card">
+            <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">💧</div>
+            <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Tank Level</div>
+            <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
+            <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
+            <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
+            <div class="water-progress">
+                <div class="progress-bar">
+                    <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
                 </div>
-            </section>
+            </div>
+        </div>
 
+        <!-- Motor Control Card -->
+        <div class="motor-control-card">
+            <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🔧</div>
+            <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Motor Control</div>
+            <div id="motorStatus" class="motor-status">MOTOR OFF</div>
+            <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
+                <div style="font-size: 12px;">ON when ≤ 25%</div>
+                <div style="font-size: 12px;">OFF when ≥ 100%</div>
+            </div>
+            <div class="switch-container" style="margin: 20px 0;">
+                <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
+                <div id="motorState" class="status-indicator">AUTO MODE</div>
+            </div>
+        </div>
+
+        <!-- Water System Info Card -->
+        <div class="water-info-card">
+            <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">ℹ️</div>
+            <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">System Information</div>
+            <div class="info-items">
+                <div class="info-item">
+                    <span class="info-label">Current Level:</span>
+                    <span id="currentLevelText" class="info-value">--%</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Motor Status:</span>
+                    <span id="motorStatusText" class="info-value">--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">System Mode:</span>
+                    <span class="info-value">Auto</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Low Level Alert:</span>
+                    <span class="info-value">25%</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Full Level:</span>
+                    <span class="info-value">100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
             <!-- Sensor Data Section -->
             <section class="sensor-section">
                 <h2>📊 Environmental Sensors</h2>

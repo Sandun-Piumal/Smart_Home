@@ -1787,84 +1787,146 @@
         }
 
         // Water Tank Functions
-        function listenToWaterTankData() {
-            if (!currentDeviceId) return;
-            
-            // Listen to water level
-            const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
-            waterLevelRef.on('value', (snapshot) => {
-                const level = snapshot.val();
-                if (level !== null) {
-                    waterLevel = level;
-                    updateWaterTankUI();
-                }
-            });
-
-            // Listen to motor state
-            const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
-            motorStateRef.on('value', (snapshot) => {
-                const state = snapshot.val();
-                if (state !== null) {
-                    waterMotorState = state;
-                    updateWaterTankUI();
-                }
-            });
-
-            // Listen to water status
-            const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
-            waterStatusRef.on('value', (snapshot) => {
-                const status = snapshot.val();
-                if (status) {
-                    waterStatus = status;
-                    updateWaterTankUI();
-                }
-            });
+        // Water Tank Functions - UPDATED
+function listenToWaterTankData() {
+    if (!currentDeviceId) {
+        console.log('❌ No device selected for water tank');
+        return;
+    }
+    
+    console.log('🔍 Listening to water tank data for:', currentDeviceId);
+    
+    // Listen to water level
+    const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
+    waterLevelRef.on('value', (snapshot) => {
+        const level = snapshot.val();
+        console.log('💧 Water level update:', level);
+        if (level !== null) {
+            waterLevel = level;
+            updateWaterTankUI();
+        } else {
+            console.log('❌ Water level is null');
         }
+    }, (error) => {
+        console.error('❌ Water level listener error:', error);
+    });
 
-        function updateWaterTankUI() {
-            // Update water level value
-            waterLevelValue.textContent = waterLevel + '%';
-            
-            // Update progress bar
-            waterProgress.style.width = waterLevel + '%';
-            
-            // Update water status
-            waterStatusElement.textContent = waterStatus;
-            
-            // Update status class based on water level
-            if (waterLevel <= 25) {
-                waterStatusElement.className = 'water-status low';
-                waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
-            } else if (waterLevel >= 100) {
-                waterStatusElement.className = 'water-status full';
-                waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
-            } else {
-                waterStatusElement.className = 'water-status normal';
-                waterProgress.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
-            }
-            
-            // Update motor status
-            if (waterMotorState) {
-                motorStatus.textContent = 'MOTOR ON 🔄';
-                motorState.textContent = 'MOTOR RUNNING';
-                motorStatusText.textContent = 'RUNNING';
-                motorStatusText.style.color = '#4CAF50';
-            } else {
-                motorStatus.textContent = 'MOTOR OFF ⏹️';
-                motorState.textContent = 'MOTOR STOPPED';
-                motorStatusText.textContent = 'STOPPED';
-                motorStatusText.style.color = '#f44336';
-            }
-            
-            // Update current level text
-            currentLevelText.textContent = waterLevel + '%';
+    // Listen to motor state
+    const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
+    motorStateRef.on('value', (snapshot) => {
+        const state = snapshot.val();
+        console.log('🔧 Motor state update:', state);
+        if (state !== null) {
+            waterMotorState = state;
+            updateWaterTankUI();
+        } else {
+            console.log('❌ Motor state is null');
         }
+    }, (error) => {
+        console.error('❌ Motor state listener error:', error);
+    });
 
-        function toggleWaterMotor() {
-            // This function is for future manual control if needed
-            // Currently the system is fully automatic
-            alert('Water motor control is currently in automatic mode.\n\nThe system will:\n• Turn ON motor when water level ≤ 25%\n• Turn OFF motor when water level ≥ 100%');
+    // Listen to water status
+    const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
+    waterStatusRef.on('value', (snapshot) => {
+        const status = snapshot.val();
+        console.log('📊 Water status update:', status);
+        if (status) {
+            waterStatus = status;
+            updateWaterTankUI();
         }
+    });
+
+    console.log('✅ Water tank listeners activated');
+}
+
+function updateWaterTankUI() {
+    console.log('🔄 Updating water tank UI...');
+    console.log('💧 Current water level:', waterLevel);
+    console.log('🔧 Current motor state:', waterMotorState);
+    console.log('📊 Current water status:', waterStatus);
+    
+    // Update water level value
+    const waterLevelValue = document.getElementById('waterLevelValue');
+    if (waterLevelValue) {
+        waterLevelValue.textContent = waterLevel + '%';
+        console.log('✅ Updated water level display:', waterLevel + '%');
+    } else {
+        console.log('❌ waterLevelValue element not found');
+    }
+    
+    // Update progress bar
+    const waterProgress = document.getElementById('waterProgress');
+    if (waterProgress) {
+        waterProgress.style.width = waterLevel + '%';
+        console.log('✅ Updated progress bar width:', waterLevel + '%');
+        
+        // Update progress bar color based on water level
+        if (waterLevel <= 25) {
+            waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
+        } else if (waterLevel >= 100) {
+            waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
+        } else {
+            waterProgress.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+        }
+    } else {
+        console.log('❌ waterProgress element not found');
+    }
+    
+    // Update water status
+    const waterStatusElement = document.getElementById('waterStatus');
+    if (waterStatusElement) {
+        waterStatusElement.textContent = waterStatus;
+        
+        // Update status class based on water level
+        waterStatusElement.className = 'water-status '; // Clear previous classes
+        if (waterLevel <= 25) {
+            waterStatusElement.classList.add('low');
+        } else if (waterLevel >= 100) {
+            waterStatusElement.classList.add('full');
+        } else {
+            waterStatusElement.classList.add('normal');
+        }
+        console.log('✅ Updated water status:', waterStatus);
+    } else {
+        console.log('❌ waterStatus element not found');
+    }
+    
+    // Update motor status
+    const motorStatus = document.getElementById('motorStatus');
+    const motorState = document.getElementById('motorState');
+    const motorStatusText = document.getElementById('motorStatusText');
+    
+    if (motorStatus && motorState && motorStatusText) {
+        if (waterMotorState) {
+            motorStatus.textContent = 'MOTOR ON 🔄';
+            motorState.textContent = 'MOTOR RUNNING';
+            motorStatusText.textContent = 'RUNNING';
+            motorStatusText.style.color = '#4CAF50';
+        } else {
+            motorStatus.textContent = 'MOTOR OFF ⏹️';
+            motorState.textContent = 'MOTOR STOPPED';
+            motorStatusText.textContent = 'STOPPED';
+            motorStatusText.style.color = '#f44336';
+        }
+        console.log('✅ Updated motor status:', waterMotorState ? 'ON' : 'OFF');
+    } else {
+        console.log('❌ Motor status elements not found');
+    }
+    
+    // Update current level text
+    const currentLevelText = document.getElementById('currentLevelText');
+    if (currentLevelText) {
+        currentLevelText.textContent = waterLevel + '%';
+        console.log('✅ Updated current level text');
+    } else {
+        console.log('❌ currentLevelText element not found');
+    }
+    
+    console.log('✅ Water tank UI update completed');
+}
+
+        
 
         // Rain sensor functions
         function listenToRainSensorData() {

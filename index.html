@@ -1089,7 +1089,7 @@
                         <div id="rainStatus" class="rain-status sunny">SUNNY WEATHER</div>
                         <div class="sensor-info" style="margin-top: 15px; font-size: 14px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
                             <strong>Threshold:</strong> 500<br>
-                            <small>Above 500 = Rain detected</small>
+                            <small>Below 500 = Rain detected</small>
                         </div>
                     </div>
 
@@ -1137,12 +1137,6 @@
                         <div class="sensor-name">Humidity</div>
                         <div class="sensor-value" id="humidityValue">--</div>
                         <div class="sensor-unit">%</div>
-                    </div>
-                    <div class="sensor-card">
-                        <div class="sensor-icon">🔆</div>
-                        <div class="sensor-name">Light Level</div>
-                        <div class="sensor-value" id="ldrValue">--</div>
-                        <div class="sensor-unit">LUX</div>
                     </div>
                     <div class="motion-sensor-card">
                         <div class="sensor-icon">🚶</div>
@@ -1370,7 +1364,6 @@
         let fanAutoMode = true;
         let temperature = 0;
         let humidity = 0;
-        let ldrValue = 0;
         let motionDetected = false;
         let manualOverrideActive = false;
         let authorizedRFIDs = [];
@@ -1379,8 +1372,7 @@
         // NEW VARIABLES FOR RAIN SENSOR
         let rainValue = 0;
         let isRaining = false;
-        let servoPosition = 90;
-        let clothStatus = "OUTDOOR";
+        let weatherStatus = "SUNNY";
         let unoConnected = false;
         let unoData = "";
 
@@ -1402,7 +1394,6 @@
         // Sensor elements
         const temperatureValue = document.getElementById('temperatureValue');
         const humidityValue = document.getElementById('humidityValue');
-        const ldrValueSpan = document.getElementById('ldrValue');
         const motionValue = document.getElementById('motionValue');
         
         // NEW: Rain sensor elements
@@ -1589,13 +1580,32 @@
         function listenToRainSensorData() {
             if (!currentDeviceId) return;
             
-            // Listen to UNO sensor data
-            const unoDataRef = database.ref(`devices/${currentDeviceId}/sensors/unoData`);
-            unoDataRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    unoData = data;
-                    parseUNOData(data);
+            // Listen to rain value
+            const rainValueRef = database.ref(`devices/${currentDeviceId}/sensors/rainValue`);
+            rainValueRef.on('value', (snapshot) => {
+                const value = snapshot.val();
+                if (value !== null) {
+                    rainValue = value;
+                    updateRainSensorUI();
+                }
+            });
+
+            // Listen to weather status
+            const weatherStatusRef = database.ref(`devices/${currentDeviceId}/sensors/weatherStatus`);
+            weatherStatusRef.on('value', (snapshot) => {
+                const status = snapshot.val();
+                if (status) {
+                    weatherStatus = status;
+                    updateRainSensorUI();
+                }
+            });
+
+            // Listen to isRaining status
+            const isRainingRef = database.ref(`devices/${currentDeviceId}/sensors/isRaining`);
+            isRainingRef.on('value', (snapshot) => {
+                const raining = snapshot.val();
+                if (raining !== null) {
+                    isRaining = raining;
                     updateRainSensorUI();
                 }
             });
@@ -1606,36 +1616,16 @@
                 unoConnected = snapshot.val() || false;
                 updateUNOStatusUI();
             });
-        }
 
-        // NEW FUNCTION: Parse UNO data
-        function parseUNOData(data) {
-            try {
-                // Expected format: "RAIN:350,STATUS:SUNNY,SERVO:90,CLOTH:OUTDOOR"
-                const parts = data.split(',');
-                
-                parts.forEach(part => {
-                    const [key, value] = part.split(':');
-                    
-                    switch(key) {
-                        case 'RAIN':
-                            rainValue = parseInt(value);
-                            isRaining = (rainValue > 500); // Threshold 500
-                            break;
-                        case 'STATUS':
-                            // Status is already derived from rain value
-                            break;
-                        case 'SERVO':
-                            servoPosition = parseInt(value);
-                            break;
-                        case 'CLOTH':
-                            clothStatus = value;
-                            break;
-                    }
-                });
-            } catch (error) {
-                console.error('Error parsing UNO data:', error);
-            }
+            // Listen to UNO data
+            const unoDataRef = database.ref(`devices/${currentDeviceId}/sensors/unoData`);
+            unoDataRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    unoData = data;
+                    updateUNOStatusUI();
+                }
+            });
         }
 
         // NEW FUNCTION: Update rain sensor UI
@@ -1643,28 +1633,38 @@
             // Update rain value
             rainValueSpan.textContent = rainValue;
             
-            // Update rain status
-            if (isRaining) {
-                rainStatus.textContent = 'RAINING 🌧️';
-                rainStatus.className = 'rain-status raining';
+            // Determine rain status based on rain value and weather status
+            let displayStatus = "SUNNY";
+            let displayIcon = "☀️";
+            let statusClass = "sunny";
+            
+            if (isRaining || rainValue < 500) {
+                displayStatus = "RAINING";
+                displayIcon = "🌧️";
+                statusClass = "raining";
             } else {
-                rainStatus.textContent = 'SUNNY WEATHER ☀️';
-                rainStatus.className = 'rain-status sunny';
+                displayStatus = "SUNNY";
+                displayIcon = "☀️";
+                statusClass = "sunny";
             }
             
-            // Update cloth status and servo
-            clothStatusSpan.textContent = clothStatus + (isRaining ? ' 🏠' : ' ☀️');
-            servoPositionSpan.textContent = `Position: ${servoPosition}°`;
+            // Update rain status display
+            rainStatus.textContent = `${displayStatus} ${displayIcon}`;
+            rainStatus.className = `rain-status ${statusClass}`;
             
-            // Update servo button
-            if (clothStatus === 'INDOOR') {
-                servoBtn.textContent = 'INDOOR';
-                servoBtn.className = 'switch-btn on';
-                servoStatus.textContent = 'INDOOR 🏠';
+            // Update cloth status based on rain
+            if (isRaining || rainValue < 500) {
+                clothStatusSpan.textContent = "INDOOR 🏠";
+                servoPositionSpan.textContent = "Position: 0°";
+                servoBtn.textContent = "INDOOR";
+                servoBtn.className = "switch-btn on";
+                servoStatus.textContent = "INDOOR 🏠";
             } else {
-                servoBtn.textContent = 'OUTDOOR';
-                servoBtn.className = 'switch-btn off';
-                servoStatus.textContent = 'OUTDOOR ☀️';
+                clothStatusSpan.textContent = "OUTDOOR ☀️";
+                servoPositionSpan.textContent = "Position: 90°";
+                servoBtn.textContent = "OUTDOOR";
+                servoBtn.className = "switch-btn off";
+                servoStatus.textContent = "OUTDOOR ☀️";
             }
         }
 
@@ -1695,8 +1695,7 @@
 
             try {
                 // Toggle cloth position
-                const newClothStatus = clothStatus === 'INDOOR' ? 'OUTDOOR' : 'INDOOR';
-                const newServoPosition = newClothStatus === 'INDOOR' ? 0 : 90;
+                const newClothStatus = isRaining ? "OUTDOOR" : "INDOOR";
                 
                 // Note: This would require additional implementation on ESP32 side
                 // to send commands to UNO. For now, we'll just update the display.
@@ -1781,16 +1780,6 @@
                 if (hum !== null) {
                     humidity = hum;
                     humidityValue.textContent = hum.toFixed(1);
-                }
-            });
-
-            // Listen to LDR value
-            const ldrRef = database.ref(`devices/${currentDeviceId}/sensors/ldr`);
-            ldrRef.on('value', (snapshot) => {
-                const ldr = snapshot.val();
-                if (ldr !== null) {
-                    ldrValue = ldr;
-                    ldrValueSpan.textContent = ldr;
                 }
             });
 

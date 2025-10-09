@@ -1326,1110 +1326,1312 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAnaSf9C37jPD2P3gb22hJm1OkkU2pIZyQ",
-            authDomain: "smart-home-5c100.firebaseapp.com",
-            databaseURL: "https://smart-home-5c100-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "smart-home-5c100",
-            storageBucket: "smart-home-5c100.firebasestorage.app",
-            messagingSenderId: "630239699447",
-            appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
-            measurementId: "G-V9FXP74CBZ"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-
-        // Global variables
-        let currentUser = null;
-        let currentDeviceId = null;
-        let devices = [];
-        let ledStates = {
-            garden: false,
-            bedroom: false,
-            kitchen: false,
-            livingroom: false,
-            garage: false,
-            security: false
-        };
-        let autoMode = false;
-        let securityAutoMode = false;
-        let doorAutoMode = false;
-        let windowState = false;
-        let doorState = false;
-        let fanState = false;
-        let fanAutoMode = true;
-        let temperature = 0;
-        let humidity = 0;
-        let motionDetected = false;
-        let manualOverrideActive = false;
-        let authorizedRFIDs = [];
-        let lastRFIDAccess = "";
-
-        // NEW VARIABLES FOR RAIN SENSOR
-        let rainValue = 0;
-        let isRaining = false;
-        let weatherStatus = "SUNNY";
-        let unoConnected = false;
-        let unoData = "";
-
-        // DOM Elements
-        const authSection = document.getElementById('authSection');
-        const appSection = document.getElementById('appSection');
-        const authForm = document.getElementById('authForm');
-        const authBtn = document.getElementById('authBtn');
-        const authToggle = document.getElementById('authToggle');
-        const authError = document.getElementById('authError');
-        const userEmail = document.getElementById('userEmail');
-        const deviceList = document.getElementById('deviceList');
-        const ledsGrid = document.getElementById('ledsGrid');
-        const currentDeviceIdSpan = document.getElementById('currentDeviceId');
-        const addDeviceModal = document.getElementById('addDeviceModal');
-        const newDeviceIdInput = document.getElementById('newDeviceId');
-        const overrideIndicator = document.getElementById('overrideIndicator');
         
-        // Sensor elements
-        const temperatureValue = document.getElementById('temperatureValue');
-        const humidityValue = document.getElementById('humidityValue');
-        const motionValue = document.getElementById('motionValue');
+            // Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAnaSf9C37jPD2P3gb22hJm1OkkU2pIZyQ",
+    authDomain: "smart-home-5c100.firebaseapp.com",
+    databaseURL: "https://smart-home-5c100-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "smart-home-5c100",
+    storageBucket: "smart-home-5c100.firebasestorage.app",
+    messagingSenderId: "630239699447",
+    appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
+    measurementId: "G-V9FXP74CBZ"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
+
+// Global variables
+let currentUser = null;
+let currentDeviceId = null;
+let devices = [];
+let ledStates = {
+    garden: false,
+    bedroom: false,
+    kitchen: false,
+    livingroom: false,
+    garage: false,
+    security: false
+};
+let autoMode = false;
+let securityAutoMode = false;
+let doorAutoMode = false;
+let windowState = false;
+let doorState = false;
+let fanState = false;
+let fanAutoMode = true;
+let temperature = 0;
+let humidity = 0;
+let motionDetected = false;
+let manualOverrideActive = false;
+let authorizedRFIDs = [];
+let lastRFIDAccess = "";
+
+// Rain sensor variables - ADDED
+let rainValue = 0;
+let isRaining = false;
+let weatherStatus = "SUNNY";
+let unoConnected = false;
+let unoData = "";
+
+// Water tank variables - ADDED
+let waterLevel = 0;
+let waterMotorState = false;
+let waterStatus = "UNKNOWN";
+
+// DOM Elements
+const authSection = document.getElementById('authSection');
+const appSection = document.getElementById('appSection');
+const authForm = document.getElementById('authForm');
+const authBtn = document.getElementById('authBtn');
+const authToggle = document.getElementById('authToggle');
+const authError = document.getElementById('authError');
+const userEmail = document.getElementById('userEmail');
+const deviceList = document.getElementById('deviceList');
+const ledsGrid = document.getElementById('ledsGrid');
+const currentDeviceIdSpan = document.getElementById('currentDeviceId');
+const addDeviceModal = document.getElementById('addDeviceModal');
+const newDeviceIdInput = document.getElementById('newDeviceId');
+const overrideIndicator = document.getElementById('overrideIndicator');
+
+// Sensor elements
+const temperatureValue = document.getElementById('temperatureValue');
+const humidityValue = document.getElementById('humidityValue');
+const motionValue = document.getElementById('motionValue');
+
+// Rain sensor elements - ADDED
+const rainValueSpan = document.getElementById('rainValue');
+const rainStatus = document.getElementById('rainStatus');
+const clothStatusSpan = document.getElementById('clothStatus');
+const servoPositionSpan = document.getElementById('servoPosition');
+const servoBtn = document.getElementById('servoBtn');
+const servoStatus = document.getElementById('servoStatus');
+const unoStatus = document.getElementById('unoStatus');
+const unoDataSpan = document.getElementById('unoData');
+
+// Water tank elements - ADDED
+const waterLevelValue = document.getElementById('waterLevelValue');
+const waterProgress = document.getElementById('waterProgress');
+const waterStatusElement = document.getElementById('waterStatus');
+const motorStatus = document.getElementById('motorStatus');
+const motorBtn = document.getElementById('motorBtn');
+const motorState = document.getElementById('motorState');
+const currentLevelText = document.getElementById('currentLevelText');
+const motorStatusText = document.getElementById('motorStatusText');
+
+// Fan elements
+const fanBtn = document.getElementById('fanBtn');
+const fanStatus = document.getElementById('fanStatus');
+const fanStatusText = document.getElementById('fanStatusText');
+const fanModeText = document.getElementById('fanModeText');
+const fanAutoStatus = document.getElementById('fanAutoStatus');
+const fanAutoModeBtn = document.getElementById('fanAutoModeBtn');
+const fanManualModeBtn = document.getElementById('fanManualModeBtn');
+
+// Security auto mode elements
+const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
+const securityAutoModeStatus = document.getElementById('securityAutoModeStatus');
+
+// Door elements
+const doorBtn = document.getElementById('doorBtn');
+const doorStatus = document.getElementById('doorStatus');
+const doorAutoModeBtn = document.getElementById('doorAutoModeBtn');
+const doorAutoModeStatus = document.getElementById('doorAutoModeStatus');
+const newRFIDKeyInput = document.getElementById('newRFIDKey');
+const rfidKeysList = document.getElementById('rfidKeysList');
+const accessLog = document.getElementById('accessLog');
+
+// Auth state listener
+auth.onAuthStateChanged((user) => {
+    currentUser = user;
+    if (user) {
+        showApp();
+        loadUserDevices();
+    } else {
+        showAuth();
+    }
+});
+
+// Auth form handler
+let isLogin = true;
+authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    authBtn.disabled = true;
+    authBtn.textContent = 'Processing...';
+
+    try {
+        if (isLogin) {
+            await auth.signInWithEmailAndPassword(email, password);
+        } else {
+            await auth.createUserWithEmailAndPassword(email, password);
+        }
+        hideError();
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        authBtn.disabled = false;
+        authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
+    }
+});
+
+// Auth toggle
+authToggle.addEventListener('click', () => {
+    isLogin = !isLogin;
+    authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
+    authToggle.textContent = isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login";
+});
+
+// Show/hide sections
+function showApp() {
+    authSection.style.display = 'none';
+    appSection.style.display = 'block';
+    if (currentUser && currentUser.email) {
+        userEmail.textContent = currentUser.email;
+    }
+}
+
+function showAuth() {
+    authSection.style.display = 'flex';
+    appSection.style.display = 'none';
+    authForm.reset();
+    hideError();
+}
+
+// Error handling
+function showError(message) {
+    authError.textContent = message;
+    authError.style.display = 'block';
+}
+
+function hideError() {
+    authError.style.display = 'none';
+}
+
+// Logout
+function logout() {
+    auth.signOut();
+}
+
+// Device Management
+function loadUserDevices() {
+    if (!currentUser) return;
+    
+    const userDevicesRef = database.ref(`users/${currentUser.uid}/devices`);
+    
+    userDevicesRef.on('value', (snapshot) => {
+        devices = [];
+        const data = snapshot.val();
         
-        // NEW: Rain sensor elements
-        const rainValueSpan = document.getElementById('rainValue');
-        const rainStatus = document.getElementById('rainStatus');
-        const clothStatusSpan = document.getElementById('clothStatus');
-        const servoPositionSpan = document.getElementById('servoPosition');
-        const servoBtn = document.getElementById('servoBtn');
-        const servoStatus = document.getElementById('servoStatus');
-        const unoStatus = document.getElementById('unoStatus');
-        const unoDataSpan = document.getElementById('unoData');
-
-        // Fan elements
-        const fanBtn = document.getElementById('fanBtn');
-        const fanStatus = document.getElementById('fanStatus');
-        const fanStatusText = document.getElementById('fanStatusText');
-        const fanModeText = document.getElementById('fanModeText');
-        const fanAutoStatus = document.getElementById('fanAutoStatus');
-        const fanAutoModeBtn = document.getElementById('fanAutoModeBtn');
-        const fanManualModeBtn = document.getElementById('fanManualModeBtn');
-
-        // Security auto mode elements
-        const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
-        const securityAutoModeStatus = document.getElementById('securityAutoModeStatus');
-
-        // Door elements
-        const doorBtn = document.getElementById('doorBtn');
-        const doorStatus = document.getElementById('doorStatus');
-        const doorAutoModeBtn = document.getElementById('doorAutoModeBtn');
-        const doorAutoModeStatus = document.getElementById('doorAutoModeStatus');
-        const newRFIDKeyInput = document.getElementById('newRFIDKey');
-        const rfidKeysList = document.getElementById('rfidKeysList');
-        const accessLog = document.getElementById('accessLog');
-
-        // Auth state listener
-        auth.onAuthStateChanged((user) => {
-            currentUser = user;
-            if (user) {
-                showApp();
-                loadUserDevices();
-            } else {
-                showAuth();
-            }
-        });
-
-        // Auth form handler
-        let isLogin = true;
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            authBtn.disabled = true;
-            authBtn.textContent = 'Processing...';
-
-            try {
-                if (isLogin) {
-                    await auth.signInWithEmailAndPassword(email, password);
-                } else {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                }
-                hideError();
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                authBtn.disabled = false;
-                authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
-            }
-        });
-
-        // Auth toggle
-        authToggle.addEventListener('click', () => {
-            isLogin = !isLogin;
-            authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
-            authToggle.textContent = isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login";
-        });
-
-        // Show/hide sections
-        function showApp() {
-            authSection.style.display = 'none';
-            appSection.style.display = 'block';
-            if (currentUser && currentUser.email) {
-                userEmail.textContent = currentUser.email;
-            }
-        }
-
-        function showAuth() {
-            authSection.style.display = 'flex';
-            appSection.style.display = 'none';
-            authForm.reset();
-            hideError();
-        }
-
-        // Error handling
-        function showError(message) {
-            authError.textContent = message;
-            authError.style.display = 'block';
-        }
-
-        function hideError() {
-            authError.style.display = 'none';
-        }
-
-        // Logout
-        function logout() {
-            auth.signOut();
-        }
-
-        // Device Management
-        function loadUserDevices() {
-            if (!currentUser) return;
-            
-            const userDevicesRef = database.ref(`users/${currentUser.uid}/devices`);
-            
-            userDevicesRef.on('value', (snapshot) => {
-                devices = [];
-                const data = snapshot.val();
-                
-                if (data) {
-                    Object.keys(data).forEach(deviceId => {
-                        devices.push({
-                            id: deviceId,
-                            ...data[deviceId]
-                        });
-                    });
-                }
-                
-                renderDevices();
-                
-                // Auto-select first device
-                if (devices.length > 0 && !currentDeviceId) {
-                    selectDevice(devices[0].id);
-                } else if (devices.length === 0) {
-                    currentDeviceId = null;
-                    currentDeviceIdSpan.textContent = 'Select a Device';
-                    renderLEDControls();
-                }
-            }, (error) => {
-                console.error('Error loading devices:', error);
+        if (data) {
+            Object.keys(data).forEach(deviceId => {
+                devices.push({
+                    id: deviceId,
+                    ...data[deviceId]
+                });
             });
         }
-
-        function renderDevices() {
-            if (devices.length === 0) {
-                deviceList.innerHTML = '<div class="loading">No devices found. Add your first device!</div>';
-                return;
-            }
-
-            deviceList.innerHTML = devices.map(device => `
-                <div class="device-card ${currentDeviceId === device.id ? 'active' : ''}" 
-                     onclick="selectDevice('${device.id}')">
-                    <div class="device-info">
-                        <div class="device-id">${device.id}</div>
-                        <div class="device-status">
-                            <div class="status-dot ${device.online ? 'online' : 'offline'}"></div>
-                            <span class="${device.online ? 'status-online' : 'status-offline'}">
-                                ${device.online ? 'Online' : 'Offline'}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="device-actions">
-                        <button class="remove-btn" onclick="event.stopPropagation(); removeDevice('${device.id}')">
-                            Remove
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+        
+        renderDevices();
+        
+        // Auto-select first device
+        if (devices.length > 0 && !currentDeviceId) {
+            selectDevice(devices[0].id);
+        } else if (devices.length === 0) {
+            currentDeviceId = null;
+            currentDeviceIdSpan.textContent = 'Select a Device';
+            renderLEDControls();
         }
+    }, (error) => {
+        console.error('Error loading devices:', error);
+    });
+}
 
-        function selectDevice(deviceId) {
-            currentDeviceId = deviceId;
-            currentDeviceIdSpan.textContent = deviceId;
+function renderDevices() {
+    if (devices.length === 0) {
+        deviceList.innerHTML = '<div class="loading">No devices found. Add your first device!</div>';
+        return;
+    }
+
+    deviceList.innerHTML = devices.map(device => `
+        <div class="device-card ${currentDeviceId === device.id ? 'active' : ''}" 
+             onclick="selectDevice('${device.id}')">
+            <div class="device-info">
+                <div class="device-id">${device.id}</div>
+                <div class="device-status">
+                    <div class="status-dot ${device.online ? 'online' : 'offline'}"></div>
+                    <span class="${device.online ? 'status-online' : 'status-offline'}">
+                        ${device.online ? 'Online' : 'Offline'}
+                    </span>
+                </div>
+            </div>
+            <div class="device-actions">
+                <button class="remove-btn" onclick="event.stopPropagation(); removeDevice('${device.id}')">
+                    Remove
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectDevice(deviceId) {
+    currentDeviceId = deviceId;
+    currentDeviceIdSpan.textContent = deviceId;
+    renderDevices();
+    listenToDeviceStatus();
+    listenToLEDStates();
+    listenToSensorData();
+    listenToFanState();
+    listenToDoorState();
+    listenToRFIDData();
+    listenToRainSensorData(); // ADDED: Rain sensor data
+    listenToWaterTankData();  // ADDED: Water tank data
+}
+
+// Water Tank Functions - ADDED
+function listenToWaterTankData() {
+    if (!currentDeviceId) {
+        console.log('❌ No device selected for water tank');
+        return;
+    }
+    
+    console.log('🔍 Listening to water tank data for:', currentDeviceId);
+    
+    // Listen to water level
+    const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
+    waterLevelRef.on('value', (snapshot) => {
+        const level = snapshot.val();
+        console.log('💧 Water level update:', level);
+        if (level !== null && level !== undefined) {
+            waterLevel = parseInt(level);
+            updateWaterTankUI();
+        } else {
+            console.log('❌ Water level is null or undefined');
+            waterLevel = 0;
+            updateWaterTankUI();
+        }
+    }, (error) => {
+        console.error('❌ Water level listener error:', error);
+    });
+
+    // Listen to motor state
+    const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
+    motorStateRef.on('value', (snapshot) => {
+        const state = snapshot.val();
+        console.log('🔧 Motor state update:', state);
+        if (state !== null && state !== undefined) {
+            waterMotorState = Boolean(state);
+            updateWaterTankUI();
+        } else {
+            console.log('❌ Motor state is null or undefined');
+            waterMotorState = false;
+            updateWaterTankUI();
+        }
+    }, (error) => {
+        console.error('❌ Motor state listener error:', error);
+    });
+
+    // Listen to water status
+    const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
+    waterStatusRef.on('value', (snapshot) => {
+        const status = snapshot.val();
+        console.log('📊 Water status update:', status);
+        if (status) {
+            waterStatus = status;
+            updateWaterTankUI();
+        }
+    });
+
+    console.log('✅ Water tank listeners activated');
+}
+
+function updateWaterTankUI() {
+    console.log('🔄 Updating water tank UI...');
+    console.log('💧 Current water level:', waterLevel);
+    console.log('🔧 Current motor state:', waterMotorState);
+    console.log('📊 Current water status:', waterStatus);
+    
+    // Ensure waterLevel is a valid number
+    if (isNaN(waterLevel) || waterLevel < 0) waterLevel = 0;
+    if (waterLevel > 100) waterLevel = 100;
+    
+    // Update all UI elements with null checks
+    const elements = {
+        'waterLevelValue': waterLevel + '%',
+        'waterProgress': waterLevel + '%',
+        'waterStatus': waterStatus,
+        'currentLevelText': waterLevel + '%',
+        'motorStatusText': waterMotorState ? 'RUNNING' : 'STOPPED'
+    };
+    
+    Object.keys(elements).forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            if (elementId === 'waterProgress') {
+                element.style.width = elements[elementId];
+                // Update progress bar color
+                if (waterLevel <= 25) {
+                    element.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
+                } else if (waterLevel >= 100) {
+                    element.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
+                } else {
+                    element.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                }
+            } else {
+                element.textContent = elements[elementId];
+            }
+        } else {
+            console.log('❌ Element not found:', elementId);
+        }
+    });
+    
+    // Update motor status display
+    const motorStatus = document.getElementById('motorStatus');
+    const motorState = document.getElementById('motorState');
+    
+    if (motorStatus && motorState) {
+        if (waterMotorState) {
+            motorStatus.textContent = 'MOTOR ON 🔄';
+            motorState.textContent = 'MOTOR RUNNING';
+        } else {
+            motorStatus.textContent = 'MOTOR OFF ⏹️';
+            motorState.textContent = 'MOTOR STOPPED';
+        }
+    }
+    
+    // Update water status class
+    const waterStatusElement = document.getElementById('waterStatus');
+    if (waterStatusElement) {
+        waterStatusElement.className = 'water-status';
+        if (waterLevel <= 25) {
+            waterStatusElement.classList.add('low');
+        } else if (waterLevel >= 100) {
+            waterStatusElement.classList.add('full');
+        } else {
+            waterStatusElement.classList.add('normal');
+        }
+    }
+    
+    console.log('✅ Water tank UI update completed');
+}
+
+// Rain Sensor Functions - ADDED
+function listenToRainSensorData() {
+    if (!currentDeviceId) {
+        console.log('❌ No device selected for rain sensor');
+        return;
+    }
+    
+    console.log('🌧️ Listening to rain sensor data for:', currentDeviceId);
+    
+    // Listen to rain value
+    const rainValueRef = database.ref(`devices/${currentDeviceId}/sensors/rainValue`);
+    rainValueRef.on('value', (snapshot) => {
+        const value = snapshot.val();
+        console.log('🌧️ Rain value update:', value);
+        if (value !== null && value !== undefined) {
+            rainValue = parseInt(value);
+            updateRainSensorUI();
+        } else {
+            console.log('❌ Rain value is null or undefined');
+            rainValue = 0;
+            updateRainSensorUI();
+        }
+    }, (error) => {
+        console.error('❌ Rain value listener error:', error);
+    });
+
+    // Listen to weather status
+    const weatherStatusRef = database.ref(`devices/${currentDeviceId}/sensors/weatherStatus`);
+    weatherStatusRef.on('value', (snapshot) => {
+        const status = snapshot.val();
+        console.log('🌤️ Weather status update:', status);
+        if (status) {
+            weatherStatus = status;
+            updateRainSensorUI();
+        } else {
+            console.log('❌ Weather status is null');
+            weatherStatus = "SUNNY";
+            updateRainSensorUI();
+        }
+    }, (error) => {
+        console.error('❌ Weather status listener error:', error);
+    });
+
+    // Listen to isRaining status
+    const isRainingRef = database.ref(`devices/${currentDeviceId}/sensors/isRaining`);
+    isRainingRef.on('value', (snapshot) => {
+        const raining = snapshot.val();
+        console.log('💧 Is raining update:', raining);
+        if (raining !== null && raining !== undefined) {
+            isRaining = Boolean(raining);
+            updateRainSensorUI();
+        } else {
+            console.log('❌ Is raining is null or undefined');
+            isRaining = false;
+            updateRainSensorUI();
+        }
+    }, (error) => {
+        console.error('❌ Is raining listener error:', error);
+    });
+
+    // Listen to UNO connection status
+    const unoConnectedRef = database.ref(`devices/${currentDeviceId}/unoConnected`);
+    unoConnectedRef.on('value', (snapshot) => {
+        const connected = snapshot.val();
+        console.log('🔌 UNO connected update:', connected);
+        if (connected !== null && connected !== undefined) {
+            unoConnected = Boolean(connected);
+            updateUNOStatusUI();
+        } else {
+            console.log('❌ UNO connected is null or undefined');
+            unoConnected = false;
+            updateUNOStatusUI();
+        }
+    }, (error) => {
+        console.error('❌ UNO connected listener error:', error);
+    });
+
+    console.log('✅ Rain sensor listeners activated');
+}
+
+function updateRainSensorUI() {
+    console.log('🔄 Updating rain sensor UI...');
+    console.log('🌧️ Current rain value:', rainValue);
+    console.log('💧 Current isRaining:', isRaining);
+    console.log('🌤️ Current weather status:', weatherStatus);
+    
+    // Update rain value display
+    if (rainValueSpan) {
+        rainValueSpan.textContent = rainValue;
+        console.log('✅ Updated rain value:', rainValue);
+    } else {
+        console.log('❌ rainValueSpan element not found');
+    }
+    
+    // Determine rain status based on rain value and weather status
+    let displayStatus = "SUNNY";
+    let displayIcon = "☀️";
+    let statusClass = "sunny";
+    
+    if (isRaining || rainValue < 500) {
+        displayStatus = "RAINING";
+        displayIcon = "🌧️";
+        statusClass = "raining";
+    } else {
+        displayStatus = "SUNNY";
+        displayIcon = "☀️";
+        statusClass = "sunny";
+    }
+    
+    // Update rain status display
+    if (rainStatus) {
+        rainStatus.textContent = `${displayStatus} ${displayIcon}`;
+        rainStatus.className = `rain-status ${statusClass}`;
+        console.log('✅ Updated rain status:', displayStatus);
+    } else {
+        console.log('❌ rainStatus element not found');
+    }
+    
+    // Update cloth status based on rain
+    if (clothStatusSpan && servoPositionSpan && servoBtn && servoStatus) {
+        if (isRaining || rainValue < 500) {
+            clothStatusSpan.textContent = "INDOOR 🏠";
+            servoPositionSpan.textContent = "Position: 0°";
+            servoBtn.textContent = "INDOOR";
+            servoBtn.className = "switch-btn on";
+            servoStatus.textContent = "INDOOR 🏠";
+            console.log('✅ Updated cloth status: INDOOR');
+        } else {
+            clothStatusSpan.textContent = "OUTDOOR ☀️";
+            servoPositionSpan.textContent = "Position: 90°";
+            servoBtn.textContent = "OUTDOOR";
+            servoBtn.className = "switch-btn off";
+            servoStatus.textContent = "OUTDOOR ☀️";
+            console.log('✅ Updated cloth status: OUTDOOR');
+        }
+    } else {
+        console.log('❌ Cloth status elements not found');
+    }
+    
+    console.log('✅ Rain sensor UI update completed');
+}
+
+function updateUNOStatusUI() {
+    console.log('🔌 Updating UNO status UI...');
+    console.log('📡 UNO connected:', unoConnected);
+    
+    if (unoStatus && unoDataSpan) {
+        if (unoConnected) {
+            unoStatus.textContent = 'CONNECTED ✅';
+            unoStatus.className = 'connection-status connected';
+            unoDataSpan.textContent = 'Receiving sensor data...';
+            console.log('✅ UNO status: CONNECTED');
+        } else {
+            unoStatus.textContent = 'DISCONNECTED ❌';
+            unoStatus.className = 'connection-status disconnected';
+            unoDataSpan.textContent = 'Waiting for connection...';
+            console.log('❌ UNO status: DISCONNECTED');
+        }
+    } else {
+        console.log('❌ UNO status elements not found');
+    }
+}
+
+async function toggleCloth() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    if (!unoConnected) {
+        alert('UNO is not connected. Cannot control cloth system.');
+        return;
+    }
+
+    try {
+        // Toggle cloth position based on current state
+        const newClothStatus = (isRaining || rainValue < 500) ? "OUTDOOR" : "INDOOR";
+        
+        // For now, we'll just show an alert since we need ESP32 to UNO communication
+        alert(`Manual cloth control activated!\n\nWould move cloth: ${newClothStatus}\n\nNote: This requires ESP32 to UNO command implementation.`);
+        
+        console.log(`👕 Manual cloth control: ${newClothStatus}`);
+        
+    } catch (error) {
+        console.error('Error controlling cloth:', error);
+        alert('Error controlling cloth: ' + error.message);
+    }
+}
+
+// ALL THE ORIGINAL FUNCTIONS
+function listenToDeviceStatus() {
+    if (!currentDeviceId) return;
+    
+    // Listen to online status
+    const statusRef = database.ref(`devices/${currentDeviceId}/online`);
+    statusRef.on('value', (snapshot) => {
+        const online = snapshot.val() || false;
+        
+        // Update in devices array
+        const deviceIndex = devices.findIndex(d => d.id === currentDeviceId);
+        if (deviceIndex !== -1) {
+            devices[deviceIndex].online = online;
             renderDevices();
-            listenToDeviceStatus();
-            listenToLEDStates();
-            listenToSensorData();
-            listenToFanState();
-            listenToDoorState();
-            listenToRFIDData();
-            listenToRainSensorData(); // NEW: Listen to rain sensor data
         }
+    });
 
-        // NEW FUNCTION: Listen to rain sensor data from UNO
-        function listenToRainSensorData() {
-            if (!currentDeviceId) return;
-            
-            // Listen to rain value
-            const rainValueRef = database.ref(`devices/${currentDeviceId}/sensors/rainValue`);
-            rainValueRef.on('value', (snapshot) => {
-                const value = snapshot.val();
-                if (value !== null) {
-                    rainValue = value;
-                    updateRainSensorUI();
-                }
-            });
+    // Listen to auto mode
+    const autoModeRef = database.ref(`devices/${currentDeviceId}/autoMode`);
+    autoModeRef.on('value', (snapshot) => {
+        autoMode = snapshot.val() || false;
+        updateAutoModeUI();
+    });
 
-            // Listen to weather status
-            const weatherStatusRef = database.ref(`devices/${currentDeviceId}/sensors/weatherStatus`);
-            weatherStatusRef.on('value', (snapshot) => {
-                const status = snapshot.val();
-                if (status) {
-                    weatherStatus = status;
-                    updateRainSensorUI();
-                }
-            });
+    // Listen to security auto mode
+    const securityAutoModeRef = database.ref(`devices/${currentDeviceId}/securityAutoMode`);
+    securityAutoModeRef.on('value', (snapshot) => {
+        securityAutoMode = snapshot.val() || false;
+        updateSecurityAutoModeUI();
+    });
 
-            // Listen to isRaining status
-            const isRainingRef = database.ref(`devices/${currentDeviceId}/sensors/isRaining`);
-            isRainingRef.on('value', (snapshot) => {
-                const raining = snapshot.val();
-                if (raining !== null) {
-                    isRaining = raining;
-                    updateRainSensorUI();
-                }
-            });
+    // Listen to door auto mode
+    const doorAutoModeRef = database.ref(`devices/${currentDeviceId}/doorAutoMode`);
+    doorAutoModeRef.on('value', (snapshot) => {
+        doorAutoMode = snapshot.val() || false;
+        updateDoorAutoModeUI();
+    });
 
-            // Listen to UNO connection status
-            const unoConnectedRef = database.ref(`devices/${currentDeviceId}/unoConnected`);
-            unoConnectedRef.on('value', (snapshot) => {
-                unoConnected = snapshot.val() || false;
-                updateUNOStatusUI();
-            });
-
-            // Listen to UNO data
-            const unoDataRef = database.ref(`devices/${currentDeviceId}/sensors/unoData`);
-            unoDataRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    unoData = data;
-                    updateUNOStatusUI();
-                }
-            });
+    // Listen to window state
+    const windowRef = database.ref(`devices/${currentDeviceId}/window`);
+    windowRef.on('value', (snapshot) => {
+        windowState = snapshot.val() || false;
+        updateWindowUI();
+        
+        // Show manual override indicator when window state changes in auto mode
+        if (autoMode) {
+            showManualOverrideIndicator();
         }
+    });
+}
 
-        // NEW FUNCTION: Update rain sensor UI
-        function updateRainSensorUI() {
-            // Update rain value
-            rainValueSpan.textContent = rainValue;
-            
-            // Determine rain status based on rain value and weather status
-            let displayStatus = "SUNNY";
-            let displayIcon = "☀️";
-            let statusClass = "sunny";
-            
-            if (isRaining || rainValue < 500) {
-                displayStatus = "RAINING";
-                displayIcon = "🌧️";
-                statusClass = "raining";
-            } else {
-                displayStatus = "SUNNY";
-                displayIcon = "☀️";
-                statusClass = "sunny";
-            }
-            
-            // Update rain status display
-            rainStatus.textContent = `${displayStatus} ${displayIcon}`;
-            rainStatus.className = `rain-status ${statusClass}`;
-            
-            // Update cloth status based on rain
-            if (isRaining || rainValue < 500) {
-                clothStatusSpan.textContent = "INDOOR 🏠";
-                servoPositionSpan.textContent = "Position: 0°";
-                servoBtn.textContent = "INDOOR";
-                servoBtn.className = "switch-btn on";
-                servoStatus.textContent = "INDOOR 🏠";
-            } else {
-                clothStatusSpan.textContent = "OUTDOOR ☀️";
-                servoPositionSpan.textContent = "Position: 90°";
-                servoBtn.textContent = "OUTDOOR";
-                servoBtn.className = "switch-btn off";
-                servoStatus.textContent = "OUTDOOR ☀️";
-            }
+function listenToSensorData() {
+    if (!currentDeviceId) return;
+    
+    // Listen to temperature
+    const tempRef = database.ref(`devices/${currentDeviceId}/sensors/temperature`);
+    tempRef.on('value', (snapshot) => {
+        const temp = snapshot.val();
+        if (temp !== null) {
+            temperature = temp;
+            temperatureValue.textContent = temp.toFixed(1);
+            updateFanAutoStatus();
         }
+    });
 
-        // NEW FUNCTION: Update UNO connection status
-        function updateUNOStatusUI() {
-            if (unoConnected) {
-                unoStatus.textContent = 'CONNECTED ✅';
-                unoStatus.className = 'connection-status connected';
-                unoDataSpan.textContent = unoData || 'Receiving data...';
-            } else {
-                unoStatus.textContent = 'DISCONNECTED ❌';
-                unoStatus.className = 'connection-status disconnected';
-                unoDataSpan.textContent = 'Waiting for connection...';
-            }
+    // Listen to humidity
+    const humidityRef = database.ref(`devices/${currentDeviceId}/sensors/humidity`);
+    humidityRef.on('value', (snapshot) => {
+        const hum = snapshot.val();
+        if (hum !== null) {
+            humidity = hum;
+            humidityValue.textContent = hum.toFixed(1);
         }
+    });
 
-        // NEW FUNCTION: Manual cloth control
-        async function toggleCloth() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            if (!unoConnected) {
-                alert('UNO is not connected. Cannot control cloth system.');
-                return;
-            }
-
-            try {
-                // Toggle cloth position
-                const newClothStatus = isRaining ? "OUTDOOR" : "INDOOR";
-                
-                // Note: This would require additional implementation on ESP32 side
-                // to send commands to UNO. For now, we'll just update the display.
-                
-                alert(`Manual cloth control: ${newClothStatus}\n\nThis feature requires additional implementation to send commands from ESP32 to UNO.`);
-                
-            } catch (error) {
-                console.error('Error controlling cloth:', error);
-                alert('Error controlling cloth: ' + error.message);
-            }
+    // Listen to motion sensor
+    const motionRef = database.ref(`devices/${currentDeviceId}/sensors/motion`);
+    motionRef.on('value', (snapshot) => {
+        const motion = snapshot.val();
+        if (motion !== null) {
+            motionDetected = motion;
+            motionValue.textContent = motion ? 'Motion Detected' : 'No Motion';
+            motionValue.style.color = motion ? '#4CAF50' : '#f44336';
         }
+    });
+}
 
-        // ALL THE ORIGINAL FUNCTIONS FROM YOUR CODE
-        function listenToDeviceStatus() {
-            if (!currentDeviceId) return;
-            
-            // Listen to online status
-            const statusRef = database.ref(`devices/${currentDeviceId}/online`);
-            statusRef.on('value', (snapshot) => {
-                const online = snapshot.val() || false;
-                
-                // Update in devices array
-                const deviceIndex = devices.findIndex(d => d.id === currentDeviceId);
-                if (deviceIndex !== -1) {
-                    devices[deviceIndex].online = online;
-                    renderDevices();
-                }
-            });
+function listenToFanState() {
+    if (!currentDeviceId) return;
+    
+    // Listen to fan state
+    const fanRef = database.ref(`devices/${currentDeviceId}/fan`);
+    fanRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            fanState = data.state || false;
+            fanAutoMode = data.autoMode !== undefined ? data.autoMode : true;
+            updateFanUI();
+        }
+    });
+}
 
-            // Listen to auto mode
-            const autoModeRef = database.ref(`devices/${currentDeviceId}/autoMode`);
-            autoModeRef.on('value', (snapshot) => {
-                autoMode = snapshot.val() || false;
-                updateAutoModeUI();
-            });
+function listenToDoorState() {
+    if (!currentDeviceId) return;
+    
+    // Listen to door state
+    const doorRef = database.ref(`devices/${currentDeviceId}/door`);
+    doorRef.on('value', (snapshot) => {
+        const state = snapshot.val();
+        if (state !== null) {
+            doorState = state;
+            updateDoorUI();
+        }
+    });
+}
 
-            // Listen to security auto mode
-            const securityAutoModeRef = database.ref(`devices/${currentDeviceId}/securityAutoMode`);
-            securityAutoModeRef.on('value', (snapshot) => {
-                securityAutoMode = snapshot.val() || false;
-                updateSecurityAutoModeUI();
-            });
-
-            // Listen to door auto mode
-            const doorAutoModeRef = database.ref(`devices/${currentDeviceId}/doorAutoMode`);
-            doorAutoModeRef.on('value', (snapshot) => {
-                doorAutoMode = snapshot.val() || false;
-                updateDoorAutoModeUI();
-            });
-
-            // Listen to window state
-            const windowRef = database.ref(`devices/${currentDeviceId}/window`);
-            windowRef.on('value', (snapshot) => {
-                windowState = snapshot.val() || false;
-                updateWindowUI();
-                
-                // Show manual override indicator when window state changes in auto mode
-                if (autoMode) {
-                    showManualOverrideIndicator();
-                }
+function listenToRFIDData() {
+    if (!currentDeviceId) return;
+    
+    // Listen to authorized RFID keys
+    const rfidRef = database.ref(`devices/${currentDeviceId}/authorizedRFIDs`);
+    rfidRef.on('value', (snapshot) => {
+        authorizedRFIDs = [];
+        const data = snapshot.val();
+        
+        if (data) {
+            Object.keys(data).forEach(rfid => {
+                authorizedRFIDs.push({
+                    uid: rfid,
+                    authorized: data[rfid]
+                });
             });
         }
+        
+        renderRFIDKeys();
+    });
 
-        function listenToSensorData() {
-            if (!currentDeviceId) return;
-            
-            // Listen to temperature
-            const tempRef = database.ref(`devices/${currentDeviceId}/sensors/temperature`);
-            tempRef.on('value', (snapshot) => {
-                const temp = snapshot.val();
-                if (temp !== null) {
-                    temperature = temp;
-                    temperatureValue.textContent = temp.toFixed(1);
-                    updateFanAutoStatus();
-                }
-            });
-
-            // Listen to humidity
-            const humidityRef = database.ref(`devices/${currentDeviceId}/sensors/humidity`);
-            humidityRef.on('value', (snapshot) => {
-                const hum = snapshot.val();
-                if (hum !== null) {
-                    humidity = hum;
-                    humidityValue.textContent = hum.toFixed(1);
-                }
-            });
-
-            // Listen to motion sensor
-            const motionRef = database.ref(`devices/${currentDeviceId}/sensors/motion`);
-            motionRef.on('value', (snapshot) => {
-                const motion = snapshot.val();
-                if (motion !== null) {
-                    motionDetected = motion;
-                    motionValue.textContent = motion ? 'Motion Detected' : 'No Motion';
-                    motionValue.style.color = motion ? '#4CAF50' : '#f44336';
-                }
-            });
+    // Listen to RFID access log
+    const accessLogRef = database.ref(`devices/${currentDeviceId}/lastRFIDAccess`);
+    accessLogRef.on('value', (snapshot) => {
+        const log = snapshot.val();
+        if (log && log !== lastRFIDAccess) {
+            lastRFIDAccess = log;
+            updateAccessLog(log);
         }
+    });
+}
 
-        function listenToFanState() {
-            if (!currentDeviceId) return;
-            
-            // Listen to fan state
-            const fanRef = database.ref(`devices/${currentDeviceId}/fan`);
-            fanRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    fanState = data.state || false;
-                    fanAutoMode = data.autoMode !== undefined ? data.autoMode : true;
-                    updateFanUI();
-                }
-            });
+function listenToLEDStates() {
+    if (!currentDeviceId) return;
+    
+    const ledRef = database.ref(`devices/${currentDeviceId}/leds`);
+    ledRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            ledStates = { ...ledStates, ...data };
+            renderLEDControls();
         }
+    }, (error) => {
+        console.error('Error listening to LED states:', error);
+    });
+}
 
-        function listenToDoorState() {
-            if (!currentDeviceId) return;
-            
-            // Listen to door state
-            const doorRef = database.ref(`devices/${currentDeviceId}/door`);
-            doorRef.on('value', (snapshot) => {
-                const state = snapshot.val();
-                if (state !== null) {
-                    doorState = state;
-                    updateDoorUI();
-                }
-            });
-        }
+function renderLEDControls() {
+    const ledConfigs = [
+        { name: 'garden', label: '🌿 Garden Light', icon: '🌿' },
+        { name: 'bedroom', label: '🛏️ Bed Room Light', icon: '🛏️' },
+        { name: 'kitchen', label: '👨‍🍳 Kitchen Light', icon: '👨‍🍳' },
+        { name: 'livingroom', label: '🛋️ Living Room Light', icon: '🛋️' },
+        { name: 'garage', label: '🚗 Garage Light', icon: '🚗' },
+        { name: 'security', label: '🚨 Security Light', icon: '🚨' }
+    ];
 
-        function listenToRFIDData() {
-            if (!currentDeviceId) return;
-            
-            // Listen to authorized RFID keys
-            const rfidRef = database.ref(`devices/${currentDeviceId}/authorizedRFIDs`);
-            rfidRef.on('value', (snapshot) => {
-                authorizedRFIDs = [];
-                const data = snapshot.val();
-                
-                if (data) {
-                    Object.keys(data).forEach(rfid => {
-                        authorizedRFIDs.push({
-                            uid: rfid,
-                            authorized: data[rfid]
-                        });
-                    });
-                }
-                
-                renderRFIDKeys();
-            });
+    if (!currentDeviceId) {
+        ledsGrid.innerHTML = '<div class="loading">Please select a device to control LEDs</div>';
+        return;
+    }
 
-            // Listen to RFID access log
-            const accessLogRef = database.ref(`devices/${currentDeviceId}/lastRFIDAccess`);
-            accessLogRef.on('value', (snapshot) => {
-                const log = snapshot.val();
-                if (log && log !== lastRFIDAccess) {
-                    lastRFIDAccess = log;
-                    updateAccessLog(log);
-                }
-            });
-        }
-
-        function listenToLEDStates() {
-            if (!currentDeviceId) return;
-            
-            const ledRef = database.ref(`devices/${currentDeviceId}/leds`);
-            ledRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    ledStates = { ...ledStates, ...data };
-                    renderLEDControls();
-                }
-            }, (error) => {
-                console.error('Error listening to LED states:', error);
-            });
-        }
-
-        function renderLEDControls() {
-            const ledConfigs = [
-                { name: 'garden', label: '🌿 Garden Light', icon: '🌿' },
-                { name: 'bedroom', label: '🛏️ Bed Room Light', icon: '🛏️' },
-                { name: 'kitchen', label: '👨‍🍳 Kitchen Light', icon: '👨‍🍳' },
-                { name: 'livingroom', label: '🛋️ Living Room Light', icon: '🛋️' },
-                { name: 'garage', label: '🚗 Garage Light', icon: '🚗' },
-                { name: 'security', label: '🚨 Security Light', icon: '🚨' }
-            ];
-
-            if (!currentDeviceId) {
-                ledsGrid.innerHTML = '<div class="loading">Please select a device to control LEDs</div>';
-                return;
-            }
-
-            ledsGrid.innerHTML = ledConfigs.map(led => {
-                const isOn = ledStates[led.name] || false;
-                const isGardenDisabled = (led.name === 'garden' && autoMode);
-                const isSecurityDisabled = (led.name === 'security' && securityAutoMode);
-                const isDisabled = isGardenDisabled || isSecurityDisabled;
-                
-                return `
-                    <div class="led-control">
-                        <div class="led-icon">${led.icon}</div>
-                        <div class="led-name">${led.label} 
-                            ${isDisabled ? '<br><small style="font-size: 12px;">(Auto Controlled)</small>' : ''}
-                        </div>
-                        <div class="switch-container">
-                            <button class="switch-btn ${isOn ? 'on' : 'off'}" 
-                                    onclick="toggleLED('${led.name}', ${!isOn})"
-                                    ${isDisabled ? 'disabled' : ''}>
-                                ${isOn ? 'ON' : 'OFF'}
-                            </button>
-                            <div class="status-indicator">
-                                ${isOn ? '✓ ON' : '✗ OFF'}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // RFID Functions
-        function renderRFIDKeys() {
-            if (authorizedRFIDs.length === 0) {
-                rfidKeysList.innerHTML = '<div class="loading">No RFID keys added yet</div>';
-                return;
-            }
-
-            rfidKeysList.innerHTML = authorizedRFIDs.map(rfid => `
-                <div class="rfid-key-item">
-                    <span>${rfid.uid}</span>
-                    <button class="remove-rfid-btn" onclick="removeRFIDKey('${rfid.uid}')">Remove</button>
+    ledsGrid.innerHTML = ledConfigs.map(led => {
+        const isOn = ledStates[led.name] || false;
+        const isGardenDisabled = (led.name === 'garden' && autoMode);
+        const isSecurityDisabled = (led.name === 'security' && securityAutoMode);
+        const isDisabled = isGardenDisabled || isSecurityDisabled;
+        
+        return `
+            <div class="led-control">
+                <div class="led-icon">${led.icon}</div>
+                <div class="led-name">${led.label} 
+                    ${isDisabled ? '<br><small style="font-size: 12px;">(Auto Controlled)</small>' : ''}
                 </div>
-            `).join('');
+                <div class="switch-container">
+                    <button class="switch-btn ${isOn ? 'on' : 'off'}" 
+                            onclick="toggleLED('${led.name}', ${!isOn})"
+                            ${isDisabled ? 'disabled' : ''}>
+                        ${isOn ? 'ON' : 'OFF'}
+                    </button>
+                    <div class="status-indicator">
+                        ${isOn ? '✓ ON' : '✗ OFF'}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// RFID Functions
+function renderRFIDKeys() {
+    if (authorizedRFIDs.length === 0) {
+        rfidKeysList.innerHTML = '<div class="loading">No RFID keys added yet</div>';
+        return;
+    }
+
+    rfidKeysList.innerHTML = authorizedRFIDs.map(rfid => `
+        <div class="rfid-key-item">
+            <span>${rfid.uid}</span>
+            <button class="remove-rfid-btn" onclick="removeRFIDKey('${rfid.uid}')">Remove</button>
+        </div>
+    `).join('');
+}
+
+function updateAccessLog(log) {
+    const logEntry = document.createElement('div');
+    logEntry.className = 'log-entry';
+    logEntry.textContent = log;
+    accessLog.insertBefore(logEntry, accessLog.firstChild);
+    
+    // Keep only last 10 entries
+    while (accessLog.children.length > 10) {
+        accessLog.removeChild(accessLog.lastChild);
+    }
+}
+
+async function addRFIDKey() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    const rfidKey = newRFIDKeyInput.value.trim().toUpperCase();
+    
+    if (!rfidKey) {
+        alert('Please enter an RFID UID');
+        return;
+    }
+
+    // Validate RFID format (should be in hex format with spaces)
+    if (!rfidKey.match(/^([0-9A-F]{2}\s?){4,10}$/)) {
+        alert('Please enter a valid RFID UID in hex format (e.g., "12 AB 34 CD")');
+        return;
+    }
+
+    try {
+        await database.ref(`devices/${currentDeviceId}/authorizedRFIDs/${rfidKey}`).set(true);
+        newRFIDKeyInput.value = '';
+        alert('RFID key added successfully!');
+    } catch (error) {
+        console.error('Error adding RFID key:', error);
+        alert('Error adding RFID key: ' + error.message);
+    }
+}
+
+async function removeRFIDKey(rfidUID) {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to remove RFID key ${rfidUID}?`)) {
+        return;
+    }
+
+    try {
+        await database.ref(`devices/${currentDeviceId}/authorizedRFIDs/${rfidUID}`).remove();
+    } catch (error) {
+        console.error('Error removing RFID key:', error);
+        alert('Error removing RFID key: ' + error.message);
+    }
+}
+
+// LED Control Functions
+async function toggleLED(ledName, state) {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    // Check if garden LED is in auto mode
+    if (ledName === 'garden' && autoMode) {
+        alert('Garden light is in auto mode. Disable auto mode to control manually.');
+        return;
+    }
+
+    // Check if security LED is in auto mode
+    if (ledName === 'security' && securityAutoMode) {
+        alert('Security light is in auto mode. Disable security auto mode to control manually.');
+        return;
+    }
+
+    try {
+        await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
+    } catch (error) {
+        console.error('Error controlling LED:', error);
+        alert('Error controlling LED: ' + error.message);
+    }
+}
+
+async function controlAllLeds(state) {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    if (autoMode || securityAutoMode) {
+        if (!confirm('Auto mode is enabled for some lights. This will turn all lights manually. Continue?')) {
+            return;
+        }
+    }
+
+    try {
+        const updates = {};
+        const ledNames = ['garden', 'bedroom', 'kitchen', 'livingroom', 'garage', 'security'];
+        ledNames.forEach(ledName => {
+            updates[ledName] = state;
+        });
+        await database.ref(`devices/${currentDeviceId}/leds`).update(updates);
+    } catch (error) {
+        console.error('Error controlling LEDs:', error);
+        alert('Error controlling LEDs: ' + error.message);
+    }
+}
+
+// Auto Mode functions
+async function toggleAutoMode() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    try {
+        const newAutoMode = !autoMode;
+        await database.ref(`devices/${currentDeviceId}/autoMode`).set(newAutoMode);
+    } catch (error) {
+        console.error('Error toggling auto mode:', error);
+        alert('Error toggling auto mode: ' + error.message);
+    }
+}
+
+async function toggleSecurityAutoMode() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    try {
+        const newSecurityAutoMode = !securityAutoMode;
+        await database.ref(`devices/${currentDeviceId}/securityAutoMode`).set(newSecurityAutoMode);
+    } catch (error) {
+        console.error('Error toggling security auto mode:', error);
+        alert('Error toggling security auto mode: ' + error.message);
+    }
+}
+
+async function toggleDoorAutoMode() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    try {
+        const newDoorAutoMode = !doorAutoMode;
+        await database.ref(`devices/${currentDeviceId}/doorAutoMode`).set(newDoorAutoMode);
+    } catch (error) {
+        console.error('Error toggling door auto mode:', error);
+        alert('Error toggling door auto mode: ' + error.message);
+    }
+}
+
+function updateAutoModeUI() {
+    const autoModeBtn = document.getElementById('autoModeBtn');
+    const autoModeStatus = document.getElementById('autoModeStatus');
+    
+    if (autoMode) {
+        autoModeBtn.textContent = 'ON';
+        autoModeBtn.className = 'switch-btn on';
+        autoModeStatus.textContent = 'Auto Mode Active';
+        autoModeStatus.style.background = '#e8f5e8';
+        autoModeStatus.style.color = '#2e7d32';
+    } else {
+        autoModeBtn.textContent = 'OFF';
+        autoModeBtn.className = 'switch-btn off';
+        autoModeStatus.textContent = 'Manual Control';
+        autoModeStatus.style.background = '#ffebee';
+        autoModeStatus.style.color = '#c62828';
+    }
+    
+    // Re-render LED controls to update disabled states
+    renderLEDControls();
+    updateWindowUI();
+}
+
+function updateSecurityAutoModeUI() {
+    if (securityAutoMode) {
+        securityAutoModeBtn.textContent = 'ON';
+        securityAutoModeBtn.className = 'switch-btn on';
+        securityAutoModeStatus.textContent = 'Security Auto Mode Active';
+        securityAutoModeStatus.style.background = '#e8f5e8';
+        securityAutoModeStatus.style.color = '#2e7d32';
+    } else {
+        securityAutoModeBtn.textContent = 'OFF';
+        securityAutoModeBtn.className = 'switch-btn off';
+        securityAutoModeStatus.textContent = 'Manual Control';
+        securityAutoModeStatus.style.background = '#ffebee';
+        securityAutoModeStatus.style.color = '#c62828';
+    }
+    
+    // Re-render LED controls to update disabled states
+    renderLEDControls();
+}
+
+function updateDoorAutoModeUI() {
+    if (doorAutoMode) {
+        doorAutoModeBtn.textContent = 'ON';
+        doorAutoModeBtn.className = 'switch-btn on';
+        doorAutoModeStatus.textContent = 'RFID Only Mode';
+        doorAutoModeStatus.style.background = '#e8f5e8';
+        doorAutoModeStatus.style.color = '#2e7d32';
+        doorBtn.disabled = true;
+        doorBtn.title = 'Switch to manual mode to control door from app';
+    } else {
+        doorAutoModeBtn.textContent = 'OFF';
+        doorAutoModeBtn.className = 'switch-btn off';
+        doorAutoModeStatus.textContent = 'Manual Control';
+        doorAutoModeStatus.style.background = '#ffebee';
+        doorAutoModeStatus.style.color = '#c62828';
+        doorBtn.disabled = false;
+        doorBtn.title = 'Click to toggle door';
+    }
+}
+
+// Door control functions
+async function toggleDoor() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    // Check if door is in auto mode
+    if (doorAutoMode) {
+        alert('Door is in RFID only mode. Switch to manual mode to control door from app.');
+        return;
+    }
+
+    try {
+        const newDoorState = !doorState;
+        await database.ref(`devices/${currentDeviceId}/door`).set(newDoorState);
+    } catch (error) {
+        console.error('Error toggling door:', error);
+        alert('Error toggling door: ' + error.message);
+    }
+}
+
+function updateDoorUI() {
+    if (doorState) {
+        doorBtn.textContent = 'OPEN';
+        doorBtn.className = 'switch-btn on';
+        doorStatus.textContent = '✓ OPEN';
+    } else {
+        doorBtn.textContent = 'CLOSE';
+        doorBtn.className = 'switch-btn off';
+        doorStatus.textContent = '✗ CLOSED';
+    }
+}
+
+// Window control functions - ALWAYS ALLOW MANUAL CONTROL
+async function toggleWindow() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    try {
+        const newWindowState = !windowState;
+        await database.ref(`devices/${currentDeviceId}/window`).set(newWindowState);
+        
+        // Show manual override message if in auto mode
+        if (autoMode) {
+            showManualOverrideIndicator();
+        }
+    } catch (error) {
+        console.error('Error toggling window:', error);
+        alert('Error toggling window: ' + error.message);
+    }
+}
+
+function updateWindowUI() {
+    const windowBtn = document.getElementById('windowBtn');
+    const windowStatus = document.getElementById('windowStatus');
+    const windowInfo = document.getElementById('windowInfo');
+    
+    if (windowState) {
+        windowBtn.textContent = 'OPEN';
+        windowBtn.className = 'switch-btn on';
+        windowStatus.textContent = '✓ OPEN';
+    } else {
+        windowBtn.textContent = 'CLOSE';
+        windowBtn.className = 'switch-btn off';
+        windowStatus.textContent = '✗ CLOSED';
+    }
+    
+    // Always enable window button
+    windowBtn.disabled = false;
+    
+    // Update info text based on mode
+    if (autoMode) {
+        windowInfo.innerHTML = 'Manual override - 30 seconds control';
+        windowInfo.style.color = '#e67e22';
+    } else {
+        windowInfo.innerHTML = 'Click to manually open/close window';
+        windowInfo.style.color = '#666';
+    }
+}
+
+// Fan control functions
+async function toggleFan() {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    try {
+        // Only allow manual control if in manual mode
+        if (fanAutoMode) {
+            alert('Fan is in auto mode. Switch to manual mode to control the fan directly.');
+            return;
         }
 
-        function updateAccessLog(log) {
-            const logEntry = document.createElement('div');
-            logEntry.className = 'log-entry';
-            logEntry.textContent = log;
-            accessLog.insertBefore(logEntry, accessLog.firstChild);
-            
-            // Keep only last 10 entries
-            while (accessLog.children.length > 10) {
-                accessLog.removeChild(accessLog.lastChild);
-            }
+        const newFanState = !fanState;
+        await database.ref(`devices/${currentDeviceId}/fan/state`).set(newFanState);
+    } catch (error) {
+        console.error('Error toggling fan:', error);
+        alert('Error toggling fan: ' + error.message);
+    }
+}
+
+async function setFanMode(isAutoMode) {
+    if (!currentDeviceId) {
+        alert('Please select a device first');
+        return;
+    }
+
+    try {
+        await database.ref(`devices/${currentDeviceId}/fan/autoMode`).set(isAutoMode);
+        
+        // If switching to auto mode, let the ESP32 control the fan based on temperature
+        if (isAutoMode) {
+            await database.ref(`devices/${currentDeviceId}/fan/manualOverride`).set(false);
         }
+    } catch (error) {
+        console.error('Error setting fan mode:', error);
+        alert('Error setting fan mode: ' + error.message);
+    }
+}
 
-        async function addRFIDKey() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+function updateFanUI() {
+    // Update fan button and status
+    if (fanState) {
+        fanBtn.textContent = 'ON';
+        fanBtn.className = 'switch-btn on';
+        fanStatus.textContent = '✓ ON';
+        fanStatusText.textContent = 'ON';
+        fanStatusText.style.color = '#2e7d32';
+    } else {
+        fanBtn.textContent = 'OFF';
+        fanBtn.className = 'switch-btn off';
+        fanStatus.textContent = '✗ OFF';
+        fanStatusText.textContent = 'OFF';
+        fanStatusText.style.color = '#c62828';
+    }
 
-            const rfidKey = newRFIDKeyInput.value.trim().toUpperCase();
-            
-            if (!rfidKey) {
-                alert('Please enter an RFID UID');
-                return;
-            }
+    // Update mode buttons
+    if (fanAutoMode) {
+        fanAutoModeBtn.className = 'mode-btn active';
+        fanManualModeBtn.className = 'mode-btn inactive';
+        fanModeText.textContent = 'Auto';
+        fanModeText.style.color = '#2e7d32';
+        fanBtn.disabled = true;
+        fanBtn.title = 'Switch to manual mode to control fan';
+    } else {
+        fanAutoModeBtn.className = 'mode-btn inactive';
+        fanManualModeBtn.className = 'mode-btn active';
+        fanModeText.textContent = 'Manual';
+        fanModeText.style.color = '#e67e22';
+        fanBtn.disabled = false;
+        fanBtn.title = 'Click to toggle fan';
+    }
+}
 
-            // Validate RFID format (should be in hex format with spaces)
-            if (!rfidKey.match(/^([0-9A-F]{2}\s?){4,10}$/)) {
-                alert('Please enter a valid RFID UID in hex format (e.g., "12 AB 34 CD")');
-                return;
-            }
-
-            try {
-                await database.ref(`devices/${currentDeviceId}/authorizedRFIDs/${rfidKey}`).set(true);
-                newRFIDKeyInput.value = '';
-                alert('RFID key added successfully!');
-            } catch (error) {
-                console.error('Error adding RFID key:', error);
-                alert('Error adding RFID key: ' + error.message);
-            }
+function updateFanAutoStatus() {
+    if (fanAutoMode) {
+        if (temperature >= 25) {
+            fanAutoStatus.textContent = 'Auto: ON (≥25°C)';
+            fanAutoStatus.style.background = 'rgba(76, 175, 80, 0.3)';
+        } else {
+            fanAutoStatus.textContent = 'Auto: OFF (<25°C)';
+            fanAutoStatus.style.background = 'rgba(244, 67, 54, 0.3)';
         }
+    } else {
+        fanAutoStatus.textContent = 'Manual Control';
+        fanAutoStatus.style.background = 'rgba(255, 193, 7, 0.3)';
+    }
+}
 
-        async function removeRFIDKey(rfidUID) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+// Manual override indicator
+function showManualOverrideIndicator() {
+    overrideIndicator.style.display = 'block';
+    
+    // Hide after 30 seconds (matching ESP32 timeout)
+    setTimeout(() => {
+        overrideIndicator.style.display = 'none';
+    }, 30000);
+}
 
-            if (!confirm(`Are you sure you want to remove RFID key ${rfidUID}?`)) {
-                return;
-            }
+// Device Modal Functions
+function showAddDeviceModal() {
+    addDeviceModal.style.display = 'flex';
+    newDeviceIdInput.value = '';
+    newDeviceIdInput.focus();
+}
 
-            try {
-                await database.ref(`devices/${currentDeviceId}/authorizedRFIDs/${rfidUID}`).remove();
-            } catch (error) {
-                console.error('Error removing RFID key:', error);
-                alert('Error removing RFID key: ' + error.message);
-            }
-        }
+function hideAddDeviceModal() {
+    addDeviceModal.style.display = 'none';
+}
 
-        // LED Control Functions
-        async function toggleLED(ledName, state) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+async function addDevice() {
+    const deviceId = newDeviceIdInput.value.trim();
+    
+    if (!deviceId) {
+        alert('Please enter a device ID');
+        return;
+    }
 
-            // Check if garden LED is in auto mode
-            if (ledName === 'garden' && autoMode) {
-                alert('Garden light is in auto mode. Disable auto mode to control manually.');
-                return;
-            }
+    if (!currentUser) {
+        alert('Please login first');
+        return;
+    }
 
-            // Check if security LED is in auto mode
-            if (ledName === 'security' && securityAutoMode) {
-                alert('Security light is in auto mode. Disable security auto mode to control manually.');
-                return;
-            }
+    try {
+        // Add to user's devices
+        await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).set({
+            addedAt: Date.now(),
+            online: false
+        });
 
-            try {
-                await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
-            } catch (error) {
-                console.error('Error controlling LED:', error);
-                alert('Error controlling LED: ' + error.message);
-            }
-        }
+        hideAddDeviceModal();
+        selectDevice(deviceId);
+    } catch (error) {
+        console.error('Error adding device:', error);
+        alert('Error adding device: ' + error.message);
+    }
+}
 
-        async function controlAllLeds(state) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+async function removeDevice(deviceId) {
+    if (!confirm(`Are you sure you want to remove device ${deviceId}?`)) {
+        return;
+    }
 
-            if (autoMode || securityAutoMode) {
-                if (!confirm('Auto mode is enabled for some lights. This will turn all lights manually. Continue?')) {
-                    return;
-                }
-            }
+    if (!currentUser) {
+        alert('Please login first');
+        return;
+    }
 
-            try {
-                const updates = {};
-                const ledNames = ['garden', 'bedroom', 'kitchen', 'livingroom', 'garage', 'security'];
-                ledNames.forEach(ledName => {
-                    updates[ledName] = state;
-                });
-                await database.ref(`devices/${currentDeviceId}/leds`).update(updates);
-            } catch (error) {
-                console.error('Error controlling LEDs:', error);
-                alert('Error controlling LEDs: ' + error.message);
-            }
-        }
-
-        // Auto Mode functions
-        async function toggleAutoMode() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                const newAutoMode = !autoMode;
-                await database.ref(`devices/${currentDeviceId}/autoMode`).set(newAutoMode);
-            } catch (error) {
-                console.error('Error toggling auto mode:', error);
-                alert('Error toggling auto mode: ' + error.message);
-            }
-        }
-
-        async function toggleSecurityAutoMode() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                const newSecurityAutoMode = !securityAutoMode;
-                await database.ref(`devices/${currentDeviceId}/securityAutoMode`).set(newSecurityAutoMode);
-            } catch (error) {
-                console.error('Error toggling security auto mode:', error);
-                alert('Error toggling security auto mode: ' + error.message);
-            }
-        }
-
-        async function toggleDoorAutoMode() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                const newDoorAutoMode = !doorAutoMode;
-                await database.ref(`devices/${currentDeviceId}/doorAutoMode`).set(newDoorAutoMode);
-            } catch (error) {
-                console.error('Error toggling door auto mode:', error);
-                alert('Error toggling door auto mode: ' + error.message);
-            }
-        }
-
-        function updateAutoModeUI() {
-            const autoModeBtn = document.getElementById('autoModeBtn');
-            const autoModeStatus = document.getElementById('autoModeStatus');
-            
-            if (autoMode) {
-                autoModeBtn.textContent = 'ON';
-                autoModeBtn.className = 'switch-btn on';
-                autoModeStatus.textContent = 'Auto Mode Active';
-                autoModeStatus.style.background = '#e8f5e8';
-                autoModeStatus.style.color = '#2e7d32';
-            } else {
-                autoModeBtn.textContent = 'OFF';
-                autoModeBtn.className = 'switch-btn off';
-                autoModeStatus.textContent = 'Manual Control';
-                autoModeStatus.style.background = '#ffebee';
-                autoModeStatus.style.color = '#c62828';
-            }
-            
-            // Re-render LED controls to update disabled states
+    try {
+        await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).remove();
+        
+        // If removed device was current device, select another one
+        if (currentDeviceId === deviceId) {
+            currentDeviceId = null;
+            currentDeviceIdSpan.textContent = 'Select a Device';
             renderLEDControls();
-            updateWindowUI();
-        }
-
-        function updateSecurityAutoModeUI() {
-            if (securityAutoMode) {
-                securityAutoModeBtn.textContent = 'ON';
-                securityAutoModeBtn.className = 'switch-btn on';
-                securityAutoModeStatus.textContent = 'Security Auto Mode Active';
-                securityAutoModeStatus.style.background = '#e8f5e8';
-                securityAutoModeStatus.style.color = '#2e7d32';
-            } else {
-                securityAutoModeBtn.textContent = 'OFF';
-                securityAutoModeBtn.className = 'switch-btn off';
-                securityAutoModeStatus.textContent = 'Manual Control';
-                securityAutoModeStatus.style.background = '#ffebee';
-                securityAutoModeStatus.style.color = '#c62828';
-            }
             
-            // Re-render LED controls to update disabled states
-            renderLEDControls();
-        }
-
-        function updateDoorAutoModeUI() {
-            if (doorAutoMode) {
-                doorAutoModeBtn.textContent = 'ON';
-                doorAutoModeBtn.className = 'switch-btn on';
-                doorAutoModeStatus.textContent = 'RFID Only Mode';
-                doorAutoModeStatus.style.background = '#e8f5e8';
-                doorAutoModeStatus.style.color = '#2e7d32';
-                doorBtn.disabled = true;
-                doorBtn.title = 'Switch to manual mode to control door from app';
-            } else {
-                doorAutoModeBtn.textContent = 'OFF';
-                doorAutoModeBtn.className = 'switch-btn off';
-                doorAutoModeStatus.textContent = 'Manual Control';
-                doorAutoModeStatus.style.background = '#ffebee';
-                doorAutoModeStatus.style.color = '#c62828';
-                doorBtn.disabled = false;
-                doorBtn.title = 'Click to toggle door';
-            }
-        }
-
-        // Door control functions
-        async function toggleDoor() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            // Check if door is in auto mode
-            if (doorAutoMode) {
-                alert('Door is in RFID only mode. Switch to manual mode to control door from app.');
-                return;
-            }
-
-            try {
-                const newDoorState = !doorState;
-                await database.ref(`devices/${currentDeviceId}/door`).set(newDoorState);
-            } catch (error) {
-                console.error('Error toggling door:', error);
-                alert('Error toggling door: ' + error.message);
-            }
-        }
-
-        function updateDoorUI() {
-            if (doorState) {
-                doorBtn.textContent = 'OPEN';
-                doorBtn.className = 'switch-btn on';
-                doorStatus.textContent = '✓ OPEN';
-            } else {
-                doorBtn.textContent = 'CLOSE';
-                doorBtn.className = 'switch-btn off';
-                doorStatus.textContent = '✗ CLOSED';
-            }
-        }
-
-        // Window control functions - ALWAYS ALLOW MANUAL CONTROL
-        async function toggleWindow() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                const newWindowState = !windowState;
-                await database.ref(`devices/${currentDeviceId}/window`).set(newWindowState);
-                
-                // Show manual override message if in auto mode
-                if (autoMode) {
-                    showManualOverrideIndicator();
+            // Select another device if available
+            if (devices.length > 1) {
+                const otherDevice = devices.find(d => d.id !== deviceId);
+                if (otherDevice) {
+                    selectDevice(otherDevice.id);
                 }
-            } catch (error) {
-                console.error('Error toggling window:', error);
-                alert('Error toggling window: ' + error.message);
             }
         }
+        
+        // Reload devices to update the list
+        loadUserDevices();
+    } catch (error) {
+        console.error('Error removing device:', error);
+        alert('Error removing device: ' + error.message);
+    }
+}
 
-        function updateWindowUI() {
-            const windowBtn = document.getElementById('windowBtn');
-            const windowStatus = document.getElementById('windowStatus');
-            const windowInfo = document.getElementById('windowInfo');
-            
-            if (windowState) {
-                windowBtn.textContent = 'OPEN';
-                windowBtn.className = 'switch-btn on';
-                windowStatus.textContent = '✓ OPEN';
-            } else {
-                windowBtn.textContent = 'CLOSE';
-                windowBtn.className = 'switch-btn off';
-                windowStatus.textContent = '✗ CLOSED';
-            }
-            
-            // Always enable window button
-            windowBtn.disabled = false;
-            
-            // Update info text based on mode
-            if (autoMode) {
-                windowInfo.innerHTML = 'Manual override - 30 seconds control';
-                windowInfo.style.color = '#e67e22';
-            } else {
-                windowInfo.innerHTML = 'Click to manually open/close window';
-                windowInfo.style.color = '#666';
-            }
-        }
+// Close modal when clicking outside
+addDeviceModal.addEventListener('click', (e) => {
+    if (e.target === addDeviceModal) {
+        hideAddDeviceModal();
+    }
+});
 
-        // Fan control functions
-        async function toggleFan() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+// Enter key support for modals
+newDeviceIdInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        addDevice();
+    }
+});
 
-            try {
-                // Only allow manual control if in manual mode
-                if (fanAutoMode) {
-                    alert('Fan is in auto mode. Switch to manual mode to control the fan directly.');
-                    return;
-                }
+// Enter key support for RFID input
+newRFIDKeyInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        addRFIDKey();
+    }
+});
 
-                const newFanState = !fanState;
-                await database.ref(`devices/${currentDeviceId}/fan/state`).set(newFanState);
-            } catch (error) {
-                console.error('Error toggling fan:', error);
-                alert('Error toggling fan: ' + error.message);
-            }
-        }
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    renderLEDControls();
+});        
 
-        async function setFanMode(isAutoMode) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                await database.ref(`devices/${currentDeviceId}/fan/autoMode`).set(isAutoMode);
-                
-                // If switching to auto mode, let the ESP32 control the fan based on temperature
-                if (isAutoMode) {
-                    await database.ref(`devices/${currentDeviceId}/fan/manualOverride`).set(false);
-                }
-            } catch (error) {
-                console.error('Error setting fan mode:', error);
-                alert('Error setting fan mode: ' + error.message);
-            }
-        }
-
-        function updateFanUI() {
-            // Update fan button and status
-            if (fanState) {
-                fanBtn.textContent = 'ON';
-                fanBtn.className = 'switch-btn on';
-                fanStatus.textContent = '✓ ON';
-                fanStatusText.textContent = 'ON';
-                fanStatusText.style.color = '#2e7d32';
-            } else {
-                fanBtn.textContent = 'OFF';
-                fanBtn.className = 'switch-btn off';
-                fanStatus.textContent = '✗ OFF';
-                fanStatusText.textContent = 'OFF';
-                fanStatusText.style.color = '#c62828';
-            }
-
-            // Update mode buttons
-            if (fanAutoMode) {
-                fanAutoModeBtn.className = 'mode-btn active';
-                fanManualModeBtn.className = 'mode-btn inactive';
-                fanModeText.textContent = 'Auto';
-                fanModeText.style.color = '#2e7d32';
-                fanBtn.disabled = true;
-                fanBtn.title = 'Switch to manual mode to control fan';
-            } else {
-                fanAutoModeBtn.className = 'mode-btn inactive';
-                fanManualModeBtn.className = 'mode-btn active';
-                fanModeText.textContent = 'Manual';
-                fanModeText.style.color = '#e67e22';
-                fanBtn.disabled = false;
-                fanBtn.title = 'Click to toggle fan';
-            }
-        }
-
-        function updateFanAutoStatus() {
-            if (fanAutoMode) {
-                if (temperature >= 25) {
-                    fanAutoStatus.textContent = 'Auto: ON (≥25°C)';
-                    fanAutoStatus.style.background = 'rgba(76, 175, 80, 0.3)';
-                } else {
-                    fanAutoStatus.textContent = 'Auto: OFF (<25°C)';
-                    fanAutoStatus.style.background = 'rgba(244, 67, 54, 0.3)';
-                }
-            } else {
-                fanAutoStatus.textContent = 'Manual Control';
-                fanAutoStatus.style.background = 'rgba(255, 193, 7, 0.3)';
-            }
-        }
-
-        // Manual override indicator
-        function showManualOverrideIndicator() {
-            overrideIndicator.style.display = 'block';
-            
-            // Hide after 30 seconds (matching ESP32 timeout)
-            setTimeout(() => {
-                overrideIndicator.style.display = 'none';
-            }, 30000);
-        }
-
-        // Device Modal Functions
-        function showAddDeviceModal() {
-            addDeviceModal.style.display = 'flex';
-            newDeviceIdInput.value = '';
-            newDeviceIdInput.focus();
-        }
-
-        function hideAddDeviceModal() {
-            addDeviceModal.style.display = 'none';
-        }
-
-        async function addDevice() {
-            const deviceId = newDeviceIdInput.value.trim();
-            
-            if (!deviceId) {
-                alert('Please enter a device ID');
-                return;
-            }
-
-            if (!currentUser) {
-                alert('Please login first');
-                return;
-            }
-
-            try {
-                // Add to user's devices
-                await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).set({
-                    addedAt: Date.now(),
-                    online: false
-                });
-
-                hideAddDeviceModal();
-                selectDevice(deviceId);
-            } catch (error) {
-                console.error('Error adding device:', error);
-                alert('Error adding device: ' + error.message);
-            }
-        }
-
-        async function removeDevice(deviceId) {
-            if (!confirm(`Are you sure you want to remove device ${deviceId}?`)) {
-                return;
-            }
-
-            if (!currentUser) {
-                alert('Please login first');
-                return;
-            }
-
-            try {
-                await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).remove();
-                
-                // If removed device was current device, select another one
-                if (currentDeviceId === deviceId) {
-                    currentDeviceId = null;
-                    currentDeviceIdSpan.textContent = 'Select a Device';
-                    renderLEDControls();
-                    
-                    // Select another device if available
-                    if (devices.length > 1) {
-                        const otherDevice = devices.find(d => d.id !== deviceId);
-                        if (otherDevice) {
-                            selectDevice(otherDevice.id);
-                        }
-                    }
-                }
-                
-                // Reload devices to update the list
-                loadUserDevices();
-            } catch (error) {
-                console.error('Error removing device:', error);
-                alert('Error removing device: ' + error.message);
-            }
-        }
-
-        // Close modal when clicking outside
-        addDeviceModal.addEventListener('click', (e) => {
-            if (e.target === addDeviceModal) {
-                hideAddDeviceModal();
-            }
-        });
-
-        // Enter key support for modals
-        newDeviceIdInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                addDevice();
-            }
-        });
-
-        // Enter key support for RFID input
-        newRFIDKeyInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                addRFIDKey();
-            }
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            renderLEDControls();
-        });
     </script>
 </body>
 </html>

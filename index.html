@@ -380,6 +380,132 @@
             color: #fff;
         }
 
+        /* Water Tank Section Styles */
+        .water-tank-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .water-tank-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .water-tank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .water-level-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .motor-control-card {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .water-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .water-status {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .water-status.low {
+            background: rgba(255, 59, 48, 0.3);
+            color: #ffeb3b;
+        }
+
+        .water-status.normal {
+            background: rgba(76, 175, 80, 0.3);
+            color: #fff;
+        }
+
+        .water-status.full {
+            background: rgba(33, 150, 243, 0.3);
+            color: #fff;
+        }
+
+        .motor-status {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .water-progress {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .info-items {
+            text-align: left;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
         /* LED Controls */
         .leds-section {
             background: white;
@@ -926,6 +1052,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .water-tank-grid {
+                grid-template-columns: 1fr;
+            }
+
             .leds-grid {
                 grid-template-columns: 1fr;
             }
@@ -1117,6 +1247,70 @@
                         <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">I2C Communication</div>
                         <div id="unoData" class="sensor-info" style="margin-top: 10px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
                             Waiting for data...
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Water Tank Control Section -->
+            <section class="water-tank-section">
+                <h2>💧 Water Tank Control System</h2>
+                <div class="water-tank-grid">
+                    <!-- Water Level Card -->
+                    <div class="water-level-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">💧</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Tank Level</div>
+                        <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
+                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
+                        <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
+                        <div class="water-progress">
+                            <div class="progress-bar">
+                                <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motor Control Card -->
+                    <div class="motor-control-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🔧</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Motor Control</div>
+                        <div id="motorStatus" class="motor-status">MOTOR OFF</div>
+                        <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
+                            <div style="font-size: 12px;">ON when ≤ 25%</div>
+                            <div style="font-size: 12px;">OFF when ≥ 100%</div>
+                        </div>
+                        <div class="switch-container" style="margin: 20px 0;">
+                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
+                            <div id="motorState" class="status-indicator">AUTO MODE</div>
+                        </div>
+                    </div>
+
+                    <!-- Water System Info Card -->
+                    <div class="water-info-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">ℹ️</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">System Information</div>
+                        <div class="info-items">
+                            <div class="info-item">
+                                <span class="info-label">Current Level:</span>
+                                <span id="currentLevelText" class="info-value">--%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Motor Status:</span>
+                                <span id="motorStatusText" class="info-value">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">System Mode:</span>
+                                <span class="info-value">Auto</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Low Level Alert:</span>
+                                <span class="info-value">25%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Full Level:</span>
+                                <span class="info-value">100%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1369,12 +1563,17 @@
         let authorizedRFIDs = [];
         let lastRFIDAccess = "";
 
-        // NEW VARIABLES FOR RAIN SENSOR
+        // Rain sensor variables
         let rainValue = 0;
         let isRaining = false;
         let weatherStatus = "SUNNY";
         let unoConnected = false;
         let unoData = "";
+
+        // Water tank variables
+        let waterLevel = 0;
+        let waterMotorState = false;
+        let waterStatus = "UNKNOWN";
 
         // DOM Elements
         const authSection = document.getElementById('authSection');
@@ -1396,7 +1595,7 @@
         const humidityValue = document.getElementById('humidityValue');
         const motionValue = document.getElementById('motionValue');
         
-        // NEW: Rain sensor elements
+        // Rain sensor elements
         const rainValueSpan = document.getElementById('rainValue');
         const rainStatus = document.getElementById('rainStatus');
         const clothStatusSpan = document.getElementById('clothStatus');
@@ -1405,6 +1604,16 @@
         const servoStatus = document.getElementById('servoStatus');
         const unoStatus = document.getElementById('unoStatus');
         const unoDataSpan = document.getElementById('unoData');
+
+        // Water tank elements
+        const waterLevelValue = document.getElementById('waterLevelValue');
+        const waterProgress = document.getElementById('waterProgress');
+        const waterStatusElement = document.getElementById('waterStatus');
+        const motorStatus = document.getElementById('motorStatus');
+        const motorBtn = document.getElementById('motorBtn');
+        const motorState = document.getElementById('motorState');
+        const currentLevelText = document.getElementById('currentLevelText');
+        const motorStatusText = document.getElementById('motorStatusText');
 
         // Fan elements
         const fanBtn = document.getElementById('fanBtn');
@@ -1573,10 +1782,91 @@
             listenToFanState();
             listenToDoorState();
             listenToRFIDData();
-            listenToRainSensorData(); // NEW: Listen to rain sensor data
+            listenToRainSensorData();
+            listenToWaterTankData();
         }
 
-        // NEW FUNCTION: Listen to rain sensor data from UNO
+        // Water Tank Functions
+        function listenToWaterTankData() {
+            if (!currentDeviceId) return;
+            
+            // Listen to water level
+            const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
+            waterLevelRef.on('value', (snapshot) => {
+                const level = snapshot.val();
+                if (level !== null) {
+                    waterLevel = level;
+                    updateWaterTankUI();
+                }
+            });
+
+            // Listen to motor state
+            const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
+            motorStateRef.on('value', (snapshot) => {
+                const state = snapshot.val();
+                if (state !== null) {
+                    waterMotorState = state;
+                    updateWaterTankUI();
+                }
+            });
+
+            // Listen to water status
+            const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
+            waterStatusRef.on('value', (snapshot) => {
+                const status = snapshot.val();
+                if (status) {
+                    waterStatus = status;
+                    updateWaterTankUI();
+                }
+            });
+        }
+
+        function updateWaterTankUI() {
+            // Update water level value
+            waterLevelValue.textContent = waterLevel + '%';
+            
+            // Update progress bar
+            waterProgress.style.width = waterLevel + '%';
+            
+            // Update water status
+            waterStatusElement.textContent = waterStatus;
+            
+            // Update status class based on water level
+            if (waterLevel <= 25) {
+                waterStatusElement.className = 'water-status low';
+                waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
+            } else if (waterLevel >= 100) {
+                waterStatusElement.className = 'water-status full';
+                waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
+            } else {
+                waterStatusElement.className = 'water-status normal';
+                waterProgress.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+            }
+            
+            // Update motor status
+            if (waterMotorState) {
+                motorStatus.textContent = 'MOTOR ON 🔄';
+                motorState.textContent = 'MOTOR RUNNING';
+                motorStatusText.textContent = 'RUNNING';
+                motorStatusText.style.color = '#4CAF50';
+            } else {
+                motorStatus.textContent = 'MOTOR OFF ⏹️';
+                motorState.textContent = 'MOTOR STOPPED';
+                motorStatusText.textContent = 'STOPPED';
+                motorStatusText.style.color = '#f44336';
+            }
+            
+            // Update current level text
+            currentLevelText.textContent = waterLevel + '%';
+        }
+
+        function toggleWaterMotor() {
+            // This function is for future manual control if needed
+            // Currently the system is fully automatic
+            alert('Water motor control is currently in automatic mode.\n\nThe system will:\n• Turn ON motor when water level ≤ 25%\n• Turn OFF motor when water level ≥ 100%');
+        }
+
+        // Rain sensor functions
         function listenToRainSensorData() {
             if (!currentDeviceId) return;
             
@@ -1628,7 +1918,6 @@
             });
         }
 
-        // NEW FUNCTION: Update rain sensor UI
         function updateRainSensorUI() {
             // Update rain value
             rainValueSpan.textContent = rainValue;
@@ -1668,7 +1957,6 @@
             }
         }
 
-        // NEW FUNCTION: Update UNO connection status
         function updateUNOStatusUI() {
             if (unoConnected) {
                 unoStatus.textContent = 'CONNECTED ✅';
@@ -1681,8 +1969,7 @@
             }
         }
 
-        // NEW FUNCTION: Manual cloth control
-        async function toggleCloth() {
+        function toggleCloth() {
             if (!currentDeviceId) {
                 alert('Please select a device first');
                 return;

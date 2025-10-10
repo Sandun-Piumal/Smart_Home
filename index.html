@@ -279,8 +279,8 @@
             background: #c82333;
         }
 
-        /* Garage Door Section */
-        .garage-section {
+        /* Gate Control Section */
+        .gate-control-section {
             background: white;
             padding: 25px;
             border-radius: 15px;
@@ -288,20 +288,21 @@
             margin-bottom: 30px;
         }
 
-        .garage-section h2 {
+        .gate-control-section h2 {
             color: #333;
             margin-bottom: 20px;
             font-size: 24px;
             text-align: center;
         }
 
-        .garage-grid {
+        .gate-control-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
+            margin-bottom: 20px;
         }
 
-        .garage-door-card {
+        .gate-status-card {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             padding: 25px;
             border-radius: 12px;
@@ -310,7 +311,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .ultrasonic-sensor-card {
+        .gate-password-card {
             background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
             padding: 25px;
             border-radius: 12px;
@@ -319,7 +320,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .garage-auto-card {
+        .gate-auto-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 25px;
             border-radius: 12px;
@@ -328,7 +329,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .garage-status {
+        .gate-status {
             font-size: 20px;
             font-weight: bold;
             margin: 15px 0;
@@ -337,29 +338,65 @@
             background: rgba(255,255,255,0.2);
         }
 
-        .garage-status.open {
+        .gate-status.open {
             background: rgba(76, 175, 80, 0.3);
             color: #fff;
         }
 
-        .garage-status.closed {
+        .gate-status.closed {
             background: rgba(244, 67, 54, 0.3);
             color: #fff;
         }
 
-        .distance-value {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 15px 0;
+        /* Water Tank Section */
+        .water-tank-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
 
-        .distance-unit {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 15px;
+        .water-tank-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
         }
 
-        .auto-status {
+        .water-tank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .water-level-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .motor-control-card {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .water-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .water-status {
             font-size: 18px;
             font-weight: bold;
             margin: 15px 0;
@@ -368,22 +405,73 @@
             background: rgba(255,255,255,0.2);
         }
 
-        .auto-status.active {
+        .water-status.low {
+            background: rgba(255, 59, 48, 0.3);
+            color: #ffeb3b;
+        }
+
+        .water-status.normal {
             background: rgba(76, 175, 80, 0.3);
             color: #fff;
         }
 
-        .auto-status.inactive {
-            background: rgba(244, 67, 54, 0.3);
+        .water-status.full {
+            background: rgba(33, 150, 243, 0.3);
             color: #fff;
         }
 
-        .sensor-info {
-            margin-top: 15px;
-            font-size: 14px;
+        .motor-status {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
             background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 8px;
+        }
+
+        .water-progress {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .info-items {
+            text-align: left;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            font-size: 14px;
         }
 
         /* LED Controls */
@@ -483,7 +571,7 @@
             background: rgba(255,255,255,0.2);
         }
 
-        /* Auto Mode Control */
+        /* Auto Mode Controls */
         .auto-control {
             background: white;
             padding: 20px;
@@ -509,74 +597,6 @@
         }
 
         .auto-mode-info {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #666;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        /* Security Auto Mode Control */
-        .security-auto-control {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-        }
-
-        .security-auto-control h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .security-auto-control-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .security-auto-mode-info {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #666;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        /* Door Auto Mode Control */
-        .door-auto-control {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-        }
-
-        .door-auto-control h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .door-auto-control-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .door-auto-mode-info {
             margin-top: 10px;
             font-size: 14px;
             color: #666;
@@ -928,7 +948,11 @@
                 gap: 10px;
             }
 
-            .garage-grid {
+            .gate-control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .water-tank-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -945,14 +969,6 @@
             }
 
             .auto-control-content {
-                flex-direction: column;
-            }
-
-            .security-auto-control-content {
-                flex-direction: column;
-            }
-
-            .door-auto-control-content {
                 flex-direction: column;
             }
 
@@ -1082,51 +1098,106 @@
                 </div>
             </section>
 
-            <!-- Garage Door Control Section -->
-            <section class="garage-section">
-                <h2>🚗 Garage Door Control System</h2>
-                <div class="garage-grid">
-                    <!-- Garage Door Control Card -->
-                    <div class="garage-door-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🚗</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Garage Door Control</div>
-                        <div id="garageStatus" class="garage-status closed">CLOSED</div>
-                        <div class="switch-container" style="margin: 20px 0;">
-                            <button id="garageBtn" class="switch-btn off" onclick="toggleGarageDoor()">CLOSE</button>
-                            <div id="garageState" class="status-indicator">✗ CLOSED</div>
+            <!-- Gate Control Section -->
+            <section class="gate-control-section">
+                <h2>🚪 Smart Gate Control</h2>
+                <div class="gate-control-grid">
+                    <div class="gate-status-card">
+                        <div class="sensor-icon">🚪</div>
+                        <div class="sensor-name">Gate Status</div>
+                        <div id="gateStatus" class="gate-status closed">CLOSED</div>
+                        <div class="switch-container">
+                            <button id="gateBtn" class="switch-btn off" onclick="toggleGate()">OPEN GATE</button>
+                            <div id="gateState" class="status-indicator">CLOSED</div>
                         </div>
-                        <div class="sensor-info">
-                            <strong>Manual Control:</strong> Click button to open/close<br>
-                            <strong>Auto Mode:</strong> Opens when car detected (5cm)
+                    </div>
+                    
+                    <div class="gate-password-card">
+                        <div class="sensor-icon">🔑</div>
+                        <div class="sensor-name">Gate Password</div>
+                        <div class="switch-container">
+                            <input type="text" id="gatePasswordInput" placeholder="Enter new password" style="padding: 10px; border: none; border-radius: 8px; width: 100%; margin-bottom: 10px;">
+                            <button class="switch-btn" onclick="changeGatePassword()" style="background: #4CAF50; color: white;">Change Password</button>
+                        </div>
+                        <div class="sensor-info" style="margin-top: 15px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                            Current Password: <span id="currentPassword">1234</span>
                         </div>
                     </div>
 
-                    <!-- Ultrasonic Sensor Card -->
-                    <div class="ultrasonic-sensor-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">📏</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Ultrasonic Sensor</div>
-                        <div id="distanceValue" class="distance-value">--</div>
-                        <div class="distance-unit">Distance (cm)</div>
-                        <div id="carDetection" class="auto-status inactive">NO CAR DETECTED</div>
-                        <div class="sensor-info">
-                            <strong>Detection Range:</strong> 5cm<br>
-                            <strong>Function:</strong> Auto-open when car approaches
+                    <div class="gate-auto-card">
+                        <div class="sensor-icon">🤖</div>
+                        <div class="sensor-name">Gate Auto Mode</div>
+                        <div class="switch-container">
+                            <button id="gateAutoModeBtn" class="switch-btn off" onclick="toggleGateAutoMode()">OFF</button>
+                            <div id="gateAutoModeStatus" class="status-indicator">MANUAL</div>
+                        </div>
+                        <div class="sensor-info" style="margin-top: 15px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                            Auto Mode: Controlled by UNO<br>
+                            Manual Mode: App control enabled
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Water Tank Control Section -->
+            <section class="water-tank-section">
+                <h2>💧 Water Tank Control System</h2>
+                <div class="water-tank-grid">
+                    <!-- Water Level Card -->
+                    <div class="water-level-card">
+                        <div class="sensor-icon">💧</div>
+                        <div class="sensor-name">Water Tank Level</div>
+                        <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
+                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
+                        <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
+                        <div class="water-progress">
+                            <div class="progress-bar">
+                                <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Garage Auto Mode Card -->
-                    <div class="garage-auto-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🤖</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Auto Mode Control</div>
-                        <div id="garageAutoStatus" class="auto-status inactive">AUTO MODE OFF</div>
-                        <div class="switch-container" style="margin: 20px 0;">
-                            <button id="garageAutoBtn" class="switch-btn off" onclick="toggleGarageAutoMode()">OFF</button>
-                            <div id="garageAutoState" class="status-indicator">MANUAL CONTROL</div>
+                    <!-- Motor Control Card -->
+                    <div class="motor-control-card">
+                        <div class="sensor-icon">🔧</div>
+                        <div class="sensor-name">Water Motor Control</div>
+                        <div id="motorStatus" class="motor-status">MOTOR OFF</div>
+                        <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
+                            <div style="font-size: 12px;">ON when ≤ 25%</div>
+                            <div style="font-size: 12px;">OFF when ≥ 100%</div>
                         </div>
-                        <div class="sensor-info">
-                            <strong>Auto Mode:</strong> Opens when car detected<br>
-                            <strong>Auto Close:</strong> Closes after 5 minutes<br>
-                            <strong>Manual Mode:</strong> Full app control
+                        <div class="switch-container" style="margin: 20px 0;">
+                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
+                            <div id="motorState" class="status-indicator">AUTO MODE</div>
+                        </div>
+                    </div>
+
+                    <!-- Water System Info Card -->
+                    <div class="water-info-card">
+                        <div class="sensor-icon">ℹ️</div>
+                        <div class="sensor-name">System Information</div>
+                        <div class="info-items">
+                            <div class="info-item">
+                                <span class="info-label">Current Level:</span>
+                                <span id="currentLevelText" class="info-value">--%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Motor Status:</span>
+                                <span id="motorStatusText" class="info-value">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">System Mode:</span>
+                                <span class="info-value">Auto</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Low Level Alert:</span>
+                                <span class="info-value">25%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Full Level:</span>
+                                <span class="info-value">100%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1153,6 +1224,12 @@
                         <div class="sensor-name">Motion Sensor</div>
                         <div class="sensor-value" id="motionValue">--</div>
                         <div class="sensor-unit">Status</div>
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-icon">🔆</div>
+                        <div class="sensor-name">Light Level</div>
+                        <div class="sensor-value" id="ldrValue">--</div>
+                        <div class="sensor-unit">LUX</div>
                     </div>
                 </div>
             </section>
@@ -1181,16 +1258,16 @@
                 </div>
 
                 <!-- Door Auto Mode Control -->
-                <div class="door-auto-control">
+                <div class="auto-control">
                     <h3>🚪 Door Auto Mode</h3>
-                    <div class="door-auto-control-content">
+                    <div class="auto-control-content">
                         <span style="font-weight: bold;">Door Auto Mode:</span>
                         <button id="doorAutoModeBtn" class="switch-btn off" onclick="toggleDoorAutoMode()">OFF</button>
                         <span id="doorAutoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
                             Manual Control
                         </span>
                     </div>
-                    <div class="door-auto-mode-info">
+                    <div class="auto-mode-info">
                         <strong>Door Control Modes:</strong><br>
                         <strong>Auto Mode:</strong> Door can only be opened with authorized RFID cards<br>
                         <strong>Manual Mode:</strong> Door can be controlled manually from the app and with RFID
@@ -1270,16 +1347,16 @@
                 </div>
 
                 <!-- Security Auto Mode Control -->
-                <div class="security-auto-control">
+                <div class="auto-control">
                     <h3>🚨 Security Light Auto Mode</h3>
-                    <div class="security-auto-control-content">
+                    <div class="auto-control-content">
                         <span style="font-weight: bold;">Security Auto Mode:</span>
                         <button id="securityAutoModeBtn" class="switch-btn off" onclick="toggleSecurityAutoMode()">OFF</button>
                         <span id="securityAutoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
                             Manual Control
                         </span>
                     </div>
-                    <div class="security-auto-mode-info">
+                    <div class="auto-mode-info">
                         <strong>Security Auto Mode Explanation:</strong><br>
                         කළුවර වැටී ඇති අවස්ථාවේදී චලනය හඳුනාගත් විට security light ස්වයංක්රීයව ON කරයි.<br>
                         චලනය නැතිව මිනිත්තු 30ක් ගතවුන පසු security light ස්වයංක්රීයව OFF කරයි.
@@ -1368,22 +1445,25 @@
         let autoMode = false;
         let securityAutoMode = false;
         let doorAutoMode = false;
-        let garageDoorAutoMode = false;
+        let gateAutoMode = false;
         let windowState = false;
         let doorState = false;
-        let garageDoorState = false;
+        let gateState = false;
         let fanState = false;
         let fanAutoMode = true;
         let temperature = 0;
         let humidity = 0;
+        let ldrValue = 0;
         let motionDetected = false;
         let manualOverrideActive = false;
         let authorizedRFIDs = [];
         let lastRFIDAccess = "";
+        let gatePassword = "1234";
 
-        // Garage system variables
-        let garageDistance = 0;
-        let carDetected = false;
+        // Water tank variables
+        let waterLevel = 0;
+        let waterMotorState = false;
+        let waterStatus = "UNKNOWN";
 
         // DOM Elements
         const authSection = document.getElementById('authSection');
@@ -1404,16 +1484,17 @@
         const temperatureValue = document.getElementById('temperatureValue');
         const humidityValue = document.getElementById('humidityValue');
         const motionValue = document.getElementById('motionValue');
-        
-        // Garage elements
-        const garageStatus = document.getElementById('garageStatus');
-        const garageBtn = document.getElementById('garageBtn');
-        const garageState = document.getElementById('garageState');
-        const distanceValue = document.getElementById('distanceValue');
-        const carDetection = document.getElementById('carDetection');
-        const garageAutoStatus = document.getElementById('garageAutoStatus');
-        const garageAutoBtn = document.getElementById('garageAutoBtn');
-        const garageAutoState = document.getElementById('garageAutoState');
+        const ldrValueSpan = document.getElementById('ldrValue');
+
+        // Water tank elements
+        const waterLevelValue = document.getElementById('waterLevelValue');
+        const waterProgress = document.getElementById('waterProgress');
+        const waterStatusElement = document.getElementById('waterStatus');
+        const motorStatus = document.getElementById('motorStatus');
+        const motorBtn = document.getElementById('motorBtn');
+        const motorState = document.getElementById('motorState');
+        const currentLevelText = document.getElementById('currentLevelText');
+        const motorStatusText = document.getElementById('motorStatusText');
 
         // Fan elements
         const fanBtn = document.getElementById('fanBtn');
@@ -1424,10 +1505,6 @@
         const fanAutoModeBtn = document.getElementById('fanAutoModeBtn');
         const fanManualModeBtn = document.getElementById('fanManualModeBtn');
 
-        // Security auto mode elements
-        const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
-        const securityAutoModeStatus = document.getElementById('securityAutoModeStatus');
-
         // Door elements
         const doorBtn = document.getElementById('doorBtn');
         const doorStatus = document.getElementById('doorStatus');
@@ -1436,6 +1513,15 @@
         const newRFIDKeyInput = document.getElementById('newRFIDKey');
         const rfidKeysList = document.getElementById('rfidKeysList');
         const accessLog = document.getElementById('accessLog');
+
+        // Gate elements
+        const gateBtn = document.getElementById('gateBtn');
+        const gateStatus = document.getElementById('gateStatus');
+        const gateStateIndicator = document.getElementById('gateState');
+        const gatePasswordInput = document.getElementById('gatePasswordInput');
+        const currentPasswordSpan = document.getElementById('currentPassword');
+        const gateAutoModeBtn = document.getElementById('gateAutoModeBtn');
+        const gateAutoModeStatus = document.getElementById('gateAutoModeStatus');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -1581,151 +1667,216 @@
             listenToSensorData();
             listenToFanState();
             listenToDoorState();
+            listenToGateState();
             listenToRFIDData();
-            listenToGarageData();
+            listenToWaterTankData();
         }
 
-        // Garage System Functions
-        function listenToGarageData() {
-            if (!currentDeviceId) {
-                console.log('❌ No device selected for garage system');
-                return;
-            }
+        // Water Tank Functions
+        function listenToWaterTankData() {
+            if (!currentDeviceId) return;
             
-            console.log('🔍 Listening to garage system data for:', currentDeviceId);
-            
-            // Listen to garage door state
-            const garageDoorRef = database.ref(`devices/${currentDeviceId}/garageDoor`);
-            garageDoorRef.on('value', (snapshot) => {
+            // Listen to water level
+            const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
+            waterLevelRef.on('value', (snapshot) => {
+                const level = snapshot.val();
+                if (level !== null) {
+                    waterLevel = level;
+                    updateWaterTankUI();
+                }
+            });
+
+            // Listen to motor state
+            const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
+            motorStateRef.on('value', (snapshot) => {
                 const state = snapshot.val();
-                console.log('🚗 Garage door state update:', state);
-                if (state !== null && state !== undefined) {
-                    garageDoorState = Boolean(state);
-                    updateGarageUI();
+                if (state !== null) {
+                    waterMotorState = state;
+                    updateWaterTankUI();
                 }
             });
 
-            // Listen to garage auto mode
-            const garageAutoModeRef = database.ref(`devices/${currentDeviceId}/garageDoorAutoMode`);
-            garageAutoModeRef.on('value', (snapshot) => {
-                const state = snapshot.val();
-                console.log('🤖 Garage auto mode update:', state);
-                if (state !== null && state !== undefined) {
-                    garageDoorAutoMode = Boolean(state);
-                    updateGarageUI();
+            // Listen to water status
+            const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
+            waterStatusRef.on('value', (snapshot) => {
+                const status = snapshot.val();
+                if (status) {
+                    waterStatus = status;
+                    updateWaterTankUI();
                 }
             });
-
-            // Listen to ultrasonic distance
-            const distanceRef = database.ref(`devices/${currentDeviceId}/sensors/garageDistance`);
-            distanceRef.on('value', (snapshot) => {
-                const distance = snapshot.val();
-                console.log('📏 Garage distance update:', distance);
-                if (distance !== null && distance !== undefined) {
-                    garageDistance = parseInt(distance);
-                    updateGarageUI();
-                }
-            });
-
-            console.log('✅ Garage system listeners activated');
         }
 
-        function updateGarageUI() {
-            console.log('🔄 Updating garage UI...');
-            console.log('🚗 Current garage state:', garageDoorState);
-            console.log('🤖 Current garage auto mode:', garageDoorAutoMode);
-            console.log('📏 Current distance:', garageDistance);
-            
-            // Update garage door status
-            if (garageDoorState) {
-                garageStatus.textContent = 'OPEN';
-                garageStatus.className = 'garage-status open';
-                garageBtn.textContent = 'OPEN';
-                garageBtn.className = 'switch-btn on';
-                garageState.textContent = '✓ OPEN';
+        function updateWaterTankUI() {
+            // Update water level display
+            waterLevelValue.textContent = waterLevel + '%';
+            waterProgress.style.width = waterLevel + '%';
+            currentLevelText.textContent = waterLevel + '%';
+
+            // Update progress bar color based on level
+            if (waterLevel <= 25) {
+                waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
+                waterStatusElement.textContent = 'LOW WATER ⚠️';
+                waterStatusElement.className = 'water-status low';
+            } else if (waterLevel >= 100) {
+                waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
+                waterStatusElement.textContent = 'FULL ✅';
+                waterStatusElement.className = 'water-status full';
             } else {
-                garageStatus.textContent = 'CLOSED';
-                garageStatus.className = 'garage-status closed';
-                garageBtn.textContent = 'CLOSE';
-                garageBtn.className = 'switch-btn off';
-                garageState.textContent = '✗ CLOSED';
+                waterProgress.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                waterStatusElement.textContent = 'NORMAL LEVEL';
+                waterStatusElement.className = 'water-status normal';
             }
-            
-            // Update distance display
-            distanceValue.textContent = garageDistance;
-            
-            // Update car detection status
-            if (garageDistance <= 5 && garageDistance > 0) {
-                carDetection.textContent = 'CAR DETECTED 🚗';
-                carDetection.className = 'auto-status active';
+
+            // Update motor status
+            if (waterMotorState) {
+                motorStatus.textContent = 'MOTOR ON 🔄';
+                motorStatusText.textContent = 'RUNNING';
+                motorState.textContent = 'MOTOR RUNNING';
             } else {
-                carDetection.textContent = 'NO CAR DETECTED';
-                carDetection.className = 'auto-status inactive';
+                motorStatus.textContent = 'MOTOR OFF ⏹️';
+                motorStatusText.textContent = 'STOPPED';
+                motorState.textContent = 'MOTOR STOPPED';
             }
-            
-            // Update garage auto mode
-            if (garageDoorAutoMode) {
-                garageAutoStatus.textContent = 'AUTO MODE ON';
-                garageAutoStatus.className = 'auto-status active';
-                garageAutoBtn.textContent = 'ON';
-                garageAutoBtn.className = 'switch-btn on';
-                garageAutoState.textContent = 'AUTO MODE';
-                
-                // Disable manual button in auto mode
-                garageBtn.disabled = true;
-                garageBtn.title = 'Switch to manual mode to control garage door';
-            } else {
-                garageAutoStatus.textContent = 'AUTO MODE OFF';
-                garageAutoStatus.className = 'auto-status inactive';
-                garageAutoBtn.textContent = 'OFF';
-                garageAutoBtn.className = 'switch-btn off';
-                garageAutoState.textContent = 'MANUAL CONTROL';
-                
-                // Enable manual button in manual mode
-                garageBtn.disabled = false;
-                garageBtn.title = 'Click to toggle garage door';
-            }
-            
-            console.log('✅ Garage UI update completed');
         }
 
-        async function toggleGarageDoor() {
+        async function toggleWaterMotor() {
             if (!currentDeviceId) {
                 alert('Please select a device first');
                 return;
             }
 
-            // Check if garage is in auto mode
-            if (garageDoorAutoMode) {
-                alert('Garage is in auto mode. Switch to manual mode to control garage door from app.');
+            // Water motor is auto-controlled, manual control disabled
+            alert('Water motor is automatically controlled based on water level.\n\nON when water level ≤ 25%\nOFF when water level ≥ 100%');
+        }
+
+        // Gate Control Functions
+        function listenToGateState() {
+            if (!currentDeviceId) return;
+            
+            // Listen to gate state
+            const gateRef = database.ref(`devices/${currentDeviceId}/gate`);
+            gateRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    gateState = data.state || false;
+                    gateAutoMode = data.autoMode !== undefined ? data.autoMode : true;
+                    if (data.password) {
+                        gatePassword = data.password;
+                        currentPasswordSpan.textContent = data.password;
+                    }
+                    updateGateUI();
+                }
+            });
+
+            // Listen to gate auto mode
+            const gateAutoModeRef = database.ref(`devices/${currentDeviceId}/gateAutoMode`);
+            gateAutoModeRef.on('value', (snapshot) => {
+                gateAutoMode = snapshot.val() || false;
+                updateGateUI();
+            });
+        }
+
+        async function toggleGate() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            // Check if gate is in auto mode
+            if (gateAutoMode) {
+                alert('Gate is in auto mode. Switch to manual mode to control gate from app.');
                 return;
             }
 
             try {
-                const newGarageState = !garageDoorState;
-                await database.ref(`devices/${currentDeviceId}/garageDoor`).set(newGarageState);
+                const newGateState = !gateState;
+                await database.ref(`devices/${currentDeviceId}/gate/state`).set(newGateState);
             } catch (error) {
-                console.error('Error toggling garage door:', error);
-                alert('Error toggling garage door: ' + error.message);
+                console.error('Error toggling gate:', error);
+                alert('Error toggling gate: ' + error.message);
             }
         }
 
-        async function toggleGarageAutoMode() {
+        async function changeGatePassword() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            const newPassword = gatePasswordInput.value.trim();
+            
+            if (!newPassword) {
+                alert('Please enter a new password');
+                return;
+            }
+
+            if (newPassword.length < 4) {
+                alert('Password must be at least 4 characters long');
+                return;
+            }
+
+            try {
+                await database.ref(`devices/${currentDeviceId}/gate/password`).set(newPassword);
+                gatePasswordInput.value = '';
+                alert('Gate password updated successfully!');
+            } catch (error) {
+                console.error('Error changing gate password:', error);
+                alert('Error changing gate password: ' + error.message);
+            }
+        }
+
+        async function toggleGateAutoMode() {
             if (!currentDeviceId) {
                 alert('Please select a device first');
                 return;
             }
 
             try {
-                const newGarageAutoMode = !garageDoorAutoMode;
-                await database.ref(`devices/${currentDeviceId}/garageDoorAutoMode`).set(newGarageAutoMode);
+                const newGateAutoMode = !gateAutoMode;
+                await database.ref(`devices/${currentDeviceId}/gateAutoMode`).set(newGateAutoMode);
             } catch (error) {
-                console.error('Error toggling garage auto mode:', error);
-                alert('Error toggling garage auto mode: ' + error.message);
+                console.error('Error toggling gate auto mode:', error);
+                alert('Error toggling gate auto mode: ' + error.message);
             }
         }
 
-        // ALL THE ORIGINAL FUNCTIONS FROM YOUR CODE (with garage system added)
+        function updateGateUI() {
+            // Update gate status
+            if (gateState) {
+                gateStatus.textContent = 'OPEN';
+                gateStatus.className = 'gate-status open';
+                gateBtn.textContent = 'CLOSE GATE';
+                gateBtn.className = 'switch-btn on';
+                gateStateIndicator.textContent = 'OPEN';
+            } else {
+                gateStatus.textContent = 'CLOSED';
+                gateStatus.className = 'gate-status closed';
+                gateBtn.textContent = 'OPEN GATE';
+                gateBtn.className = 'switch-btn off';
+                gateStateIndicator.textContent = 'CLOSED';
+            }
+
+            // Update gate auto mode
+            if (gateAutoMode) {
+                gateAutoModeBtn.textContent = 'ON';
+                gateAutoModeBtn.className = 'switch-btn on';
+                gateAutoModeStatus.textContent = 'AUTO MODE';
+                gateBtn.disabled = true;
+                gateBtn.title = 'Switch to manual mode to control gate';
+            } else {
+                gateAutoModeBtn.textContent = 'OFF';
+                gateAutoModeBtn.className = 'switch-btn off';
+                gateAutoModeStatus.textContent = 'MANUAL';
+                gateBtn.disabled = false;
+                gateBtn.title = 'Click to toggle gate';
+            }
+
+            // Update current password display
+            currentPasswordSpan.textContent = gatePassword;
+        }
+
+        // ALL THE ORIGINAL FUNCTIONS FROM YOUR CODE
         function listenToDeviceStatus() {
             if (!currentDeviceId) return;
             
@@ -1808,6 +1959,16 @@
                     motionDetected = motion;
                     motionValue.textContent = motion ? 'Motion Detected' : 'No Motion';
                     motionValue.style.color = motion ? '#4CAF50' : '#f44336';
+                }
+            });
+
+            // Listen to LDR value
+            const ldrRef = database.ref(`devices/${currentDeviceId}/sensors/ldr`);
+            ldrRef.on('value', (snapshot) => {
+                const ldr = snapshot.val();
+                if (ldr !== null) {
+                    ldrValue = ldr;
+                    ldrValueSpan.textContent = ldr;
                 }
             });
         }
@@ -2126,6 +2287,9 @@
         }
 
         function updateSecurityAutoModeUI() {
+            const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
+            const securityAutoModeStatus = document.getElementById('securityAutoModeStatus');
+            
             if (securityAutoMode) {
                 securityAutoModeBtn.textContent = 'ON';
                 securityAutoModeBtn.className = 'switch-btn on';
@@ -2440,6 +2604,13 @@
         newRFIDKeyInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 addRFIDKey();
+            }
+        });
+
+        // Enter key support for gate password input
+        gatePasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                changeGatePassword();
             }
         });
 

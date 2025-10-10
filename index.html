@@ -279,8 +279,8 @@
             background: #c82333;
         }
 
-        /* Rain Sensor Section */
-        .rain-sensor-section {
+        /* Garage Door Section */
+        .garage-section {
             background: white;
             padding: 25px;
             border-radius: 15px;
@@ -288,20 +288,20 @@
             margin-bottom: 30px;
         }
 
-        .rain-sensor-section h2 {
+        .garage-section h2 {
             color: #333;
             margin-bottom: 20px;
             font-size: 24px;
             text-align: center;
         }
 
-        .rain-sensor-grid {
+        .garage-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
 
-        .rain-sensor-card {
+        .garage-door-card {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             padding: 25px;
             border-radius: 12px;
@@ -310,7 +310,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .servo-control-card {
+        .ultrasonic-sensor-card {
             background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
             padding: 25px;
             border-radius: 12px;
@@ -319,7 +319,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .uno-status-card {
+        .garage-auto-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 25px;
             border-radius: 12px;
@@ -328,7 +328,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .rain-status {
+        .garage-status {
             font-size: 20px;
             font-weight: bold;
             margin: 15px 0;
@@ -337,98 +337,29 @@
             background: rgba(255,255,255,0.2);
         }
 
-        .rain-status.raining {
-            background: rgba(255, 59, 48, 0.3);
-            color: #ffeb3b;
-        }
-
-        .rain-status.sunny {
+        .garage-status.open {
             background: rgba(76, 175, 80, 0.3);
             color: #fff;
         }
 
-        .cloth-status {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-
-        .servo-position {
-            font-size: 16px;
-            margin: 10px 0;
-            padding: 8px 15px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.2);
-        }
-
-        .connection-status {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 15px 0;
-            padding: 10px 20px;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.2);
-        }
-
-        .connection-status.connected {
-            background: rgba(76, 175, 80, 0.3);
-            color: #fff;
-        }
-
-        .connection-status.disconnected {
+        .garage-status.closed {
             background: rgba(244, 67, 54, 0.3);
             color: #fff;
         }
 
-        /* Water Tank Section Styles */
-        .water-tank-section {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+        .distance-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 15px 0;
         }
 
-        .water-tank-section h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
-            text-align: center;
+        .distance-unit {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
         }
 
-        .water-tank-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .water-level-card {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            padding: 25px;
-            border-radius: 12px;
-            color: white;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .motor-control-card {
-            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
-            padding: 25px;
-            border-radius: 12px;
-            color: white;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .water-info-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 25px;
-            border-radius: 12px;
-            color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .water-status {
+        .auto-status {
             font-size: 18px;
             font-weight: bold;
             margin: 15px 0;
@@ -437,73 +368,22 @@
             background: rgba(255,255,255,0.2);
         }
 
-        .water-status.low {
-            background: rgba(255, 59, 48, 0.3);
-            color: #ffeb3b;
-        }
-
-        .water-status.normal {
+        .auto-status.active {
             background: rgba(76, 175, 80, 0.3);
             color: #fff;
         }
 
-        .water-status.full {
-            background: rgba(33, 150, 243, 0.3);
+        .auto-status.inactive {
+            background: rgba(244, 67, 54, 0.3);
             color: #fff;
         }
 
-        .motor-status {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 15px 0;
-            padding: 10px 20px;
-            border-radius: 25px;
+        .sensor-info {
+            margin-top: 15px;
+            font-size: 14px;
             background: rgba(255,255,255,0.2);
-        }
-
-        .water-progress {
-            margin: 20px 0;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .info-items {
-            text-align: left;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .info-value {
-            font-weight: bold;
-            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
         }
 
         /* LED Controls */
@@ -1048,11 +928,7 @@
                 gap: 10px;
             }
 
-            .rain-sensor-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .water-tank-grid {
+            .garage-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -1206,111 +1082,51 @@
                 </div>
             </section>
 
-            <!-- Rain Sensor & Cloth Control Section -->
-            <section class="rain-sensor-section">
-                <h2>🌧️ Rain Sensor & Cloth Control</h2>
-                <div class="rain-sensor-grid">
-                    <!-- Rain Sensor Card -->
-                    <div class="rain-sensor-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🌧️</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Rain Drop Sensor</div>
-                        <div class="sensor-value" id="rainValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
-                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Sensor Value</div>
-                        <div id="rainStatus" class="rain-status sunny">SUNNY WEATHER</div>
-                        <div class="sensor-info" style="margin-top: 15px; font-size: 14px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-                            <strong>Threshold:</strong> 500<br>
-                            <small>Below 500 = Rain detected</small>
-                        </div>
-                    </div>
-
-                    <!-- Servo Control Card -->
-                    <div class="servo-control-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">👕</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Cloth Control System</div>
-                        <div id="clothStatus" class="cloth-status">OUTDOOR ☀️</div>
-                        <div id="servoPosition" class="servo-position">Position: 90°</div>
+            <!-- Garage Door Control Section -->
+            <section class="garage-section">
+                <h2>🚗 Garage Door Control System</h2>
+                <div class="garage-grid">
+                    <!-- Garage Door Control Card -->
+                    <div class="garage-door-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🚗</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Garage Door Control</div>
+                        <div id="garageStatus" class="garage-status closed">CLOSED</div>
                         <div class="switch-container" style="margin: 20px 0;">
-                            <button id="servoBtn" class="switch-btn off" onclick="toggleCloth()">OUTDOOR</button>
-                            <div id="servoStatus" class="status-indicator">OUTDOOR</div>
+                            <button id="garageBtn" class="switch-btn off" onclick="toggleGarageDoor()">CLOSE</button>
+                            <div id="garageState" class="status-indicator">✗ CLOSED</div>
                         </div>
-                        <div class="sensor-info" style="margin-top: 15px; font-size: 14px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-                            <strong>Auto Mode:</strong> Active<br>
-                            <small>Rain = INDOOR 🏠 | Sunny = OUTDOOR ☀️</small>
-                        </div>
-                    </div>
-
-                    <!-- UNO Connection Status -->
-                    <div class="uno-status-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🔌</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">UNO Connection</div>
-                        <div id="unoStatus" class="connection-status disconnected">DISCONNECTED</div>
-                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">I2C Communication</div>
-                        <div id="unoData" class="sensor-info" style="margin-top: 10px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-                            Waiting for data...
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Water Tank Control Section -->
-            <section class="water-tank-section">
-                <h2>💧 Water Tank Control System</h2>
-                <div class="water-tank-grid">
-                    <!-- Water Level Card -->
-                    <div class="water-level-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">💧</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Tank Level</div>
-                        <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
-                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
-                        <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
-                        <div class="water-progress">
-                            <div class="progress-bar">
-                                <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
-                            </div>
+                        <div class="sensor-info">
+                            <strong>Manual Control:</strong> Click button to open/close<br>
+                            <strong>Auto Mode:</strong> Opens when car detected (5cm)
                         </div>
                     </div>
 
-                    <!-- Motor Control Card -->
-                    <div class="motor-control-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🔧</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Water Motor Control</div>
-                        <div id="motorStatus" class="motor-status">MOTOR OFF</div>
-                        <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
-                            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
-                            <div style="font-size: 12px;">ON when ≤ 25%</div>
-                            <div style="font-size: 12px;">OFF when ≥ 100%</div>
+                    <!-- Ultrasonic Sensor Card -->
+                    <div class="ultrasonic-sensor-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">📏</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Ultrasonic Sensor</div>
+                        <div id="distanceValue" class="distance-value">--</div>
+                        <div class="distance-unit">Distance (cm)</div>
+                        <div id="carDetection" class="auto-status inactive">NO CAR DETECTED</div>
+                        <div class="sensor-info">
+                            <strong>Detection Range:</strong> 5cm<br>
+                            <strong>Function:</strong> Auto-open when car approaches
                         </div>
+                    </div>
+
+                    <!-- Garage Auto Mode Card -->
+                    <div class="garage-auto-card">
+                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">🤖</div>
+                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Auto Mode Control</div>
+                        <div id="garageAutoStatus" class="auto-status inactive">AUTO MODE OFF</div>
                         <div class="switch-container" style="margin: 20px 0;">
-                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
-                            <div id="motorState" class="status-indicator">AUTO MODE</div>
+                            <button id="garageAutoBtn" class="switch-btn off" onclick="toggleGarageAutoMode()">OFF</button>
+                            <div id="garageAutoState" class="status-indicator">MANUAL CONTROL</div>
                         </div>
-                    </div>
-
-                    <!-- Water System Info Card -->
-                    <div class="water-info-card">
-                        <div class="sensor-icon" style="font-size: 40px; margin-bottom: 15px;">ℹ️</div>
-                        <div class="sensor-name" style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">System Information</div>
-                        <div class="info-items">
-                            <div class="info-item">
-                                <span class="info-label">Current Level:</span>
-                                <span id="currentLevelText" class="info-value">--%</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Motor Status:</span>
-                                <span id="motorStatusText" class="info-value">--</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">System Mode:</span>
-                                <span class="info-value">Auto</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Low Level Alert:</span>
-                                <span class="info-value">25%</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Full Level:</span>
-                                <span class="info-value">100%</span>
-                            </div>
+                        <div class="sensor-info">
+                            <strong>Auto Mode:</strong> Opens when car detected<br>
+                            <strong>Auto Close:</strong> Closes after 5 minutes<br>
+                            <strong>Manual Mode:</strong> Full app control
                         </div>
                     </div>
                 </div>
@@ -1552,8 +1368,10 @@
         let autoMode = false;
         let securityAutoMode = false;
         let doorAutoMode = false;
+        let garageDoorAutoMode = false;
         let windowState = false;
         let doorState = false;
+        let garageDoorState = false;
         let fanState = false;
         let fanAutoMode = true;
         let temperature = 0;
@@ -1563,17 +1381,9 @@
         let authorizedRFIDs = [];
         let lastRFIDAccess = "";
 
-        // Rain sensor variables
-        let rainValue = 0;
-        let isRaining = false;
-        let weatherStatus = "SUNNY";
-        let unoConnected = false;
-        let unoData = "";
-
-        // Water tank variables - IMPROVED
-        let waterLevel = 0;
-        let waterMotorState = false;
-        let waterStatus = "UNKNOWN";
+        // Garage system variables
+        let garageDistance = 0;
+        let carDetected = false;
 
         // DOM Elements
         const authSection = document.getElementById('authSection');
@@ -1595,25 +1405,15 @@
         const humidityValue = document.getElementById('humidityValue');
         const motionValue = document.getElementById('motionValue');
         
-        // Rain sensor elements
-        const rainValueSpan = document.getElementById('rainValue');
-        const rainStatus = document.getElementById('rainStatus');
-        const clothStatusSpan = document.getElementById('clothStatus');
-        const servoPositionSpan = document.getElementById('servoPosition');
-        const servoBtn = document.getElementById('servoBtn');
-        const servoStatus = document.getElementById('servoStatus');
-        const unoStatus = document.getElementById('unoStatus');
-        const unoDataSpan = document.getElementById('unoData');
-
-        // Water tank elements
-        const waterLevelValue = document.getElementById('waterLevelValue');
-        const waterProgress = document.getElementById('waterProgress');
-        const waterStatusElement = document.getElementById('waterStatus');
-        const motorStatus = document.getElementById('motorStatus');
-        const motorBtn = document.getElementById('motorBtn');
-        const motorState = document.getElementById('motorState');
-        const currentLevelText = document.getElementById('currentLevelText');
-        const motorStatusText = document.getElementById('motorStatusText');
+        // Garage elements
+        const garageStatus = document.getElementById('garageStatus');
+        const garageBtn = document.getElementById('garageBtn');
+        const garageState = document.getElementById('garageState');
+        const distanceValue = document.getElementById('distanceValue');
+        const carDetection = document.getElementById('carDetection');
+        const garageAutoStatus = document.getElementById('garageAutoStatus');
+        const garageAutoBtn = document.getElementById('garageAutoBtn');
+        const garageAutoState = document.getElementById('garageAutoState');
 
         // Fan elements
         const fanBtn = document.getElementById('fanBtn');
@@ -1782,268 +1582,150 @@
             listenToFanState();
             listenToDoorState();
             listenToRFIDData();
-            listenToRainSensorData();
-            listenToWaterTankData();
+            listenToGarageData();
         }
 
-        // Water Tank Functions - IMPROVED
-        function listenToWaterTankData() {
+        // Garage System Functions
+        function listenToGarageData() {
             if (!currentDeviceId) {
-                console.log('❌ No device selected for water tank');
+                console.log('❌ No device selected for garage system');
                 return;
             }
             
-            console.log('🔍 Listening to water tank data for:', currentDeviceId);
+            console.log('🔍 Listening to garage system data for:', currentDeviceId);
             
-            // Listen to water level
-            const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
-            waterLevelRef.on('value', (snapshot) => {
-                const level = snapshot.val();
-                console.log('💧 Water level update:', level);
-                if (level !== null && level !== undefined) {
-                    waterLevel = parseInt(level);
-                    updateWaterTankUI();
-                } else {
-                    console.log('❌ Water level is null or undefined');
-                    waterLevel = 0;
-                    updateWaterTankUI();
-                }
-            }, (error) => {
-                console.error('❌ Water level listener error:', error);
-            });
-
-            // Listen to motor state
-            const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
-            motorStateRef.on('value', (snapshot) => {
+            // Listen to garage door state
+            const garageDoorRef = database.ref(`devices/${currentDeviceId}/garageDoor`);
+            garageDoorRef.on('value', (snapshot) => {
                 const state = snapshot.val();
-                console.log('🔧 Motor state update:', state);
+                console.log('🚗 Garage door state update:', state);
                 if (state !== null && state !== undefined) {
-                    waterMotorState = Boolean(state);
-                    updateWaterTankUI();
-                } else {
-                    console.log('❌ Motor state is null or undefined');
-                    waterMotorState = false;
-                    updateWaterTankUI();
-                }
-            }, (error) => {
-                console.error('❌ Motor state listener error:', error);
-            });
-
-            // Listen to water status
-            const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
-            waterStatusRef.on('value', (snapshot) => {
-                const status = snapshot.val();
-                console.log('📊 Water status update:', status);
-                if (status) {
-                    waterStatus = status;
-                    updateWaterTankUI();
+                    garageDoorState = Boolean(state);
+                    updateGarageUI();
                 }
             });
 
-            console.log('✅ Water tank listeners activated');
+            // Listen to garage auto mode
+            const garageAutoModeRef = database.ref(`devices/${currentDeviceId}/garageDoorAutoMode`);
+            garageAutoModeRef.on('value', (snapshot) => {
+                const state = snapshot.val();
+                console.log('🤖 Garage auto mode update:', state);
+                if (state !== null && state !== undefined) {
+                    garageDoorAutoMode = Boolean(state);
+                    updateGarageUI();
+                }
+            });
+
+            // Listen to ultrasonic distance
+            const distanceRef = database.ref(`devices/${currentDeviceId}/sensors/garageDistance`);
+            distanceRef.on('value', (snapshot) => {
+                const distance = snapshot.val();
+                console.log('📏 Garage distance update:', distance);
+                if (distance !== null && distance !== undefined) {
+                    garageDistance = parseInt(distance);
+                    updateGarageUI();
+                }
+            });
+
+            console.log('✅ Garage system listeners activated');
         }
 
-        // Update water tank UI with better error handling
-        function updateWaterTankUI() {
-            console.log('🔄 Updating water tank UI...');
-            console.log('💧 Current water level:', waterLevel);
-            console.log('🔧 Current motor state:', waterMotorState);
-            console.log('📊 Current water status:', waterStatus);
+        function updateGarageUI() {
+            console.log('🔄 Updating garage UI...');
+            console.log('🚗 Current garage state:', garageDoorState);
+            console.log('🤖 Current garage auto mode:', garageDoorAutoMode);
+            console.log('📏 Current distance:', garageDistance);
             
-            // Ensure waterLevel is a valid number
-            if (isNaN(waterLevel) || waterLevel < 0) waterLevel = 0;
-            if (waterLevel > 100) waterLevel = 100;
-            
-            // Update all UI elements with null checks
-            const elements = {
-                'waterLevelValue': waterLevel + '%',
-                'waterProgress': waterLevel + '%',
-                'waterStatus': waterStatus,
-                'currentLevelText': waterLevel + '%',
-                'motorStatusText': waterMotorState ? 'RUNNING' : 'STOPPED'
-            };
-            
-            Object.keys(elements).forEach(elementId => {
-                const element = document.getElementById(elementId);
-                if (element) {
-                    if (elementId === 'waterProgress') {
-                        element.style.width = elements[elementId];
-                        // Update progress bar color
-                        if (waterLevel <= 25) {
-                            element.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
-                        } else if (waterLevel >= 100) {
-                            element.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
-                        } else {
-                            element.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
-                        }
-                    } else {
-                        element.textContent = elements[elementId];
-                    }
-                } else {
-                    console.log('❌ Element not found:', elementId);
-                }
-            });
-            
-            // Update motor status display
-            const motorStatus = document.getElementById('motorStatus');
-            const motorState = document.getElementById('motorState');
-            
-            if (motorStatus && motorState) {
-                if (waterMotorState) {
-                    motorStatus.textContent = 'MOTOR ON 🔄';
-                    motorState.textContent = 'MOTOR RUNNING';
-                } else {
-                    motorStatus.textContent = 'MOTOR OFF ⏹️';
-                    motorState.textContent = 'MOTOR STOPPED';
-                }
-            }
-            
-            // Update water status class
-            const waterStatusElement = document.getElementById('waterStatus');
-            if (waterStatusElement) {
-                waterStatusElement.className = 'water-status';
-                if (waterLevel <= 25) {
-                    waterStatusElement.classList.add('low');
-                } else if (waterLevel >= 100) {
-                    waterStatusElement.classList.add('full');
-                } else {
-                    waterStatusElement.classList.add('normal');
-                }
-            }
-            
-            console.log('✅ Water tank UI update completed');
-        }
-
-        // Rain sensor functions
-        function listenToRainSensorData() {
-            if (!currentDeviceId) return;
-            
-            // Listen to rain value
-            const rainValueRef = database.ref(`devices/${currentDeviceId}/sensors/rainValue`);
-            rainValueRef.on('value', (snapshot) => {
-                const value = snapshot.val();
-                if (value !== null) {
-                    rainValue = value;
-                    updateRainSensorUI();
-                }
-            });
-
-            // Listen to weather status
-            const weatherStatusRef = database.ref(`devices/${currentDeviceId}/sensors/weatherStatus`);
-            weatherStatusRef.on('value', (snapshot) => {
-                const status = snapshot.val();
-                if (status) {
-                    weatherStatus = status;
-                    updateRainSensorUI();
-                }
-            });
-
-            // Listen to isRaining status
-            const isRainingRef = database.ref(`devices/${currentDeviceId}/sensors/isRaining`);
-            isRainingRef.on('value', (snapshot) => {
-                const raining = snapshot.val();
-                if (raining !== null) {
-                    isRaining = raining;
-                    updateRainSensorUI();
-                }
-            });
-
-            // Listen to UNO connection status
-            const unoConnectedRef = database.ref(`devices/${currentDeviceId}/unoConnected`);
-            unoConnectedRef.on('value', (snapshot) => {
-                unoConnected = snapshot.val() || false;
-                updateUNOStatusUI();
-            });
-
-            // Listen to UNO data
-            const unoDataRef = database.ref(`devices/${currentDeviceId}/sensors/unoData`);
-            unoDataRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    unoData = data;
-                    updateUNOStatusUI();
-                }
-            });
-        }
-
-        function updateRainSensorUI() {
-            // Update rain value
-            rainValueSpan.textContent = rainValue;
-            
-            // Determine rain status based on rain value and weather status
-            let displayStatus = "SUNNY";
-            let displayIcon = "☀️";
-            let statusClass = "sunny";
-            
-            if (isRaining || rainValue < 500) {
-                displayStatus = "RAINING";
-                displayIcon = "🌧️";
-                statusClass = "raining";
+            // Update garage door status
+            if (garageDoorState) {
+                garageStatus.textContent = 'OPEN';
+                garageStatus.className = 'garage-status open';
+                garageBtn.textContent = 'OPEN';
+                garageBtn.className = 'switch-btn on';
+                garageState.textContent = '✓ OPEN';
             } else {
-                displayStatus = "SUNNY";
-                displayIcon = "☀️";
-                statusClass = "sunny";
+                garageStatus.textContent = 'CLOSED';
+                garageStatus.className = 'garage-status closed';
+                garageBtn.textContent = 'CLOSE';
+                garageBtn.className = 'switch-btn off';
+                garageState.textContent = '✗ CLOSED';
             }
             
-            // Update rain status display
-            rainStatus.textContent = `${displayStatus} ${displayIcon}`;
-            rainStatus.className = `rain-status ${statusClass}`;
+            // Update distance display
+            distanceValue.textContent = garageDistance;
             
-            // Update cloth status based on rain
-            if (isRaining || rainValue < 500) {
-                clothStatusSpan.textContent = "INDOOR 🏠";
-                servoPositionSpan.textContent = "Position: 0°";
-                servoBtn.textContent = "INDOOR";
-                servoBtn.className = "switch-btn on";
-                servoStatus.textContent = "INDOOR 🏠";
+            // Update car detection status
+            if (garageDistance <= 5 && garageDistance > 0) {
+                carDetection.textContent = 'CAR DETECTED 🚗';
+                carDetection.className = 'auto-status active';
             } else {
-                clothStatusSpan.textContent = "OUTDOOR ☀️";
-                servoPositionSpan.textContent = "Position: 90°";
-                servoBtn.textContent = "OUTDOOR";
-                servoBtn.className = "switch-btn off";
-                servoStatus.textContent = "OUTDOOR ☀️";
+                carDetection.textContent = 'NO CAR DETECTED';
+                carDetection.className = 'auto-status inactive';
             }
+            
+            // Update garage auto mode
+            if (garageDoorAutoMode) {
+                garageAutoStatus.textContent = 'AUTO MODE ON';
+                garageAutoStatus.className = 'auto-status active';
+                garageAutoBtn.textContent = 'ON';
+                garageAutoBtn.className = 'switch-btn on';
+                garageAutoState.textContent = 'AUTO MODE';
+                
+                // Disable manual button in auto mode
+                garageBtn.disabled = true;
+                garageBtn.title = 'Switch to manual mode to control garage door';
+            } else {
+                garageAutoStatus.textContent = 'AUTO MODE OFF';
+                garageAutoStatus.className = 'auto-status inactive';
+                garageAutoBtn.textContent = 'OFF';
+                garageAutoBtn.className = 'switch-btn off';
+                garageAutoState.textContent = 'MANUAL CONTROL';
+                
+                // Enable manual button in manual mode
+                garageBtn.disabled = false;
+                garageBtn.title = 'Click to toggle garage door';
+            }
+            
+            console.log('✅ Garage UI update completed');
         }
 
-        function updateUNOStatusUI() {
-            if (unoConnected) {
-                unoStatus.textContent = 'CONNECTED ✅';
-                unoStatus.className = 'connection-status connected';
-                unoDataSpan.textContent = unoData || 'Receiving data...';
-            } else {
-                unoStatus.textContent = 'DISCONNECTED ❌';
-                unoStatus.className = 'connection-status disconnected';
-                unoDataSpan.textContent = 'Waiting for connection...';
-            }
-        }
-
-        function toggleCloth() {
+        async function toggleGarageDoor() {
             if (!currentDeviceId) {
                 alert('Please select a device first');
                 return;
             }
 
-            if (!unoConnected) {
-                alert('UNO is not connected. Cannot control cloth system.');
+            // Check if garage is in auto mode
+            if (garageDoorAutoMode) {
+                alert('Garage is in auto mode. Switch to manual mode to control garage door from app.');
                 return;
             }
 
             try {
-                // Toggle cloth position
-                const newClothStatus = isRaining ? "OUTDOOR" : "INDOOR";
-                
-                // Note: This would require additional implementation on ESP32 side
-                // to send commands to UNO. For now, we'll just update the display.
-                
-                alert(`Manual cloth control: ${newClothStatus}\n\nThis feature requires additional implementation to send commands from ESP32 to UNO.`);
-                
+                const newGarageState = !garageDoorState;
+                await database.ref(`devices/${currentDeviceId}/garageDoor`).set(newGarageState);
             } catch (error) {
-                console.error('Error controlling cloth:', error);
-                alert('Error controlling cloth: ' + error.message);
+                console.error('Error toggling garage door:', error);
+                alert('Error toggling garage door: ' + error.message);
             }
         }
 
-        // ALL THE ORIGINAL FUNCTIONS FROM YOUR CODE
+        async function toggleGarageAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const newGarageAutoMode = !garageDoorAutoMode;
+                await database.ref(`devices/${currentDeviceId}/garageDoorAutoMode`).set(newGarageAutoMode);
+            } catch (error) {
+                console.error('Error toggling garage auto mode:', error);
+                alert('Error toggling garage auto mode: ' + error.message);
+            }
+        }
+
+        // ALL THE ORIGINAL FUNCTIONS FROM YOUR CODE (with garage system added)
         function listenToDeviceStatus() {
             if (!currentDeviceId) return;
             

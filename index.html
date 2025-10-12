@@ -279,8 +279,8 @@
             background: #c82333;
         }
 
-        /* Control Section Base Styles */
-        .control-section {
+        /* Gate Control Section */
+        .gate-control-section {
             background: white;
             padding: 25px;
             border-radius: 15px;
@@ -288,21 +288,22 @@
             margin-bottom: 30px;
         }
 
-        .control-section h2 {
+        .gate-control-section h2 {
             color: #333;
             margin-bottom: 20px;
             font-size: 24px;
             text-align: center;
         }
 
-        .control-grid {
+        .gate-control-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
 
-        .control-card {
+        .gate-status-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             padding: 25px;
             border-radius: 12px;
             color: white;
@@ -310,19 +311,25 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .status-card {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .action-card {
+        .gate-password-card {
             background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .mode-card {
+        .gate-auto-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .status-display {
+        .gate-status {
             font-size: 20px;
             font-weight: bold;
             margin: 15px 0;
@@ -331,140 +338,97 @@
             background: rgba(255,255,255,0.2);
         }
 
-        .status-display.on {
+        .gate-status.open {
             background: rgba(76, 175, 80, 0.3);
             color: #fff;
         }
 
-        .status-display.off {
+        .gate-status.closed {
             background: rgba(244, 67, 54, 0.3);
             color: #fff;
         }
 
-        /* Mode Control Styles */
-        .mode-control {
+        /* Water Tank Section */
+        .water-tank-section {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-        }
-
-        .mode-control h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .mode-control-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .mode-info {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #666;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        /* Mode Switch Button */
-        .mode-switch {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-        }
-
-        .mode-btn {
-            padding: 6px 12px;
-            border: none;
+            padding: 25px;
             border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
 
-        .mode-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .mode-btn.inactive {
-            background: rgba(255,255,255,0.5);
-            color: #666;
-        }
-
-        .mode-status {
-            background: rgba(255,255,255,0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* Switch Controls */
-        .switch-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .switch-btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 100px;
-            background: white;
+        .water-tank-section h2 {
             color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
         }
 
-        .switch-btn.on {
-            background: #4CAF50;
+        .water-tank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .water-level-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 12px;
             color: white;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .switch-btn.off {
-            background: #f44336;
+        .motor-control-card {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            padding: 25px;
+            border-radius: 12px;
             color: white;
-            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .switch-btn:hover {
-            transform: scale(1.05);
+        .water-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .switch-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .status-indicator {
-            font-size: 14px;
+        .water-status {
+            font-size: 18px;
             font-weight: bold;
-            padding: 5px 15px;
-            border-radius: 20px;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
             background: rgba(255,255,255,0.2);
         }
 
-        /* Water Tank Specific Styles */
+        .water-status.low {
+            background: rgba(255, 59, 48, 0.3);
+            color: #ffeb3b;
+        }
+
+        .water-status.normal {
+            background: rgba(76, 175, 80, 0.3);
+            color: #fff;
+        }
+
+        .water-status.full {
+            background: rgba(33, 150, 243, 0.3);
+            color: #fff;
+        }
+
+        .motor-status {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+        }
+
         .water-progress {
             margin: 20px 0;
         }
@@ -555,6 +519,103 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+        }
+
+        .switch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .switch-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            background: white;
+            color: #333;
+        }
+
+        .switch-btn.on {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .switch-btn.off {
+            background: #f44336;
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .switch-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .switch-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-indicator {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Auto Mode Controls */
+        .auto-control {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .auto-control h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .auto-control-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .auto-mode-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Manual Override Indicator */
+        .override-indicator {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+            display: none;
         }
 
         /* Group Controls */
@@ -740,6 +801,43 @@
             gap: 10px;
         }
 
+        .fan-mode-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .mode-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .mode-btn.inactive {
+            background: rgba(255,255,255,0.5);
+            color: #666;
+        }
+
+        .fan-auto-status {
+            background: rgba(255,255,255,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         .fan-content {
             display: flex;
             justify-content: space-between;
@@ -837,51 +935,6 @@
             border-bottom: none;
         }
 
-        .rfid-key-list {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-
-        .rfid-key-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .rfid-key-item:last-child {
-            border-bottom: none;
-        }
-
-        .remove-rfid-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 3px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        /* Manual Override Indicator */
-        .override-indicator {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .app-header {
@@ -895,7 +948,11 @@
                 gap: 10px;
             }
 
-            .control-grid {
+            .gate-control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .water-tank-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -911,7 +968,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .mode-control-content {
+            .auto-control-content {
                 flex-direction: column;
             }
 
@@ -960,6 +1017,38 @@
             margin: 10px 0;
             text-align: center;
             font-size: 14px;
+        }
+
+        .rfid-key-list {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .rfid-key-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .rfid-key-item:last-child {
+            border-bottom: none;
+        }
+
+        .remove-rfid-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
         }
     </style>
 </head>
@@ -1010,41 +1099,20 @@
             </section>
 
             <!-- Gate Control Section -->
-            <section class="control-section">
+            <section class="gate-control-section">
                 <h2>🚪 Smart Gate Control</h2>
-                
-                <!-- Gate Mode Control -->
-                <div class="mode-control">
-                    <h3>🤖 Gate Control Mode</h3>
-                    <div class="mode-control-content">
-                        <span style="font-weight: bold;">Control Mode:</span>
-                        <div class="mode-switch">
-                            <button id="gateAutoModeBtn" class="mode-btn active" onclick="setGateMode(true)">Auto</button>
-                            <button id="gateManualModeBtn" class="mode-btn inactive" onclick="setGateMode(false)">Manual</button>
-                        </div>
-                        <div id="gateModeStatus" class="mode-status">
-                            Auto: Controlled by UNO
-                        </div>
-                    </div>
-                    <div class="mode-info">
-                        <strong>Gate Control Modes:</strong><br>
-                        <strong>Auto Mode:</strong> Gate controlled by UNO system<br>
-                        <strong>Manual Mode:</strong> Gate can be controlled manually from the app
-                    </div>
-                </div>
-
-                <div class="control-grid">
-                    <div class="control-card status-card">
+                <div class="gate-control-grid">
+                    <div class="gate-status-card">
                         <div class="sensor-icon">🚪</div>
                         <div class="sensor-name">Gate Status</div>
-                        <div id="gateStatus" class="status-display off">CLOSED</div>
+                        <div id="gateStatus" class="gate-status closed">CLOSED</div>
                         <div class="switch-container">
-                            <button id="gateBtn" class="switch-btn off" onclick="toggleGate()" disabled>OPEN GATE</button>
-                            <div id="gateState" class="status-indicator">AUTO MODE</div>
+                            <button id="gateBtn" class="switch-btn off" onclick="toggleGate()">OPEN GATE</button>
+                            <div id="gateState" class="status-indicator">CLOSED</div>
                         </div>
                     </div>
                     
-                    <div class="control-card action-card">
+                    <div class="gate-password-card">
                         <div class="sensor-icon">🔑</div>
                         <div class="sensor-name">Gate Password</div>
                         <div class="switch-container">
@@ -1055,41 +1123,33 @@
                             Current Password: <span id="currentPassword">1234</span>
                         </div>
                     </div>
+
+                    <div class="gate-auto-card">
+                        <div class="sensor-icon">🤖</div>
+                        <div class="sensor-name">Gate Auto Mode</div>
+                        <div class="switch-container">
+                            <button id="gateAutoModeBtn" class="switch-btn off" onclick="toggleGateAutoMode()">OFF</button>
+                            <div id="gateAutoModeStatus" class="status-indicator">MANUAL</div>
+                        </div>
+                        <div class="sensor-info" style="margin-top: 15px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                            Auto Mode: Controlled by UNO<br>
+                            Manual Mode: App control enabled
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!-- Water Tank Control Section -->
-            <section class="control-section">
+            <section class="water-tank-section">
                 <h2>💧 Water Tank Control System</h2>
-                
-                <!-- Water Tank Mode Control -->
-                <div class="mode-control">
-                    <h3>🤖 Water Tank Control Mode</h3>
-                    <div class="mode-control-content">
-                        <span style="font-weight: bold;">Control Mode:</span>
-                        <div class="mode-switch">
-                            <button id="waterAutoModeBtn" class="mode-btn active" onclick="setWaterTankMode(true)">Auto</button>
-                            <button id="waterManualModeBtn" class="mode-btn inactive" onclick="setWaterTankMode(false)">Manual</button>
-                        </div>
-                        <div id="waterModeStatus" class="mode-status">
-                            Auto: Controlled by level sensors
-                        </div>
-                    </div>
-                    <div class="mode-info">
-                        <strong>Water Tank Control Modes:</strong><br>
-                        <strong>Auto Mode:</strong> Motor automatically controlled by water level sensors<br>
-                        <strong>Manual Mode:</strong> Motor can be controlled manually from the app
-                    </div>
-                </div>
-
-                <div class="control-grid">
+                <div class="water-tank-grid">
                     <!-- Water Level Card -->
-                    <div class="control-card status-card">
+                    <div class="water-level-card">
                         <div class="sensor-icon">💧</div>
                         <div class="sensor-name">Water Tank Level</div>
                         <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
                         <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
-                        <div id="waterStatus" class="status-display">NORMAL LEVEL</div>
+                        <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
                         <div class="water-progress">
                             <div class="progress-bar">
                                 <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
@@ -1098,23 +1158,23 @@
                     </div>
 
                     <!-- Motor Control Card -->
-                    <div class="control-card action-card">
+                    <div class="motor-control-card">
                         <div class="sensor-icon">🔧</div>
                         <div class="sensor-name">Water Motor Control</div>
-                        <div id="motorStatus" class="status-display">MOTOR OFF</div>
+                        <div id="motorStatus" class="motor-status">MOTOR OFF</div>
                         <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
                             <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
                             <div style="font-size: 12px;">ON when ≤ 25%</div>
                             <div style="font-size: 12px;">OFF when ≥ 100%</div>
                         </div>
                         <div class="switch-container" style="margin: 20px 0;">
-                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO MODE</button>
-                            <div id="motorState" class="status-indicator">AUTO CONTROL</div>
+                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
+                            <div id="motorState" class="status-indicator">AUTO MODE</div>
                         </div>
                     </div>
 
                     <!-- Water System Info Card -->
-                    <div class="control-card mode-card">
+                    <div class="water-info-card">
                         <div class="sensor-icon">ℹ️</div>
                         <div class="sensor-name">System Information</div>
                         <div class="info-items">
@@ -1128,7 +1188,7 @@
                             </div>
                             <div class="info-item">
                                 <span class="info-label">System Mode:</span>
-                                <span id="waterSystemMode" class="info-value">Auto</span>
+                                <span class="info-value">Auto</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Low Level Alert:</span>
@@ -1177,34 +1237,13 @@
             <!-- RFID Door Control Section -->
             <section class="rfid-section">
                 <h2>🔑 RFID Door Control</h2>
-                
-                <!-- Door Mode Control -->
-                <div class="mode-control">
-                    <h3>🤖 Door Control Mode</h3>
-                    <div class="mode-control-content">
-                        <span style="font-weight: bold;">Control Mode:</span>
-                        <div class="mode-switch">
-                            <button id="doorAutoModeBtn" class="mode-btn active" onclick="setDoorMode(true)">Auto</button>
-                            <button id="doorManualModeBtn" class="mode-btn inactive" onclick="setDoorMode(false)">Manual</button>
-                        </div>
-                        <div id="doorModeStatus" class="mode-status">
-                            Auto: RFID Only Mode
-                        </div>
-                    </div>
-                    <div class="mode-info">
-                        <strong>Door Control Modes:</strong><br>
-                        <strong>Auto Mode:</strong> Door can only be opened with authorized RFID cards<br>
-                        <strong>Manual Mode:</strong> Door can be controlled manually from the app and with RFID
-                    </div>
-                </div>
-
                 <div class="rfid-controls">
                     <div class="rfid-control-card">
                         <div class="led-icon">🚪</div>
                         <div class="led-name">Main Door Control</div>
                         <div class="switch-container">
-                            <button id="doorBtn" class="switch-btn off" onclick="toggleDoor()" disabled>CLOSE</button>
-                            <div id="doorStatus" class="status-indicator">RFID ONLY</div>
+                            <button id="doorBtn" class="switch-btn off" onclick="toggleDoor()">CLOSE</button>
+                            <div id="doorStatus" class="status-indicator">✗ CLOSED</div>
                         </div>
                     </div>
                     
@@ -1215,6 +1254,23 @@
                             <input type="text" id="newRFIDKey" placeholder="Enter RFID UID" style="padding: 10px; border: none; border-radius: 8px; width: 100%; margin-bottom: 10px;">
                             <button class="switch-btn" onclick="addRFIDKey()" style="background: #4CAF50; color: white;">Add Key</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Door Auto Mode Control -->
+                <div class="auto-control">
+                    <h3>🚪 Door Auto Mode</h3>
+                    <div class="auto-control-content">
+                        <span style="font-weight: bold;">Door Auto Mode:</span>
+                        <button id="doorAutoModeBtn" class="switch-btn off" onclick="toggleDoorAutoMode()">OFF</button>
+                        <span id="doorAutoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
+                            Manual Control
+                        </span>
+                    </div>
+                    <div class="auto-mode-info">
+                        <strong>Door Control Modes:</strong><br>
+                        <strong>Auto Mode:</strong> Door can only be opened with authorized RFID cards<br>
+                        <strong>Manual Mode:</strong> Door can be controlled manually from the app and with RFID
                     </div>
                 </div>
 
@@ -1241,12 +1297,12 @@
                     <div class="fan-title">
                         🌀 Fan Control
                     </div>
-                    <div class="mode-switch">
+                    <div class="fan-mode-control">
                         <span style="font-size: 14px; font-weight: bold;">Mode:</span>
                         <button id="fanAutoModeBtn" class="mode-btn active" onclick="setFanMode(true)">Auto</button>
                         <button id="fanManualModeBtn" class="mode-btn inactive" onclick="setFanMode(false)">Manual</button>
                     </div>
-                    <div id="fanModeStatus" class="mode-status">
+                    <div id="fanAutoStatus" class="fan-auto-status">
                         Auto: 25°C
                     </div>
                 </div>
@@ -1263,8 +1319,8 @@
                         </div>
                     </div>
                     <div class="switch-container">
-                        <button id="fanBtn" class="switch-btn off" onclick="toggleFan()" disabled>OFF</button>
-                        <div id="fanStatus" class="status-indicator">AUTO MODE</div>
+                        <button id="fanBtn" class="switch-btn off" onclick="toggleFan()">OFF</button>
+                        <div id="fanStatus" class="status-indicator">✗ OFF</div>
                     </div>
                 </div>
             </div>
@@ -1273,45 +1329,37 @@
             <section class="leds-section">
                 <h2>💡 Smart Controls - <span id="currentDeviceId">Select a Device</span></h2>
                 
-                <!-- LED Mode Control -->
-                <div class="mode-control">
-                    <h3>🤖 LED Control Mode</h3>
-                    <div class="mode-control-content">
-                        <span style="font-weight: bold;">Control Mode:</span>
-                        <div class="mode-switch">
-                            <button id="ledAutoModeBtn" class="mode-btn active" onclick="setLEDMode(true)">Auto</button>
-                            <button id="ledManualModeBtn" class="mode-btn inactive" onclick="setLEDMode(false)">Manual</button>
-                        </div>
-                        <div id="ledModeStatus" class="mode-status">
-                            Auto: Light-based control
-                        </div>
+                <!-- Auto Mode Control -->
+                <div class="auto-control">
+                    <h3>🤖 Auto Mode Control</h3>
+                    <div class="auto-control-content">
+                        <span style="font-weight: bold;">Auto Mode:</span>
+                        <button id="autoModeBtn" class="switch-btn off" onclick="toggleAutoMode()">OFF</button>
+                        <span id="autoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
+                            Manual Control
+                        </span>
                     </div>
-                    <div class="mode-info">
-                        <strong>LED Control Modes:</strong><br>
-                        <strong>Auto Mode:</strong> කළුවර වැටුනහම ජනෙල් ස්වයංක්රීයව වසා garden light ON කරයි.<br>
-                        එළිය වැටුනහම ජනෙල් විවෘත කර garden light OFF කරයි.<br>
-                        <strong>Manual Mode:</strong> All lights can be controlled manually from the app
+                    <div class="auto-mode-info">
+                        <strong>Auto Mode Explanation:</strong><br>
+                        කළුවර වැටුනහම ජනෙල් ස්වයංක්රීයව වසා garden light ON කරයි.<br>
+                        එළිය වැටුනහම ජනෙල් විවෘත කර garden light OFF කරයි.
                     </div>
                 </div>
 
-                <!-- Security Light Mode Control -->
-                <div class="mode-control">
-                    <h3>🚨 Security Light Control Mode</h3>
-                    <div class="mode-control-content">
-                        <span style="font-weight: bold;">Control Mode:</span>
-                        <div class="mode-switch">
-                            <button id="securityAutoModeBtn" class="mode-btn active" onclick="setSecurityMode(true)">Auto</button>
-                            <button id="securityManualModeBtn" class="mode-btn inactive" onclick="setSecurityMode(false)">Manual</button>
-                        </div>
-                        <div id="securityModeStatus" class="mode-status">
-                            Auto: Motion-based control
-                        </div>
+                <!-- Security Auto Mode Control -->
+                <div class="auto-control">
+                    <h3>🚨 Security Light Auto Mode</h3>
+                    <div class="auto-control-content">
+                        <span style="font-weight: bold;">Security Auto Mode:</span>
+                        <button id="securityAutoModeBtn" class="switch-btn off" onclick="toggleSecurityAutoMode()">OFF</button>
+                        <span id="securityAutoModeStatus" style="font-size: 14px; padding: 5px 15px; border-radius: 20px; background: #ffebee; color: #c62828;">
+                            Manual Control
+                        </span>
                     </div>
-                    <div class="mode-info">
-                        <strong>Security Light Control Modes:</strong><br>
-                        <strong>Auto Mode:</strong> කළුවර වැටී ඇති අවස්ථාවේදී චලනය හඳුනාගත් විට security light ස්වයංක්රීයව ON කරයි.<br>
-                        චලනය නැතිව මිනිත්තු 30ක් ගතවුන පසු security light ස්වයංක්රීයව OFF කරයි.<br>
-                        <strong>Manual Mode:</strong> Security light can be controlled manually from the app
+                    <div class="auto-mode-info">
+                        <strong>Security Auto Mode Explanation:</strong><br>
+                        කළුවර වැටී ඇති අවස්ථාවේදී චලනය හඳුනාගත් විට security light ස්වයංක්රීයව ON කරයි.<br>
+                        චලනය නැතිව මිනිත්තු 30ක් ගතවුන පසු security light ස්වයංක්රීයව OFF කරයි.
                     </div>
                 </div>
 
@@ -1386,18 +1434,6 @@
         let currentUser = null;
         let currentDeviceId = null;
         let devices = [];
-        
-        // Mode states for all components
-        let modes = {
-            gate: { auto: true, state: false },
-            waterTank: { auto: true, state: false },
-            door: { auto: true, state: false },
-            fan: { auto: true, state: false },
-            led: { auto: true, state: false },
-            security: { auto: true, state: false }
-        };
-
-        // LED states
         let ledStates = {
             garden: false,
             bedroom: false,
@@ -1406,23 +1442,28 @@
             garage: false,
             security: false
         };
-
-        // Sensor data
+        let autoMode = false;
+        let securityAutoMode = false;
+        let doorAutoMode = false;
+        let gateAutoMode = false;
+        let windowState = false;
+        let doorState = false;
+        let gateState = false;
+        let fanState = false;
+        let fanAutoMode = true;
         let temperature = 0;
         let humidity = 0;
         let ldrValue = 0;
         let motionDetected = false;
-        let windowState = false;
-
-        // Water tank data
-        let waterLevel = 0;
-        let waterMotorState = false;
-        let waterStatus = "UNKNOWN";
-
-        // RFID data
+        let manualOverrideActive = false;
         let authorizedRFIDs = [];
         let lastRFIDAccess = "";
         let gatePassword = "1234";
+
+        // Water tank variables
+        let waterLevel = 0;
+        let waterMotorState = false;
+        let waterStatus = "UNKNOWN";
 
         // DOM Elements
         const authSection = document.getElementById('authSection');
@@ -1454,14 +1495,13 @@
         const motorState = document.getElementById('motorState');
         const currentLevelText = document.getElementById('currentLevelText');
         const motorStatusText = document.getElementById('motorStatusText');
-        const waterSystemMode = document.getElementById('waterSystemMode');
 
         // Fan elements
         const fanBtn = document.getElementById('fanBtn');
         const fanStatus = document.getElementById('fanStatus');
         const fanStatusText = document.getElementById('fanStatusText');
         const fanModeText = document.getElementById('fanModeText');
-        const fanModeStatus = document.getElementById('fanModeStatus');
+        const fanAutoStatus = document.getElementById('fanAutoStatus');
         const fanAutoModeBtn = document.getElementById('fanAutoModeBtn');
         const fanManualModeBtn = document.getElementById('fanManualModeBtn');
 
@@ -1469,8 +1509,7 @@
         const doorBtn = document.getElementById('doorBtn');
         const doorStatus = document.getElementById('doorStatus');
         const doorAutoModeBtn = document.getElementById('doorAutoModeBtn');
-        const doorManualModeBtn = document.getElementById('doorManualModeBtn');
-        const doorModeStatus = document.getElementById('doorModeStatus');
+        const doorAutoModeStatus = document.getElementById('doorAutoModeStatus');
         const newRFIDKeyInput = document.getElementById('newRFIDKey');
         const rfidKeysList = document.getElementById('rfidKeysList');
         const accessLog = document.getElementById('accessLog');
@@ -1482,23 +1521,7 @@
         const gatePasswordInput = document.getElementById('gatePasswordInput');
         const currentPasswordSpan = document.getElementById('currentPassword');
         const gateAutoModeBtn = document.getElementById('gateAutoModeBtn');
-        const gateManualModeBtn = document.getElementById('gateManualModeBtn');
-        const gateModeStatus = document.getElementById('gateModeStatus');
-
-        // Water tank mode elements
-        const waterAutoModeBtn = document.getElementById('waterAutoModeBtn');
-        const waterManualModeBtn = document.getElementById('waterManualModeBtn');
-        const waterModeStatus = document.getElementById('waterModeStatus');
-
-        // LED mode elements
-        const ledAutoModeBtn = document.getElementById('ledAutoModeBtn');
-        const ledManualModeBtn = document.getElementById('ledManualModeBtn');
-        const ledModeStatus = document.getElementById('ledModeStatus');
-
-        // Security mode elements
-        const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
-        const securityManualModeBtn = document.getElementById('securityManualModeBtn');
-        const securityModeStatus = document.getElementById('securityModeStatus');
+        const gateAutoModeStatus = document.getElementById('gateAutoModeStatus');
 
         // Auth state listener
         auth.onAuthStateChanged((user) => {
@@ -1647,229 +1670,6 @@
             listenToGateState();
             listenToRFIDData();
             listenToWaterTankData();
-            loadModeStates();
-        }
-
-        // Mode Control Functions
-        async function loadModeStates() {
-            if (!currentDeviceId) return;
-
-            // Load all mode states from Firebase
-            const modesRef = database.ref(`devices/${currentDeviceId}/modes`);
-            modesRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    modes = { ...modes, ...data };
-                    updateAllModeUI();
-                }
-            });
-        }
-
-        async function setGateMode(isAuto) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                modes.gate.auto = isAuto;
-                await database.ref(`devices/${currentDeviceId}/modes/gate`).set(modes.gate);
-                updateGateModeUI();
-            } catch (error) {
-                console.error('Error setting gate mode:', error);
-                alert('Error setting gate mode: ' + error.message);
-            }
-        }
-
-        async function setWaterTankMode(isAuto) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                modes.waterTank.auto = isAuto;
-                await database.ref(`devices/${currentDeviceId}/modes/waterTank`).set(modes.waterTank);
-                updateWaterTankModeUI();
-            } catch (error) {
-                console.error('Error setting water tank mode:', error);
-                alert('Error setting water tank mode: ' + error.message);
-            }
-        }
-
-        async function setDoorMode(isAuto) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                modes.door.auto = isAuto;
-                await database.ref(`devices/${currentDeviceId}/modes/door`).set(modes.door);
-                updateDoorModeUI();
-            } catch (error) {
-                console.error('Error setting door mode:', error);
-                alert('Error setting door mode: ' + error.message);
-            }
-        }
-
-        async function setFanMode(isAuto) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                modes.fan.auto = isAuto;
-                await database.ref(`devices/${currentDeviceId}/modes/fan`).set(modes.fan);
-                updateFanModeUI();
-            } catch (error) {
-                console.error('Error setting fan mode:', error);
-                alert('Error setting fan mode: ' + error.message);
-            }
-        }
-
-        async function setLEDMode(isAuto) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                modes.led.auto = isAuto;
-                await database.ref(`devices/${currentDeviceId}/modes/led`).set(modes.led);
-                updateLEDModeUI();
-            } catch (error) {
-                console.error('Error setting LED mode:', error);
-                alert('Error setting LED mode: ' + error.message);
-            }
-        }
-
-        async function setSecurityMode(isAuto) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            try {
-                modes.security.auto = isAuto;
-                await database.ref(`devices/${currentDeviceId}/modes/security`).set(modes.security);
-                updateSecurityModeUI();
-            } catch (error) {
-                console.error('Error setting security mode:', error);
-                alert('Error setting security mode: ' + error.message);
-            }
-        }
-
-        function updateAllModeUI() {
-            updateGateModeUI();
-            updateWaterTankModeUI();
-            updateDoorModeUI();
-            updateFanModeUI();
-            updateLEDModeUI();
-            updateSecurityModeUI();
-        }
-
-        function updateGateModeUI() {
-            if (modes.gate.auto) {
-                gateAutoModeBtn.className = 'mode-btn active';
-                gateManualModeBtn.className = 'mode-btn inactive';
-                gateModeStatus.textContent = 'Auto: Controlled by UNO';
-                gateBtn.disabled = true;
-                gateBtn.title = 'Switch to manual mode to control gate';
-                gateStateIndicator.textContent = 'AUTO MODE';
-            } else {
-                gateAutoModeBtn.className = 'mode-btn inactive';
-                gateManualModeBtn.className = 'mode-btn active';
-                gateModeStatus.textContent = 'Manual: App control enabled';
-                gateBtn.disabled = false;
-                gateBtn.title = 'Click to toggle gate';
-                gateStateIndicator.textContent = 'MANUAL MODE';
-            }
-        }
-
-        function updateWaterTankModeUI() {
-            if (modes.waterTank.auto) {
-                waterAutoModeBtn.className = 'mode-btn active';
-                waterManualModeBtn.className = 'mode-btn inactive';
-                waterModeStatus.textContent = 'Auto: Controlled by level sensors';
-                waterSystemMode.textContent = 'Auto';
-                motorBtn.disabled = true;
-                motorBtn.title = 'Switch to manual mode to control motor';
-                motorState.textContent = 'AUTO CONTROL';
-            } else {
-                waterAutoModeBtn.className = 'mode-btn inactive';
-                waterManualModeBtn.className = 'mode-btn active';
-                waterModeStatus.textContent = 'Manual: App control enabled';
-                waterSystemMode.textContent = 'Manual';
-                motorBtn.disabled = false;
-                motorBtn.title = 'Click to toggle motor';
-                motorState.textContent = 'MANUAL CONTROL';
-            }
-        }
-
-        function updateDoorModeUI() {
-            if (modes.door.auto) {
-                doorAutoModeBtn.className = 'mode-btn active';
-                doorManualModeBtn.className = 'mode-btn inactive';
-                doorModeStatus.textContent = 'Auto: RFID Only Mode';
-                doorBtn.disabled = true;
-                doorBtn.title = 'Switch to manual mode to control door from app';
-                doorStatus.textContent = 'RFID ONLY';
-            } else {
-                doorAutoModeBtn.className = 'mode-btn inactive';
-                doorManualModeBtn.className = 'mode-btn active';
-                doorModeStatus.textContent = 'Manual: App control enabled';
-                doorBtn.disabled = false;
-                doorBtn.title = 'Click to toggle door';
-                doorStatus.textContent = 'MANUAL MODE';
-            }
-        }
-
-        function updateFanModeUI() {
-            if (modes.fan.auto) {
-                fanAutoModeBtn.className = 'mode-btn active';
-                fanManualModeBtn.className = 'mode-btn inactive';
-                fanModeStatus.textContent = temperature >= 25 ? 'Auto: ON (≥25°C)' : 'Auto: OFF (<25°C)';
-                fanModeText.textContent = 'Auto';
-                fanBtn.disabled = true;
-                fanBtn.title = 'Switch to manual mode to control fan';
-                fanStatus.textContent = 'AUTO MODE';
-            } else {
-                fanAutoModeBtn.className = 'mode-btn inactive';
-                fanManualModeBtn.className = 'mode-btn active';
-                fanModeStatus.textContent = 'Manual: App control enabled';
-                fanModeText.textContent = 'Manual';
-                fanBtn.disabled = false;
-                fanBtn.title = 'Click to toggle fan';
-                fanStatus.textContent = 'MANUAL MODE';
-            }
-        }
-
-        function updateLEDModeUI() {
-            if (modes.led.auto) {
-                ledAutoModeBtn.className = 'mode-btn active';
-                ledManualModeBtn.className = 'mode-btn inactive';
-                ledModeStatus.textContent = 'Auto: Light-based control';
-            } else {
-                ledAutoModeBtn.className = 'mode-btn inactive';
-                ledManualModeBtn.className = 'mode-btn active';
-                ledModeStatus.textContent = 'Manual: App control enabled';
-            }
-            renderLEDControls();
-        }
-
-        function updateSecurityModeUI() {
-            if (modes.security.auto) {
-                securityAutoModeBtn.className = 'mode-btn active';
-                securityManualModeBtn.className = 'mode-btn inactive';
-                securityModeStatus.textContent = 'Auto: Motion-based control';
-            } else {
-                securityAutoModeBtn.className = 'mode-btn inactive';
-                securityManualModeBtn.className = 'mode-btn active';
-                securityModeStatus.textContent = 'Manual: App control enabled';
-            }
-            renderLEDControls();
         }
 
         // Water Tank Functions
@@ -1917,33 +1717,26 @@
             if (waterLevel <= 25) {
                 waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
                 waterStatusElement.textContent = 'LOW WATER ⚠️';
-                waterStatusElement.className = 'status-display off';
+                waterStatusElement.className = 'water-status low';
             } else if (waterLevel >= 100) {
                 waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
                 waterStatusElement.textContent = 'FULL ✅';
-                waterStatusElement.className = 'status-display on';
+                waterStatusElement.className = 'water-status full';
             } else {
                 waterProgress.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
                 waterStatusElement.textContent = 'NORMAL LEVEL';
-                waterStatusElement.className = 'status-display';
+                waterStatusElement.className = 'water-status normal';
             }
 
             // Update motor status
             if (waterMotorState) {
                 motorStatus.textContent = 'MOTOR ON 🔄';
                 motorStatusText.textContent = 'RUNNING';
+                motorState.textContent = 'MOTOR RUNNING';
             } else {
                 motorStatus.textContent = 'MOTOR OFF ⏹️';
                 motorStatusText.textContent = 'STOPPED';
-            }
-
-            // Update motor button based on mode
-            if (modes.waterTank.auto) {
-                motorBtn.textContent = 'AUTO MODE';
-                motorBtn.className = 'switch-btn off';
-            } else {
-                motorBtn.textContent = waterMotorState ? 'TURN OFF' : 'TURN ON';
-                motorBtn.className = waterMotorState ? 'switch-btn on' : 'switch-btn off';
+                motorState.textContent = 'MOTOR STOPPED';
             }
         }
 
@@ -1953,19 +1746,8 @@
                 return;
             }
 
-            // Check if in auto mode
-            if (modes.waterTank.auto) {
-                alert('Water motor is in auto mode. Switch to manual mode to control motor manually.');
-                return;
-            }
-
-            try {
-                const newMotorState = !waterMotorState;
-                await database.ref(`devices/${currentDeviceId}/waterTank/motorState`).set(newMotorState);
-            } catch (error) {
-                console.error('Error toggling water motor:', error);
-                alert('Error toggling water motor: ' + error.message);
-            }
+            // Water motor is auto-controlled, manual control disabled
+            alert('Water motor is automatically controlled based on water level.\n\nON when water level ≤ 25%\nOFF when water level ≥ 100%');
         }
 
         // Gate Control Functions
@@ -1977,13 +1759,21 @@
             gateRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    modes.gate.state = data.state || false;
+                    gateState = data.state || false;
+                    gateAutoMode = data.autoMode !== undefined ? data.autoMode : true;
                     if (data.password) {
                         gatePassword = data.password;
                         currentPasswordSpan.textContent = data.password;
                     }
                     updateGateUI();
                 }
+            });
+
+            // Listen to gate auto mode
+            const gateAutoModeRef = database.ref(`devices/${currentDeviceId}/gateAutoMode`);
+            gateAutoModeRef.on('value', (snapshot) => {
+                gateAutoMode = snapshot.val() || false;
+                updateGateUI();
             });
         }
 
@@ -1994,14 +1784,13 @@
             }
 
             // Check if gate is in auto mode
-            if (modes.gate.auto) {
+            if (gateAutoMode) {
                 alert('Gate is in auto mode. Switch to manual mode to control gate from app.');
                 return;
             }
 
             try {
-                const newGateState = !modes.gate.state;
-                modes.gate.state = newGateState;
+                const newGateState = !gateState;
                 await database.ref(`devices/${currentDeviceId}/gate/state`).set(newGateState);
             } catch (error) {
                 console.error('Error toggling gate:', error);
@@ -2037,18 +1826,50 @@
             }
         }
 
+        async function toggleGateAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const newGateAutoMode = !gateAutoMode;
+                await database.ref(`devices/${currentDeviceId}/gateAutoMode`).set(newGateAutoMode);
+            } catch (error) {
+                console.error('Error toggling gate auto mode:', error);
+                alert('Error toggling gate auto mode: ' + error.message);
+            }
+        }
+
         function updateGateUI() {
             // Update gate status
-            if (modes.gate.state) {
+            if (gateState) {
                 gateStatus.textContent = 'OPEN';
-                gateStatus.className = 'status-display on';
+                gateStatus.className = 'gate-status open';
                 gateBtn.textContent = 'CLOSE GATE';
                 gateBtn.className = 'switch-btn on';
+                gateStateIndicator.textContent = 'OPEN';
             } else {
                 gateStatus.textContent = 'CLOSED';
-                gateStatus.className = 'status-display off';
+                gateStatus.className = 'gate-status closed';
                 gateBtn.textContent = 'OPEN GATE';
                 gateBtn.className = 'switch-btn off';
+                gateStateIndicator.textContent = 'CLOSED';
+            }
+
+            // Update gate auto mode
+            if (gateAutoMode) {
+                gateAutoModeBtn.textContent = 'ON';
+                gateAutoModeBtn.className = 'switch-btn on';
+                gateAutoModeStatus.textContent = 'AUTO MODE';
+                gateBtn.disabled = true;
+                gateBtn.title = 'Switch to manual mode to control gate';
+            } else {
+                gateAutoModeBtn.textContent = 'OFF';
+                gateAutoModeBtn.className = 'switch-btn off';
+                gateAutoModeStatus.textContent = 'MANUAL';
+                gateBtn.disabled = false;
+                gateBtn.title = 'Click to toggle gate';
             }
 
             // Update current password display
@@ -2072,6 +1893,27 @@
                 }
             });
 
+            // Listen to auto mode
+            const autoModeRef = database.ref(`devices/${currentDeviceId}/autoMode`);
+            autoModeRef.on('value', (snapshot) => {
+                autoMode = snapshot.val() || false;
+                updateAutoModeUI();
+            });
+
+            // Listen to security auto mode
+            const securityAutoModeRef = database.ref(`devices/${currentDeviceId}/securityAutoMode`);
+            securityAutoModeRef.on('value', (snapshot) => {
+                securityAutoMode = snapshot.val() || false;
+                updateSecurityAutoModeUI();
+            });
+
+            // Listen to door auto mode
+            const doorAutoModeRef = database.ref(`devices/${currentDeviceId}/doorAutoMode`);
+            doorAutoModeRef.on('value', (snapshot) => {
+                doorAutoMode = snapshot.val() || false;
+                updateDoorAutoModeUI();
+            });
+
             // Listen to window state
             const windowRef = database.ref(`devices/${currentDeviceId}/window`);
             windowRef.on('value', (snapshot) => {
@@ -2079,7 +1921,7 @@
                 updateWindowUI();
                 
                 // Show manual override indicator when window state changes in auto mode
-                if (modes.led.auto) {
+                if (autoMode) {
                     showManualOverrideIndicator();
                 }
             });
@@ -2095,7 +1937,7 @@
                 if (temp !== null) {
                     temperature = temp;
                     temperatureValue.textContent = temp.toFixed(1);
-                    updateFanModeStatus();
+                    updateFanAutoStatus();
                 }
             });
 
@@ -2139,7 +1981,8 @@
             fanRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    modes.fan.state = data.state || false;
+                    fanState = data.state || false;
+                    fanAutoMode = data.autoMode !== undefined ? data.autoMode : true;
                     updateFanUI();
                 }
             });
@@ -2153,7 +1996,7 @@
             doorRef.on('value', (snapshot) => {
                 const state = snapshot.val();
                 if (state !== null) {
-                    modes.door.state = state;
+                    doorState = state;
                     updateDoorUI();
                 }
             });
@@ -2223,8 +2066,8 @@
 
             ledsGrid.innerHTML = ledConfigs.map(led => {
                 const isOn = ledStates[led.name] || false;
-                const isGardenDisabled = (led.name === 'garden' && modes.led.auto);
-                const isSecurityDisabled = (led.name === 'security' && modes.security.auto);
+                const isGardenDisabled = (led.name === 'garden' && autoMode);
+                const isSecurityDisabled = (led.name === 'security' && securityAutoMode);
                 const isDisabled = isGardenDisabled || isSecurityDisabled;
                 
                 return `
@@ -2330,14 +2173,14 @@
             }
 
             // Check if garden LED is in auto mode
-            if (ledName === 'garden' && modes.led.auto) {
-                alert('Garden light is in auto mode. Switch to manual mode to control manually.');
+            if (ledName === 'garden' && autoMode) {
+                alert('Garden light is in auto mode. Disable auto mode to control manually.');
                 return;
             }
 
             // Check if security LED is in auto mode
-            if (ledName === 'security' && modes.security.auto) {
-                alert('Security light is in auto mode. Switch to manual mode to control manually.');
+            if (ledName === 'security' && securityAutoMode) {
+                alert('Security light is in auto mode. Disable security auto mode to control manually.');
                 return;
             }
 
@@ -2355,7 +2198,7 @@
                 return;
             }
 
-            if (modes.led.auto || modes.security.auto) {
+            if (autoMode || securityAutoMode) {
                 if (!confirm('Auto mode is enabled for some lights. This will turn all lights manually. Continue?')) {
                     return;
                 }
@@ -2374,6 +2217,117 @@
             }
         }
 
+        // Auto Mode functions
+        async function toggleAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const newAutoMode = !autoMode;
+                await database.ref(`devices/${currentDeviceId}/autoMode`).set(newAutoMode);
+            } catch (error) {
+                console.error('Error toggling auto mode:', error);
+                alert('Error toggling auto mode: ' + error.message);
+            }
+        }
+
+        async function toggleSecurityAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const newSecurityAutoMode = !securityAutoMode;
+                await database.ref(`devices/${currentDeviceId}/securityAutoMode`).set(newSecurityAutoMode);
+            } catch (error) {
+                console.error('Error toggling security auto mode:', error);
+                alert('Error toggling security auto mode: ' + error.message);
+            }
+        }
+
+        async function toggleDoorAutoMode() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const newDoorAutoMode = !doorAutoMode;
+                await database.ref(`devices/${currentDeviceId}/doorAutoMode`).set(newDoorAutoMode);
+            } catch (error) {
+                console.error('Error toggling door auto mode:', error);
+                alert('Error toggling door auto mode: ' + error.message);
+            }
+        }
+
+        function updateAutoModeUI() {
+            const autoModeBtn = document.getElementById('autoModeBtn');
+            const autoModeStatus = document.getElementById('autoModeStatus');
+            
+            if (autoMode) {
+                autoModeBtn.textContent = 'ON';
+                autoModeBtn.className = 'switch-btn on';
+                autoModeStatus.textContent = 'Auto Mode Active';
+                autoModeStatus.style.background = '#e8f5e8';
+                autoModeStatus.style.color = '#2e7d32';
+            } else {
+                autoModeBtn.textContent = 'OFF';
+                autoModeBtn.className = 'switch-btn off';
+                autoModeStatus.textContent = 'Manual Control';
+                autoModeStatus.style.background = '#ffebee';
+                autoModeStatus.style.color = '#c62828';
+            }
+            
+            // Re-render LED controls to update disabled states
+            renderLEDControls();
+            updateWindowUI();
+        }
+
+        function updateSecurityAutoModeUI() {
+            const securityAutoModeBtn = document.getElementById('securityAutoModeBtn');
+            const securityAutoModeStatus = document.getElementById('securityAutoModeStatus');
+            
+            if (securityAutoMode) {
+                securityAutoModeBtn.textContent = 'ON';
+                securityAutoModeBtn.className = 'switch-btn on';
+                securityAutoModeStatus.textContent = 'Security Auto Mode Active';
+                securityAutoModeStatus.style.background = '#e8f5e8';
+                securityAutoModeStatus.style.color = '#2e7d32';
+            } else {
+                securityAutoModeBtn.textContent = 'OFF';
+                securityAutoModeBtn.className = 'switch-btn off';
+                securityAutoModeStatus.textContent = 'Manual Control';
+                securityAutoModeStatus.style.background = '#ffebee';
+                securityAutoModeStatus.style.color = '#c62828';
+            }
+            
+            // Re-render LED controls to update disabled states
+            renderLEDControls();
+        }
+
+        function updateDoorAutoModeUI() {
+            if (doorAutoMode) {
+                doorAutoModeBtn.textContent = 'ON';
+                doorAutoModeBtn.className = 'switch-btn on';
+                doorAutoModeStatus.textContent = 'RFID Only Mode';
+                doorAutoModeStatus.style.background = '#e8f5e8';
+                doorAutoModeStatus.style.color = '#2e7d32';
+                doorBtn.disabled = true;
+                doorBtn.title = 'Switch to manual mode to control door from app';
+            } else {
+                doorAutoModeBtn.textContent = 'OFF';
+                doorAutoModeBtn.className = 'switch-btn off';
+                doorAutoModeStatus.textContent = 'Manual Control';
+                doorAutoModeStatus.style.background = '#ffebee';
+                doorAutoModeStatus.style.color = '#c62828';
+                doorBtn.disabled = false;
+                doorBtn.title = 'Click to toggle door';
+            }
+        }
+
         // Door control functions
         async function toggleDoor() {
             if (!currentDeviceId) {
@@ -2382,14 +2336,13 @@
             }
 
             // Check if door is in auto mode
-            if (modes.door.auto) {
+            if (doorAutoMode) {
                 alert('Door is in RFID only mode. Switch to manual mode to control door from app.');
                 return;
             }
 
             try {
-                const newDoorState = !modes.door.state;
-                modes.door.state = newDoorState;
+                const newDoorState = !doorState;
                 await database.ref(`devices/${currentDeviceId}/door`).set(newDoorState);
             } catch (error) {
                 console.error('Error toggling door:', error);
@@ -2398,12 +2351,12 @@
         }
 
         function updateDoorUI() {
-            if (modes.door.state) {
-                doorBtn.textContent = 'CLOSE';
+            if (doorState) {
+                doorBtn.textContent = 'OPEN';
                 doorBtn.className = 'switch-btn on';
                 doorStatus.textContent = '✓ OPEN';
             } else {
-                doorBtn.textContent = 'OPEN';
+                doorBtn.textContent = 'CLOSE';
                 doorBtn.className = 'switch-btn off';
                 doorStatus.textContent = '✗ CLOSED';
             }
@@ -2421,7 +2374,7 @@
                 await database.ref(`devices/${currentDeviceId}/window`).set(newWindowState);
                 
                 // Show manual override message if in auto mode
-                if (modes.led.auto) {
+                if (autoMode) {
                     showManualOverrideIndicator();
                 }
             } catch (error) {
@@ -2436,11 +2389,11 @@
             const windowInfo = document.getElementById('windowInfo');
             
             if (windowState) {
-                windowBtn.textContent = 'CLOSE';
+                windowBtn.textContent = 'OPEN';
                 windowBtn.className = 'switch-btn on';
                 windowStatus.textContent = '✓ OPEN';
             } else {
-                windowBtn.textContent = 'OPEN';
+                windowBtn.textContent = 'CLOSE';
                 windowBtn.className = 'switch-btn off';
                 windowStatus.textContent = '✗ CLOSED';
             }
@@ -2449,7 +2402,7 @@
             windowBtn.disabled = false;
             
             // Update info text based on mode
-            if (modes.led.auto) {
+            if (autoMode) {
                 windowInfo.innerHTML = 'Manual override - 30 seconds control';
                 windowInfo.style.color = '#e67e22';
             } else {
@@ -2467,13 +2420,12 @@
 
             try {
                 // Only allow manual control if in manual mode
-                if (modes.fan.auto) {
+                if (fanAutoMode) {
                     alert('Fan is in auto mode. Switch to manual mode to control the fan directly.');
                     return;
                 }
 
-                const newFanState = !modes.fan.state;
-                modes.fan.state = newFanState;
+                const newFanState = !fanState;
                 await database.ref(`devices/${currentDeviceId}/fan/state`).set(newFanState);
             } catch (error) {
                 console.error('Error toggling fan:', error);
@@ -2481,9 +2433,28 @@
             }
         }
 
+        async function setFanMode(isAutoMode) {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                await database.ref(`devices/${currentDeviceId}/fan/autoMode`).set(isAutoMode);
+                
+                // If switching to auto mode, let the ESP32 control the fan based on temperature
+                if (isAutoMode) {
+                    await database.ref(`devices/${currentDeviceId}/fan/manualOverride`).set(false);
+                }
+            } catch (error) {
+                console.error('Error setting fan mode:', error);
+                alert('Error setting fan mode: ' + error.message);
+            }
+        }
+
         function updateFanUI() {
             // Update fan button and status
-            if (modes.fan.state) {
+            if (fanState) {
                 fanBtn.textContent = 'ON';
                 fanBtn.className = 'switch-btn on';
                 fanStatus.textContent = '✓ ON';
@@ -2496,17 +2467,37 @@
                 fanStatusText.textContent = 'OFF';
                 fanStatusText.style.color = '#c62828';
             }
+
+            // Update mode buttons
+            if (fanAutoMode) {
+                fanAutoModeBtn.className = 'mode-btn active';
+                fanManualModeBtn.className = 'mode-btn inactive';
+                fanModeText.textContent = 'Auto';
+                fanModeText.style.color = '#2e7d32';
+                fanBtn.disabled = true;
+                fanBtn.title = 'Switch to manual mode to control fan';
+            } else {
+                fanAutoModeBtn.className = 'mode-btn inactive';
+                fanManualModeBtn.className = 'mode-btn active';
+                fanModeText.textContent = 'Manual';
+                fanModeText.style.color = '#e67e22';
+                fanBtn.disabled = false;
+                fanBtn.title = 'Click to toggle fan';
+            }
         }
 
-        function updateFanModeStatus() {
-            if (modes.fan.auto) {
+        function updateFanAutoStatus() {
+            if (fanAutoMode) {
                 if (temperature >= 25) {
-                    fanModeStatus.textContent = 'Auto: ON (≥25°C)';
-                    fanModeStatus.style.background = 'rgba(76, 175, 80, 0.3)';
+                    fanAutoStatus.textContent = 'Auto: ON (≥25°C)';
+                    fanAutoStatus.style.background = 'rgba(76, 175, 80, 0.3)';
                 } else {
-                    fanModeStatus.textContent = 'Auto: OFF (<25°C)';
-                    fanModeStatus.style.background = 'rgba(244, 67, 54, 0.3)';
+                    fanAutoStatus.textContent = 'Auto: OFF (<25°C)';
+                    fanAutoStatus.style.background = 'rgba(244, 67, 54, 0.3)';
                 }
+            } else {
+                fanAutoStatus.textContent = 'Manual Control';
+                fanAutoStatus.style.background = 'rgba(255, 193, 7, 0.3)';
             }
         }
 

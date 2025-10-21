@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1054,40 +1050,6 @@
             cursor: pointer;
             font-size: 10px;
         }
-        
-        */
-
-// Add this CSS for animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-    
-    .gate-status.open {
-        animation: pulse 2s infinite;
-    }
-    
-    .gate-quick-card {
-        transition: all 0.3s ease;
-    }
-    
-    .gate-quick-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    }
-`;
-document.head.appendChild(style);
-
-// Call this function when device is selected
-function initGateControls() {
-    addQuickGateControls();
-    listenToGateState();
-}
-
-
     </style>
 </head>
 <body>
@@ -1137,39 +1099,45 @@ function initGateControls() {
             </section>
 
             <!-- Gate Control Section -->
-           <div class="gate-control-grid">
-    <div class="gate-status-card">
-        <div class="sensor-icon">🚪</div>
-        <div class="sensor-name">Gate Status</div>
-        <div id="gateStatus" class="gate-status closed">CLOSED</div>
-        <div class="switch-container">
-            <button id="gateBtn" class="switch-btn off" onclick="toggleGate()">OPEN GATE</button>
-            <div id="gateState" class="status-indicator">CLOSED</div>
-        </div>
-    </div>
-    
-    <div class="gate-password-card">
-        <div class="sensor-icon">🔑</div>
-        <div class="sensor-name">Gate Password</div>
-        <div class="switch-container">
-            <input type="text" id="gatePasswordInput" placeholder="Enter new password" style="padding: 10px; border: none; border-radius: 8px; width: 100%; margin-bottom: 10px;">
-            <button class="switch-btn" onclick="changeGatePassword()" style="background: #4CAF50; color: white;">Change Password</button>
-        </div>
-        <div class="sensor-info" style="margin-top: 15px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-            Current Password: <span id="currentPassword">456</span>
-        </div>
-    </div>
+            <section class="gate-control-section">
+                <h2>🚪 Smart Gate Control</h2>
+                <div class="gate-control-grid">
+                    <div class="gate-status-card">
+                        <div class="sensor-icon">🚪</div>
+                        <div class="sensor-name">Gate Status</div>
+                        <div id="gateStatus" class="gate-status closed">CLOSED</div>
+                        <div class="switch-container">
+                            <button id="gateBtn" class="switch-btn off" onclick="toggleGate()">OPEN GATE</button>
+                            <div id="gateState" class="status-indicator">CLOSED</div>
+                        </div>
+                    </div>
+                    
+                    <div class="gate-password-card">
+                        <div class="sensor-icon">🔑</div>
+                        <div class="sensor-name">Gate Password</div>
+                        <div class="switch-container">
+                            <input type="text" id="gatePasswordInput" placeholder="Enter new password" style="padding: 10px; border: none; border-radius: 8px; width: 100%; margin-bottom: 10px;">
+                            <button class="switch-btn" onclick="changeGatePassword()" style="background: #4CAF50; color: white;">Change Password</button>
+                        </div>
+                        <div class="sensor-info" style="margin-top: 15px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                            Current Password: <span id="currentPassword">456</span>
+                        </div>
+                    </div>
 
-    <div class="gate-auto-card">
-        <div class="sensor-icon">⏰</div>
-        <div class="sensor-name">Auto Close Timer</div>
-        <div class="sensor-value" style="font-size: 24px; font-weight: bold; margin: 10px 0;">2 MIN</div>
-        <div class="sensor-info" style="margin-top: 10px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-            Auto closes after 2 minutes<br>
-            Manual close anytime
-        </div>
-    </div>
-</div>
+                    <div class="gate-auto-card">
+                        <div class="sensor-icon">🤖</div>
+                        <div class="sensor-name">Gate Auto Mode</div>
+                        <div class="switch-container">
+                            <button id="gateAutoModeBtn" class="switch-btn off" onclick="toggleGateAutoMode()">OFF</button>
+                            <div id="gateAutoModeStatus" class="status-indicator">MANUAL</div>
+                        </div>
+                        <div class="sensor-info" style="margin-top: 15px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                            Auto Mode: Controlled by UNO<br>
+                            Manual Mode: App control enabled
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <!-- Water Tank Control Section -->
             <section class="water-tank-section">
@@ -1490,7 +1458,7 @@ function initGateControls() {
         let manualOverrideActive = false;
         let authorizedRFIDs = [];
         let lastRFIDAccess = "";
-        let gatePassword = "1234";
+        let gatePassword = "456";
 
         // Water tank variables
         let waterLevel = 0;
@@ -1750,7 +1718,7 @@ function initGateControls() {
                 waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
                 waterStatusElement.textContent = 'LOW WATER ⚠️';
                 waterStatusElement.className = 'water-status low';
-            } else if (waterLevel >= 100) {
+            } else if (waterLevel >= 95) {
                 waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
                 waterStatusElement.textContent = 'FULL ✅';
                 waterStatusElement.className = 'water-status full';
@@ -1779,13 +1747,8 @@ function initGateControls() {
             }
 
             // Water motor is auto-controlled, manual control disabled
-            alert('Water motor is automatically controlled based on water level.\n\nON when water level ≤ 25%\nOFF when water level ≥ 100%');
+            alert('Water motor is automatically controlled based on water level.\n\nON when water level ≤ 25%\nOFF when water level ≥ 95%');
         }
-        
-        
-        
-
-
 
         // Gate Control Functions
         function listenToGateState() {
@@ -1912,184 +1875,6 @@ function initGateControls() {
             // Update current password display
             currentPasswordSpan.textContent = gatePassword;
         }
-
-        
-        // Gate Control Functions - UPDATED
-function listenToGateState() {
-    if (!currentDeviceId) return;
-    
-    // Listen to gate state
-    const gateRef = database.ref(`devices/${currentDeviceId}/gate`);
-    gateRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            gateState = data.state || false;
-            if (data.password) {
-                gatePassword = data.password;
-                currentPasswordSpan.textContent = data.password;
-            }
-            updateGateUI();
-        }
-    });
-
-    // Listen to gate commands via I2C simulation
-    const gateCommandRef = database.ref(`devices/${currentDeviceId}/gateCommand`);
-    gateCommandRef.on('value', (snapshot) => {
-        const command = snapshot.val();
-        if (command) {
-            handleGateCommand(command);
-        }
-    });
-}
-
-async function toggleGate() {
-    if (!currentDeviceId) {
-        alert('Please select a device first');
-        return;
-    }
-
-    try {
-        // Send toggle command via I2C simulation
-        await database.ref(`devices/${currentDeviceId}/gateCommand`).set('TOGGLE');
-        
-        // Also update local state immediately for better UX
-        const newGateState = !gateState;
-        await database.ref(`devices/${currentDeviceId}/gate/state`).set(newGateState);
-        
-        console.log('📱 Gate toggle command sent');
-    } catch (error) {
-        console.error('Error toggling gate:', error);
-        alert('Error toggling gate: ' + error.message);
-    }
-}
-
-async function openGate() {
-    if (!currentDeviceId) {
-        alert('Please select a device first');
-        return;
-    }
-
-    try {
-        // Send open command via I2C simulation
-        await database.ref(`devices/${currentDeviceId}/gateCommand`).set('OPEN');
-        await database.ref(`devices/${currentDeviceId}/gate/state`).set(true);
-        console.log('📱 Gate open command sent');
-    } catch (error) {
-        console.error('Error opening gate:', error);
-        alert('Error opening gate: ' + error.message);
-    }
-}
-
-async function closeGate() {
-    if (!currentDeviceId) {
-        alert('Please select a device first');
-        return;
-    }
-
-    try {
-        // Send close command via I2C simulation
-        await database.ref(`devices/${currentDeviceId}/gateCommand`).set('CLOSE');
-        await database.ref(`devices/${currentDeviceId}/gate/state`).set(false);
-        console.log('📱 Gate close command sent');
-    } catch (error) {
-        console.error('Error closing gate:', error);
-        alert('Error closing gate: ' + error.message);
-    }
-}
-
-function handleGateCommand(command) {
-    console.log('🔧 Processing gate command:', command);
-    
-    switch(command) {
-        case 'OPEN':
-            gateState = true;
-            updateGateUI();
-            break;
-        case 'CLOSE':
-            gateState = false;
-            updateGateUI();
-            break;
-        case 'TOGGLE':
-            gateState = !gateState;
-            updateGateUI();
-            break;
-    }
-    
-    // Clear the command after processing
-    database.ref(`devices/${currentDeviceId}/gateCommand`).remove();
-}
-
-function updateGateUI() {
-    // Update gate status display
-    if (gateState) {
-        gateStatus.textContent = 'OPEN';
-        gateStatus.className = 'gate-status open';
-        gateBtn.textContent = 'CLOSE GATE';
-        gateBtn.className = 'switch-btn on';
-        gateStateIndicator.textContent = 'OPEN';
-        
-        // Add open animation
-        gateStatus.style.animation = 'pulse 2s infinite';
-    } else {
-        gateStatus.textContent = 'CLOSED';
-        gateStatus.className = 'gate-status closed';
-        gateBtn.textContent = 'OPEN GATE';
-        gateBtn.className = 'switch-btn off';
-        gateStateIndicator.textContent = 'CLOSED';
-        
-        // Remove animation
-        gateStatus.style.animation = 'none';
-    }
-
-    // Update current password display
-    currentPasswordSpan.textContent = gatePassword;
-    
-    // Add some visual feedback
-    gateBtn.style.transform = 'scale(1.05)';
-    setTimeout(() => {
-        gateBtn.style.transform = 'scale(1)';
-    }, 200);
-}
-
-// Add quick control buttons to the gate section
-function addQuickGateControls() {
-    const gateControlGrid = document.querySelector('.gate-control-grid');
-    
-    // Add quick control buttons if not already added
-    if (!document.getElementById('quickGateControls')) {
-        const quickControls = `
-            <div class="gate-quick-card" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); padding: 20px; border-radius: 12px; color: white; text-align: center; grid-column: 1 / -1;">
-                <div class="sensor-icon">⚡</div>
-                <div class="sensor-name">Quick Controls</div>
-                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
-                    <button class="switch-btn" onclick="openGate()" style="background: #4CAF50; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        🚪 OPEN NOW
-                    </button>
-                    <button class="switch-btn" onclick="closeGate()" style="background: #f44336; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        🔒 CLOSE NOW
-                    </button>
-                    <button class="switch-btn" onclick="toggleGate()" style="background: #2196F3; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        🔄 TOGGLE GATE
-                    </button>
-                </div>
-                <div style="margin-top: 10px; font-size: 12px; opacity: 0.9;">
-                    Control gate instantly from app | Keypad: A=Open, B=Close, #=Toggle with Password
-                </div>
-            </div>
-        `;
-        
-        gateControlGrid.insertAdjacentHTML('beforeend', quickControls);
-    }
-}
-
-// Update the gate control section in your HTML
-// Replace the existing gate-control-grid content with this:
-/*
-
-
-
-
-
 
         // ALL THE ORIGINAL FUNCTIONS FROM YOUR CODE
         function listenToDeviceStatus() {

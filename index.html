@@ -1,3 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Control System</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Auth Styles */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .auth-form {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .auth-btn:disabled {
+            background: #ccc;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .auth-toggle span {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        /* Main App Styles */
+        .app-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            color: #333;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-email {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+
+        /* Device Management */
+        .device-management {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .device-header h2 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .add-device-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .add-device-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .device-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .device-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .device-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .device-card.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .device-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .device-id {
+            font-weight: 600;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .status-online {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-offline {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-dot.online {
+            background: #28a745;
+        }
+
+        .status-dot.offline {
+            background: #dc3545;
+        }
+
+        .device-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        /* Gate Control Section */
+        .gate-control-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .gate-control-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .gate-control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .gate-status-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .gate-password-card {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .gate-auto-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .gate-status {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .gate-status.open {
+            background: rgba(76, 175, 80, 0.3);
+            color: #fff;
+        }
+
+        .gate-status.closed {
+            background: rgba(244, 67, 54, 0.3);
+            color: #fff;
+        }
+
+        /* Water Tank Section */
+        .water-tank-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .water-tank-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .water-tank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .water-level-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .motor-control-card {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .water-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .water-status {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .water-status.low {
+            background: rgba(255, 59, 48, 0.3);
+            color: #ffeb3b;
+        }
+
+        .water-status.normal {
+            background: rgba(76, 175, 80, 0.3);
+            color: #fff;
+        }
+
+        .water-status.full {
+            background: rgba(33, 150, 243, 0.3);
+            color: #fff;
+        }
+
+        .motor-status {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .water-progress {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .info-items {
+            text-align: left;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* LED Controls */
+        .leds-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .leds-section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .leds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .led-control {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .led-control:hover {
+            transform: translateY(-5px);
+        }
+
+        .led-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .led-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .switch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .switch-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            background: white;
+            color: #333;
+        }
+
+        .switch-btn.on {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .switch-btn.off {
+            background: #f44336;
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .switch-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .switch-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-indicator {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Quick Gate Controls */
+        .gate-quick-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            grid-column: 1 / -1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .gate-quick-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Group Controls */
+        .group-controls {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .group-controls h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .group-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .group-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .all-on {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .all-off {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+        }
+
+        .group-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modal-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .user-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .gate-control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .water-tank-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .leds-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .group-buttons {
+                flex-direction: column;
+            }
+
+            .device-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .sensor-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Auth Section -->
+        <div id="authSection" class="auth-container">
+            <div class="auth-form">
+                <h2>Smart Home Control</h2>
+                <div id="authError" class="error" style="display: none;"></div>
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" id="authBtn" class="auth-btn">Login</button>
+                </form>
+                <div class="auth-toggle">
+                    <span id="authToggle">Don't have an account? Sign Up</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Section -->
+        <div id="appSection" style="display: none;">
+            <!-- Header -->
+            <header class="app-header">
+                <h1 class="app-title">🏠 Smart Home Control</h1>
+                <div class="user-section">
+                    <span class="user-email" id="userEmail"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <!-- Device Management -->
+            <section class="device-management">
+                <div class="device-header">
+                    <h2>📱 Your Devices</h2>
+                    <button class="add-device-btn" onclick="showAddDeviceModal()">+ Add Device</button>
+                </div>
+                <div id="deviceList" class="device-list">
+                    <!-- Devices will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Gate Control Section -->
+            <section class="gate-control-section">
+                <h2>🚪 Smart Gate Control</h2>
+                <div class="gate-control-grid">
+                    <div class="gate-status-card">
+                        <div class="sensor-icon">🚪</div>
+                        <div class="sensor-name">Gate Status</div>
+                        <div id="gateStatus" class="gate-status closed">CLOSED</div>
+                        <div class="switch-container">
+                            <button id="gateBtn" class="switch-btn off" onclick="toggleGate()">OPEN GATE</button>
+                            <div id="gateState" class="status-indicator">CLOSED</div>
+                        </div>
+                    </div>
+                    
+                    <div class="gate-password-card">
+                        <div class="sensor-icon">🔑</div>
+                        <div class="sensor-name">Gate Password</div>
+                        <div class="switch-container">
+                            <input type="text" id="gatePasswordInput" placeholder="Enter new password" style="padding: 10px; border: none; border-radius: 8px; width: 100%; margin-bottom: 10px;">
+                            <button class="switch-btn" onclick="changeGatePassword()" style="background: #4CAF50; color: white;">Change Password</button>
+                        </div>
+                        <div class="sensor-info" style="margin-top: 15px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                            Current Password: <span id="currentPassword">456</span>
+                        </div>
+                    </div>
+
+                    <div class="gate-auto-card">
+                        <div class="sensor-icon">⏰</div>
+                        <div class="sensor-name">Auto Close Timer</div>
+                        <div class="sensor-value" style="font-size: 24px; font-weight: bold; margin: 10px 0;">2 MIN</div>
+                        <div class="sensor-info" style="margin-top: 10px; font-size: 12px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                            Auto closes after 2 minutes<br>
+                            Manual close anytime
+                        </div>
+                    </div>
+
+                    <!-- Quick Gate Controls -->
+                    <div class="gate-quick-card">
+                        <div class="sensor-icon">⚡</div>
+                        <div class="sensor-name">Quick Controls</div>
+                        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                            <button class="switch-btn" onclick="openGate()" style="background: #4CAF50; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🚪 OPEN NOW
+                            </button>
+                            <button class="switch-btn" onclick="closeGate()" style="background: #f44336; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🔒 CLOSE NOW
+                            </button>
+                            <button class="switch-btn" onclick="toggleGate()" style="background: #2196F3; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🔄 TOGGLE GATE
+                            </button>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; opacity: 0.9;">
+                            Control gate instantly from app | Keypad: A=Open, B=Close, #=Toggle with Password
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Water Tank Control Section -->
+            <section class="water-tank-section">
+                <h2>💧 Water Tank Control System</h2>
+                <div class="water-tank-grid">
+                    <!-- Water Level Card -->
+                    <div class="water-level-card">
+                        <div class="sensor-icon">💧</div>
+                        <div class="sensor-name">Water Tank Level</div>
+                        <div class="water-value" id="waterLevelValue" style="font-size: 32px; font-weight: bold; margin-bottom: 5px;">--</div>
+                        <div class="sensor-unit" style="font-size: 14px; opacity: 0.9; margin-bottom: 15px;">Percentage</div>
+                        <div id="waterStatus" class="water-status normal">NORMAL LEVEL</div>
+                        <div class="water-progress">
+                            <div class="progress-bar">
+                                <div id="waterProgress" class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motor Control Card -->
+                    <div class="motor-control-card">
+                        <div class="sensor-icon">🔧</div>
+                        <div class="sensor-name">Water Motor Control</div>
+                        <div id="motorStatus" class="motor-status">MOTOR OFF</div>
+                        <div class="motor-info" style="margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Auto Control:</strong></div>
+                            <div style="font-size: 12px;">ON when ≤ 25%</div>
+                            <div style="font-size: 12px;">OFF when ≥ 95%</div>
+                        </div>
+                        <div class="switch-container" style="margin: 20px 0;">
+                            <button id="motorBtn" class="switch-btn off" onclick="toggleWaterMotor()" disabled>AUTO</button>
+                            <div id="motorState" class="status-indicator">AUTO MODE</div>
+                        </div>
+                    </div>
+
+                    <!-- Water System Info Card -->
+                    <div class="water-info-card">
+                        <div class="sensor-icon">ℹ️</div>
+                        <div class="sensor-name">System Information</div>
+                        <div class="info-items">
+                            <div class="info-item">
+                                <span class="info-label">Current Level:</span>
+                                <span id="currentLevelText" class="info-value">--%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Motor Status:</span>
+                                <span id="motorStatusText" class="info-value">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">System Mode:</span>
+                                <span class="info-value">Auto</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Low Level Alert:</span>
+                                <span class="info-value">25%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Full Level:</span>
+                                <span class="info-value">95%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LED Controls -->
+            <section class="leds-section">
+                <h2>💡 Smart Lighting Control - <span id="currentDeviceId">Select a Device</span></h2>
+                
+                <div class="leds-grid" id="ledsGrid">
+                    <!-- LED controls will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Group Controls -->
+            <section class="group-controls">
+                <h3>🎛️ Group Controls</h3>
+                <div class="group-buttons">
+                    <button class="group-btn all-on" onclick="controlAllLeds(true)">All Lights ON</button>
+                    <button class="group-btn all-off" onclick="controlAllLeds(false)">All Lights OFF</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Add Device Modal -->
+        <div id="addDeviceModal" class="modal-overlay" style="display: none;">
+            <div class="modal">
+                <h3>➕ Add New Device</h3>
+                <div class="form-group">
+                    <label for="newDeviceId">Device ID</label>
+                    <input type="text" id="newDeviceId" placeholder="Enter device ID (e.g., ARDUINO_UNO_001)">
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" onclick="hideAddDeviceModal()">Cancel</button>
+                    <button class="modal-btn primary" onclick="addDevice()">Add Device</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnaSf9C37jPD2P3gb22hJm1OkkU2pIZyQ",
+            authDomain: "smart-home-5c100.firebaseapp.com",
+            databaseURL: "https://smart-home-5c100-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "smart-home-5c100",
+            storageBucket: "smart-home-5c100.firebasestorage.app",
+            messagingSenderId: "630239699447",
+            appId: "1:630239699447:web:7737f4df63a807d2d28ef2",
+            measurementId: "G-V9FXP74CBZ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Global variables
+        let currentUser = null;
+        let currentDeviceId = null;
+        let devices = [];
+        let ledStates = {
+            garden: false,
+            bedroom: false,
+            kitchen: false,
+            livingroom: false,
+            garage: false,
+            security: false
+        };
+        let gateState = false;
+        let gatePassword = "456";
+
+        // Water tank variables
+        let waterLevel = 0;
+        let waterMotorState = false;
+        let waterStatus = "UNKNOWN";
+
+        // DOM Elements
+        const authSection = document.getElementById('authSection');
+        const appSection = document.getElementById('appSection');
+        const authForm = document.getElementById('authForm');
+        const authBtn = document.getElementById('authBtn');
+        const authToggle = document.getElementById('authToggle');
+        const authError = document.getElementById('authError');
+        const userEmail = document.getElementById('userEmail');
+        const deviceList = document.getElementById('deviceList');
+        const ledsGrid = document.getElementById('ledsGrid');
+        const currentDeviceIdSpan = document.getElementById('currentDeviceId');
+        const addDeviceModal = document.getElementById('addDeviceModal');
+        const newDeviceIdInput = document.getElementById('newDeviceId');
+        
+        // Water tank elements
+        const waterLevelValue = document.getElementById('waterLevelValue');
+        const waterProgress = document.getElementById('waterProgress');
+        const waterStatusElement = document.getElementById('waterStatus');
+        const motorStatus = document.getElementById('motorStatus');
+        const motorBtn = document.getElementById('motorBtn');
+        const motorState = document.getElementById('motorState');
+        const currentLevelText = document.getElementById('currentLevelText');
+        const motorStatusText = document.getElementById('motorStatusText');
+
+        // Gate elements
+        const gateBtn = document.getElementById('gateBtn');
+        const gateStatus = document.getElementById('gateStatus');
+        const gateStateIndicator = document.getElementById('gateState');
+        const gatePasswordInput = document.getElementById('gatePasswordInput');
+        const currentPasswordSpan = document.getElementById('currentPassword');
+
+        // Auth state listener
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                showApp();
+                loadUserDevices();
+            } else {
+                showAuth();
+            }
+        });
+
+        // Auth form handler
+        let isLogin = true;
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            authBtn.disabled = true;
+            authBtn.textContent = 'Processing...';
+
+            try {
+                if (isLogin) {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } else {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                }
+                hideError();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                authBtn.disabled = false;
+                authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
+            }
+        });
+
+        // Auth toggle
+        authToggle.addEventListener('click', () => {
+            isLogin = !isLogin;
+            authBtn.textContent = isLogin ? 'Login' : 'Sign Up';
+            authToggle.textContent = isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login";
+        });
+
+        // Show/hide sections
+        function showApp() {
+            authSection.style.display = 'none';
+            appSection.style.display = 'block';
+            if (currentUser && currentUser.email) {
+                userEmail.textContent = currentUser.email;
+            }
+        }
+
+        function showAuth() {
+            authSection.style.display = 'flex';
+            appSection.style.display = 'none';
+            authForm.reset();
+            hideError();
+        }
+
+        // Error handling
+        function showError(message) {
+            authError.textContent = message;
+            authError.style.display = 'block';
+        }
+
+        function hideError() {
+            authError.style.display = 'none';
+        }
+
+        // Logout
+        function logout() {
+            auth.signOut();
+        }
+
+        // Device Management
+        function loadUserDevices() {
+            if (!currentUser) return;
+            
+            const userDevicesRef = database.ref(`users/${currentUser.uid}/devices`);
+            
+            userDevicesRef.on('value', (snapshot) => {
+                devices = [];
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.keys(data).forEach(deviceId => {
+                        devices.push({
+                            id: deviceId,
+                            ...data[deviceId]
+                        });
+                    });
+                }
+                
+                renderDevices();
+                
+                // Auto-select first device
+                if (devices.length > 0 && !currentDeviceId) {
+                    selectDevice(devices[0].id);
+                } else if (devices.length === 0) {
+                    currentDeviceId = null;
+                    currentDeviceIdSpan.textContent = 'Select a Device';
+                    renderLEDControls();
+                }
+            }, (error) => {
+                console.error('Error loading devices:', error);
+            });
+        }
+
+        function renderDevices() {
+            if (devices.length === 0) {
+                deviceList.innerHTML = '<div class="loading">No devices found. Add your first device!</div>';
+                return;
+            }
+
+            deviceList.innerHTML = devices.map(device => `
+                <div class="device-card ${currentDeviceId === device.id ? 'active' : ''}" 
+                     onclick="selectDevice('${device.id}')">
+                    <div class="device-info">
+                        <div class="device-id">${device.id}</div>
+                        <div class="device-status">
+                            <div class="status-dot ${device.online ? 'online' : 'offline'}"></div>
+                            <span class="${device.online ? 'status-online' : 'status-offline'}">
+                                ${device.online ? 'Online' : 'Offline'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="device-actions">
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeDevice('${device.id}')">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectDevice(deviceId) {
+            currentDeviceId = deviceId;
+            currentDeviceIdSpan.textContent = deviceId;
+            renderDevices();
+            listenToDeviceStatus();
+            listenToLEDStates();
+            listenToWaterTankData();
+            listenToGateState();
+        }
+
+        // Water Tank Functions
+        function listenToWaterTankData() {
+            if (!currentDeviceId) return;
+            
+            // Listen to water level
+            const waterLevelRef = database.ref(`devices/${currentDeviceId}/waterTank/level`);
+            waterLevelRef.on('value', (snapshot) => {
+                const level = snapshot.val();
+                if (level !== null) {
+                    waterLevel = level;
+                    updateWaterTankUI();
+                }
+            });
+
+            // Listen to motor state
+            const motorStateRef = database.ref(`devices/${currentDeviceId}/waterTank/motorState`);
+            motorStateRef.on('value', (snapshot) => {
+                const state = snapshot.val();
+                if (state !== null) {
+                    waterMotorState = state;
+                    updateWaterTankUI();
+                }
+            });
+
+            // Listen to water status
+            const waterStatusRef = database.ref(`devices/${currentDeviceId}/waterTank/status`);
+            waterStatusRef.on('value', (snapshot) => {
+                const status = snapshot.val();
+                if (status) {
+                    waterStatus = status;
+                    updateWaterTankUI();
+                }
+            });
+        }
+
+        function updateWaterTankUI() {
+            // Update water level display
+            waterLevelValue.textContent = waterLevel + '%';
+            waterProgress.style.width = waterLevel + '%';
+            currentLevelText.textContent = waterLevel + '%';
+
+            // Update progress bar color based on level
+            if (waterLevel <= 25) {
+                waterProgress.style.background = 'linear-gradient(90deg, #f44336, #ff9800)';
+                waterStatusElement.textContent = 'LOW WATER ⚠️';
+                waterStatusElement.className = 'water-status low';
+            } else if (waterLevel >= 95) {
+                waterProgress.style.background = 'linear-gradient(90deg, #2196F3, #03A9F4)';
+                waterStatusElement.textContent = 'FULL ✅';
+                waterStatusElement.className = 'water-status full';
+            } else {
+                waterProgress.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                waterStatusElement.textContent = 'NORMAL LEVEL';
+                waterStatusElement.className = 'water-status normal';
+            }
+
+            // Update motor status
+            if (waterMotorState) {
+                motorStatus.textContent = 'MOTOR ON 🔄';
+                motorStatusText.textContent = 'RUNNING';
+                motorState.textContent = 'MOTOR RUNNING';
+            } else {
+                motorStatus.textContent = 'MOTOR OFF ⏹️';
+                motorStatusText.textContent = 'STOPPED';
+                motorState.textContent = 'MOTOR STOPPED';
+            }
+        }
+
+        async function toggleWaterMotor() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            // Water motor is auto-controlled, manual control disabled
+            alert('Water motor is automatically controlled based on water level.\n\nON when water level ≤ 25%\nOFF when water level ≥ 95%');
+        }
 
         // Gate Control Functions
         function listenToGateState() {
@@ -9,7 +1262,6 @@
                 const data = snapshot.val();
                 if (data) {
                     gateState = data.state || false;
-                    gateAutoMode = data.autoMode !== undefined ? data.autoMode : true;
                     if (data.password) {
                         gatePassword = data.password;
                         currentPasswordSpan.textContent = data.password;
@@ -18,11 +1270,13 @@
                 }
             });
 
-            // Listen to gate auto mode
-            const gateAutoModeRef = database.ref(`devices/${currentDeviceId}/gateAutoMode`);
-            gateAutoModeRef.on('value', (snapshot) => {
-                gateAutoMode = snapshot.val() || false;
-                updateGateUI();
+            // Listen to gate commands
+            const gateCommandRef = database.ref(`devices/${currentDeviceId}/gateCommand`);
+            gateCommandRef.on('value', (snapshot) => {
+                const command = snapshot.val();
+                if (command) {
+                    handleGateCommand(command);
+                }
             });
         }
 
@@ -32,18 +1286,52 @@
                 return;
             }
 
-            // Check if gate is in auto mode
-            if (gateAutoMode) {
-                alert('Gate is in auto mode. Switch to manual mode to control gate from app.');
+            try {
+                // Send toggle command
+                await database.ref(`devices/${currentDeviceId}/gateCommand`).set('TOGGLE');
+                
+                // Also update local state immediately for better UX
+                const newGateState = !gateState;
+                await database.ref(`devices/${currentDeviceId}/gate/state`).set(newGateState);
+                
+                console.log('📱 Gate toggle command sent');
+            } catch (error) {
+                console.error('Error toggling gate:', error);
+                alert('Error toggling gate: ' + error.message);
+            }
+        }
+
+        async function openGate() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
                 return;
             }
 
             try {
-                const newGateState = !gateState;
-                await database.ref(`devices/${currentDeviceId}/gate/state`).set(newGateState);
+                // Send open command
+                await database.ref(`devices/${currentDeviceId}/gateCommand`).set('OPEN');
+                await database.ref(`devices/${currentDeviceId}/gate/state`).set(true);
+                console.log('📱 Gate open command sent');
             } catch (error) {
-                console.error('Error toggling gate:', error);
-                alert('Error toggling gate: ' + error.message);
+                console.error('Error opening gate:', error);
+                alert('Error opening gate: ' + error.message);
+            }
+        }
+
+        async function closeGate() {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                // Send close command
+                await database.ref(`devices/${currentDeviceId}/gateCommand`).set('CLOSE');
+                await database.ref(`devices/${currentDeviceId}/gate/state`).set(false);
+                console.log('📱 Gate close command sent');
+            } catch (error) {
+                console.error('Error closing gate:', error);
+                alert('Error closing gate: ' + error.message);
             }
         }
 
@@ -60,8 +1348,8 @@
                 return;
             }
 
-            if (newPassword.length < 4) {
-                alert('Password must be at least 4 characters long');
+            if (newPassword.length < 3) {
+                alert('Password must be at least 3 characters long');
                 return;
             }
 
@@ -75,19 +1363,26 @@
             }
         }
 
-        async function toggleGateAutoMode() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
+        function handleGateCommand(command) {
+            console.log('🔧 Processing gate command:', command);
+            
+            switch(command) {
+                case 'OPEN':
+                    gateState = true;
+                    updateGateUI();
+                    break;
+                case 'CLOSE':
+                    gateState = false;
+                    updateGateUI();
+                    break;
+                case 'TOGGLE':
+                    gateState = !gateState;
+                    updateGateUI();
+                    break;
             }
-
-            try {
-                const newGateAutoMode = !gateAutoMode;
-                await database.ref(`devices/${currentDeviceId}/gateAutoMode`).set(newGateAutoMode);
-            } catch (error) {
-                console.error('Error toggling gate auto mode:', error);
-                alert('Error toggling gate auto mode: ' + error.message);
-            }
+            
+            // Clear the command after processing
+            database.ref(`devices/${currentDeviceId}/gateCommand`).remove();
         }
 
         function updateGateUI() {
@@ -106,21 +1401,219 @@
                 gateStateIndicator.textContent = 'CLOSED';
             }
 
-            // Update gate auto mode
-            if (gateAutoMode) {
-                gateAutoModeBtn.textContent = 'ON';
-                gateAutoModeBtn.className = 'switch-btn on';
-                gateAutoModeStatus.textContent = 'AUTO MODE';
-                gateBtn.disabled = true;
-                gateBtn.title = 'Switch to manual mode to control gate';
-            } else {
-                gateAutoModeBtn.textContent = 'OFF';
-                gateAutoModeBtn.className = 'switch-btn off';
-                gateAutoModeStatus.textContent = 'MANUAL';
-                gateBtn.disabled = false;
-                gateBtn.title = 'Click to toggle gate';
-            }
-
             // Update current password display
             currentPasswordSpan.textContent = gatePassword;
+            
+            // Add some visual feedback
+            gateBtn.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                gateBtn.style.transform = 'scale(1)';
+            }, 200);
         }
+
+        // Device Status Listening
+        function listenToDeviceStatus() {
+            if (!currentDeviceId) return;
+            
+            // Listen to online status
+            const statusRef = database.ref(`devices/${currentDeviceId}/online`);
+            statusRef.on('value', (snapshot) => {
+                const online = snapshot.val() || false;
+                
+                // Update in devices array
+                const deviceIndex = devices.findIndex(d => d.id === currentDeviceId);
+                if (deviceIndex !== -1) {
+                    devices[deviceIndex].online = online;
+                    renderDevices();
+                }
+            });
+        }
+
+        // LED Control Functions
+        function listenToLEDStates() {
+            if (!currentDeviceId) return;
+            
+            const ledRef = database.ref(`devices/${currentDeviceId}/leds`);
+            ledRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    ledStates = { ...ledStates, ...data };
+                    renderLEDControls();
+                }
+            }, (error) => {
+                console.error('Error listening to LED states:', error);
+            });
+        }
+
+        function renderLEDControls() {
+            const ledConfigs = [
+                { name: 'garden', label: '🌿 Garden Light', icon: '🌿' },
+                { name: 'bedroom', label: '🛏️ Bed Room Light', icon: '🛏️' },
+                { name: 'kitchen', label: '👨‍🍳 Kitchen Light', icon: '👨‍🍳' },
+                { name: 'livingroom', label: '🛋️ Living Room Light', icon: '🛋️' },
+                { name: 'garage', label: '🚗 Garage Light', icon: '🚗' },
+                { name: 'security', label: '🚨 Security Light', icon: '🚨' }
+            ];
+
+            if (!currentDeviceId) {
+                ledsGrid.innerHTML = '<div class="loading">Please select a device to control LEDs</div>';
+                return;
+            }
+
+            ledsGrid.innerHTML = ledConfigs.map(led => {
+                const isOn = ledStates[led.name] || false;
+                
+                return `
+                    <div class="led-control">
+                        <div class="led-icon">${led.icon}</div>
+                        <div class="led-name">${led.label}</div>
+                        <div class="switch-container">
+                            <button class="switch-btn ${isOn ? 'on' : 'off'}" 
+                                    onclick="toggleLED('${led.name}', ${!isOn})">
+                                ${isOn ? 'ON' : 'OFF'}
+                            </button>
+                            <div class="status-indicator">
+                                ${isOn ? '✓ ON' : '✗ OFF'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function toggleLED(ledName, state) {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
+            } catch (error) {
+                console.error('Error controlling LED:', error);
+                alert('Error controlling LED: ' + error.message);
+            }
+        }
+
+        async function controlAllLeds(state) {
+            if (!currentDeviceId) {
+                alert('Please select a device first');
+                return;
+            }
+
+            try {
+                const updates = {};
+                const ledNames = ['garden', 'bedroom', 'kitchen', 'livingroom', 'garage', 'security'];
+                ledNames.forEach(ledName => {
+                    updates[ledName] = state;
+                });
+                await database.ref(`devices/${currentDeviceId}/leds`).update(updates);
+            } catch (error) {
+                console.error('Error controlling LEDs:', error);
+                alert('Error controlling LEDs: ' + error.message);
+            }
+        }
+
+        // Device Modal Functions
+        function showAddDeviceModal() {
+            addDeviceModal.style.display = 'flex';
+            newDeviceIdInput.value = '';
+            newDeviceIdInput.focus();
+        }
+
+        function hideAddDeviceModal() {
+            addDeviceModal.style.display = 'none';
+        }
+
+        async function addDevice() {
+            const deviceId = newDeviceIdInput.value.trim();
+            
+            if (!deviceId) {
+                alert('Please enter a device ID');
+                return;
+            }
+
+            if (!currentUser) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                // Add to user's devices
+                await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).set({
+                    addedAt: Date.now(),
+                    online: false
+                });
+
+                hideAddDeviceModal();
+                selectDevice(deviceId);
+            } catch (error) {
+                console.error('Error adding device:', error);
+                alert('Error adding device: ' + error.message);
+            }
+        }
+
+        async function removeDevice(deviceId) {
+            if (!confirm(`Are you sure you want to remove device ${deviceId}?`)) {
+                return;
+            }
+
+            if (!currentUser) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                await database.ref(`users/${currentUser.uid}/devices/${deviceId}`).remove();
+                
+                // If removed device was current device, select another one
+                if (currentDeviceId === deviceId) {
+                    currentDeviceId = null;
+                    currentDeviceIdSpan.textContent = 'Select a Device';
+                    renderLEDControls();
+                    
+                    // Select another device if available
+                    if (devices.length > 1) {
+                        const otherDevice = devices.find(d => d.id !== deviceId);
+                        if (otherDevice) {
+                            selectDevice(otherDevice.id);
+                        }
+                    }
+                }
+                
+                // Reload devices to update the list
+                loadUserDevices();
+            } catch (error) {
+                console.error('Error removing device:', error);
+                alert('Error removing device: ' + error.message);
+            }
+        }
+
+        // Close modal when clicking outside
+        addDeviceModal.addEventListener('click', (e) => {
+            if (e.target === addDeviceModal) {
+                hideAddDeviceModal();
+            }
+        });
+
+        // Enter key support for modals
+        newDeviceIdInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addDevice();
+            }
+        });
+
+        // Enter key support for gate password input
+        gatePasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                changeGatePassword();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderLEDControls();
+        });
+    </script>
+</body>
+</html>

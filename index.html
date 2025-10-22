@@ -1111,6 +1111,17 @@
                 </div>
             </header>
 
+            <!-- Device Management -->
+            <section class="device-management">
+                <div class="device-header">
+                    <h2>📱 Your Devices</h2>
+                    <button class="add-device-btn" onclick="showAddDeviceModal()">+ Add Device</button>
+                </div>
+                <div id="deviceList" class="device-list">
+                    <!-- Devices will be loaded here -->
+                </div>
+            </section>
+
             <!-- Voice Control Section -->
             <section class="voice-control-section">
                 <h2>🎤 Voice Control</h2>
@@ -1153,16 +1164,7 @@
                 </div>
             </section>
 
-            <!-- Device Management -->
-            <section class="device-management">
-                <div class="device-header">
-                    <h2>📱 Your Devices</h2>
-                    <button class="add-device-btn" onclick="showAddDeviceModal()">+ Add Device</button>
-                </div>
-                <div id="deviceList" class="device-list">
-                    <!-- Devices will be loaded here -->
-                </div>
-            </section>
+            
 
             <!-- Water Tank Control Section -->
             <section class="water-tank-section">
@@ -1586,7 +1588,7 @@
                 } else if (command.includes('living room light') || command.includes('living room')) {
                     toggleLED('livingroom', state);
                     voiceFeedback.textContent = state ? "Turning on living room light" : "Turning off living room light";
-                } else if (command.includes('upper floor light') || command.includes('garage')) {
+                } else if (command.includes('upper floor light') || command.includes('upper floor')) {
                     toggleLED('garage', state);
                     voiceFeedback.textContent = state ? "Turning on upper floor light" : "Turning off upper floor light";
                 } else if (command.includes('security light') || command.includes('security')) {

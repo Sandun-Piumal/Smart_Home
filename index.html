@@ -1210,6 +1210,21 @@
             <!-- Voice Control Section -->
             <section class="voice-control-section">
                 <h2>🎤 Voice Control</h2>
+                
+                        <div class="voice-command-card">
+                        <div class="sensor-icon">🗣️</div>
+                        <div class="sensor-name">Available Commands</div>
+                        <div class="command-list">
+                            <div class="command-item">"Turn on/off [light name]"</div>
+                            <div class="command-item">"All lights on/off"</div>
+                            <div class="command-item">"Open/close the door"</div>
+                            <div class="command-item">"Open/close the gate"</div>
+                            <div class="command-item">"Turn on/off the fan"</div>
+                            <div class="command-item">"What's the temperature?"</div>
+                            <div class="command-item">"Water level status"</div>
+                        </div>
+                    </div>
+                
                 <div class="voice-control-grid">
                     <div class="voice-control-card">
                         <div class="sensor-icon">🗣️</div>
@@ -1650,25 +1665,25 @@
                 // Check for specific lights
                 if (command.includes('garden light') || command.includes('garden')) {
                     toggleLED('garden', state);
-                    voiceFeedback.textContent = state ? "Turning on garden light" : "Turning off garden light";
+                    voiceFeedback.textContent = state ? "Turn on garden light" : "Turn off garden light";
                 } else if (command.includes('bedroom light') || command.includes('bedroom')) {
                     toggleLED('bedroom', state);
-                    voiceFeedback.textContent = state ? "Turning on bedroom light" : "Turning off bedroom light";
+                    voiceFeedback.textContent = state ? "Turn on bedroom light" : "Turn off bedroom light";
                 } else if (command.includes('kitchen light') || command.includes('kitchen')) {
                     toggleLED('kitchen', state);
-                    voiceFeedback.textContent = state ? "Turning on kitchen light" : "Turning off kitchen light";
+                    voiceFeedback.textContent = state ? "Turn on kitchen light" : "Turn off kitchen light";
                 } else if (command.includes('living room light') || command.includes('living room')) {
                     toggleLED('livingroom', state);
-                    voiceFeedback.textContent = state ? "Turning on living room light" : "Turning off living room light";
+                    voiceFeedback.textContent = state ? "Turn on living room light" : "Turn off living room light";
                 } else if (command.includes('upper floor light') || command.includes('upper floor')) {
                     toggleLED('garage', state);
-                    voiceFeedback.textContent = state ? "Turning on upper floor light" : "Turning off upper floor light";
+                    voiceFeedback.textContent = state ? "Turn on upper floor light" : "Turn off upper floor light";
                 } else if (command.includes('security light') || command.includes('security')) {
                     toggleLED('security', state);
-                    voiceFeedback.textContent = state ? "Turning on security light" : "Turning off security light";
+                    voiceFeedback.textContent = state ? "Turn on security light" : "Turn off security light";
                 } else if (command.includes('all lights')) {
                     controlAllLeds(state);
-                    voiceFeedback.textContent = state ? "Turning on all lights" : "Turning off all lights";
+                    voiceFeedback.textContent = state ? "Turn on all lights" : "Turn off all lights";
                 }
             }
             
@@ -2317,101 +2332,108 @@
             }
         }
 
-        // LED Control Functions
+        // OPTIMIZED LED Control Functions - NO DELAY!
         async function toggleLED(ledName, state) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+            if (!currentDeviceId) return;
 
-            // Check if garden LED is in auto mode
-            if (ledName === 'garden' && autoMode) {
-                alert('Garden light is in auto mode. Disable auto mode to control manually.');
-                return;
-            }
-
-            // Check if security LED is in auto mode
-            if (ledName === 'security' && securityAutoMode) {
-                alert('Security light is in auto mode. Disable security auto mode to control manually.');
-                return;
+            // Quick validation without alerts
+            if ((ledName === 'garden' && autoMode) || (ledName === 'security' && securityAutoMode)) {
+                return; // Silent return - no alert
             }
 
             try {
-                await database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
+                // FASTEST METHOD - No await, direct set
+                database.ref(`devices/${currentDeviceId}/leds/${ledName}`).set(state);
+                
+                // Immediate UI update
+                ledStates[ledName] = state;
+                renderLEDControls();
+                
             } catch (error) {
                 console.error('Error controlling LED:', error);
-                alert('Error controlling LED: ' + error.message);
             }
         }
 
+        // OPTIMIZED Group Control - NO DELAY!
         async function controlAllLeds(state) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            if (autoMode || securityAutoMode) {
-                if (!confirm('Auto mode is enabled for some lights. This will turn all lights manually. Continue?')) {
-                    return;
-                }
-            }
+            if (!currentDeviceId) return;
 
             try {
-                const updates = {};
-                const ledNames = ['garden', 'bedroom', 'kitchen', 'livingroom', 'garage', 'security'];
-                ledNames.forEach(ledName => {
-                    updates[ledName] = state;
+                // Single batch update - fastest
+                const updates = {
+                    garden: autoMode ? ledStates.garden : state,
+                    bedroom: state, 
+                    kitchen: state,
+                    livingroom: state,
+                    garage: state,
+                    security: securityAutoMode ? ledStates.security : state
+                };
+                
+                // No await - fire and forget
+                database.ref(`devices/${currentDeviceId}/leds`).update(updates);
+                
+                // Immediate UI update
+                Object.keys(ledStates).forEach(key => {
+                    if (!(key === 'garden' && autoMode) && !(key === 'security' && securityAutoMode)) {
+                        ledStates[key] = state;
+                    }
                 });
-                await database.ref(`devices/${currentDeviceId}/leds`).update(updates);
+                renderLEDControls();
+                
             } catch (error) {
                 console.error('Error controlling LEDs:', error);
-                alert('Error controlling LEDs: ' + error.message);
             }
         }
 
-        // Auto Mode functions
+        // OPTIMIZED Auto Mode functions - NO DELAY!
         async function toggleAutoMode() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+            if (!currentDeviceId) return;
 
             try {
                 const newAutoMode = !autoMode;
-                await database.ref(`devices/${currentDeviceId}/autoMode`).set(newAutoMode);
+                // Direct set without await
+                database.ref(`devices/${currentDeviceId}/autoMode`).set(newAutoMode);
+                
+                // Immediate UI update
+                autoMode = newAutoMode;
+                updateAutoModeUI();
+                
             } catch (error) {
                 console.error('Error toggling auto mode:', error);
-                alert('Error toggling auto mode: ' + error.message);
             }
         }
 
         async function toggleSecurityAutoMode() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+            if (!currentDeviceId) return;
 
             try {
                 const newSecurityAutoMode = !securityAutoMode;
-                await database.ref(`devices/${currentDeviceId}/securityAutoMode`).set(newSecurityAutoMode);
+                // Direct set without await
+                database.ref(`devices/${currentDeviceId}/securityAutoMode`).set(newSecurityAutoMode);
+                
+                // Immediate UI update
+                securityAutoMode = newSecurityAutoMode;
+                updateSecurityAutoModeUI();
+                
             } catch (error) {
                 console.error('Error toggling security auto mode:', error);
-                alert('Error toggling security auto mode: ' + error.message);
             }
         }
 
         async function toggleDoorAutoMode() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+            if (!currentDeviceId) return;
 
             try {
                 const newDoorAutoMode = !doorAutoMode;
-                await database.ref(`devices/${currentDeviceId}/doorAutoMode`).set(newDoorAutoMode);
+                // Direct set without await
+                database.ref(`devices/${currentDeviceId}/doorAutoMode`).set(newDoorAutoMode);
+                
+                // Immediate UI update
+                doorAutoMode = newDoorAutoMode;
+                updateDoorAutoModeUI();
+                
             } catch (error) {
                 console.error('Error toggling door auto mode:', error);
-                alert('Error toggling door auto mode: ' + error.message);
             }
         }
 
@@ -2479,25 +2501,21 @@
             }
         }
 
-        // Door control functions
+        // OPTIMIZED Door control functions - NO DELAY!
         async function toggleDoor() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
-
-            // Check if door is in auto mode
-            if (doorAutoMode) {
-                alert('Door is in RFID only mode. Switch to manual mode to control door from app.');
-                return;
-            }
+            if (!currentDeviceId || doorAutoMode) return;
 
             try {
                 const newDoorState = !doorState;
-                await database.ref(`devices/${currentDeviceId}/door`).set(newDoorState);
+                // Fast set without await
+                database.ref(`devices/${currentDeviceId}/door`).set(newDoorState);
+                
+                // Immediate UI update  
+                doorState = newDoorState;
+                updateDoorUI();
+                
             } catch (error) {
                 console.error('Error toggling door:', error);
-                alert('Error toggling door: ' + error.message);
             }
         }
 
@@ -2513,44 +2531,41 @@
             }
         }
 
-        // Fan control functions
+        // OPTIMIZED Fan control functions - NO DELAY!
         async function toggleFan() {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+            if (!currentDeviceId || fanAutoMode) return;
 
             try {
-                // Only allow manual control if in manual mode
-                if (fanAutoMode) {
-                    alert('Fan is in auto mode. Switch to manual mode to control the fan directly.');
-                    return;
-                }
-
                 const newFanState = !fanState;
-                await database.ref(`devices/${currentDeviceId}/fan/state`).set(newFanState);
+                // Fast set without await
+                database.ref(`devices/${currentDeviceId}/fan/state`).set(newFanState);
+                
+                // Immediate UI update
+                fanState = newFanState;
+                updateFanUI();
+                
             } catch (error) {
                 console.error('Error toggling fan:', error);
-                alert('Error toggling fan: ' + error.message);
             }
         }
 
         async function setFanMode(isAutoMode) {
-            if (!currentDeviceId) {
-                alert('Please select a device first');
-                return;
-            }
+            if (!currentDeviceId) return;
 
             try {
-                await database.ref(`devices/${currentDeviceId}/fan/autoMode`).set(isAutoMode);
+                // Fast set without await
+                database.ref(`devices/${currentDeviceId}/fan/autoMode`).set(isAutoMode);
+                
+                // Immediate UI update
+                fanAutoMode = isAutoMode;
+                updateFanUI();
                 
                 // If switching to auto mode, let the ESP32 control the fan based on temperature
                 if (isAutoMode) {
-                    await database.ref(`devices/${currentDeviceId}/fan/manualOverride`).set(false);
+                    database.ref(`devices/${currentDeviceId}/fan/manualOverride`).set(false);
                 }
             } catch (error) {
                 console.error('Error setting fan mode:', error);
-                alert('Error setting fan mode: ' + error.message);
             }
         }
 

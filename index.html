@@ -1212,13 +1212,12 @@
                 <h2>🎤 Voice Control</h2>
                 
                         <div class="voice-command-card">
-                        <div class="sensor-icon">🗣️</div>
+                        
                         <div class="sensor-name">Available Commands</div>
                         <div class="command-list">
                             <div class="command-item">"Turn on/off [light name]"</div>
-                            <div class="command-item">"All lights on/off"</div>
+                            <div class="command-item">"Turn on/off All light"</div>
                             <div class="command-item">"Open/close the door"</div>
-                            <div class="command-item">"Open/close the gate"</div>
                             <div class="command-item">"Turn on/off the fan"</div>
                             <div class="command-item">"What's the temperature?"</div>
                             <div class="command-item">"Water level status"</div>
@@ -1681,9 +1680,9 @@
                 } else if (command.includes('security light') || command.includes('security')) {
                     toggleLED('security', state);
                     voiceFeedback.textContent = state ? "Turn on security light" : "Turn off security light";
-                } else if (command.includes('all lights')) {
+                } else if (command.includes('all light')) {
                     controlAllLeds(state);
-                    voiceFeedback.textContent = state ? "Turn on all lights" : "Turn off all lights";
+                    voiceFeedback.textContent = state ? "Turn on all light" : "Turn off all light";
                 }
             }
             

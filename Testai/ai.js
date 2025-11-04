@@ -60,7 +60,7 @@ const languageContent = {
         ocrProcessingText: "රූපය විශ්ලේෂණය කරමින්...",
         systemPrompt: `ඔබ Smart AI නම් උපකාරක AI වේ. සියලුම ප්‍රශ්නවලට සිංහල භාෂාවෙන් පිළිතුරු දෙන්න. 
         පිළිතුරු සවිස්තරාත්මක, උපයෝගී සහ මිත්‍රශීලී විය යුතුය. 
-        කේතය, තාක්ෂණය, විද්‍යාව, ඉතිහාසය සහ සාමාන්‍ය දැනුම පිළිබඳ ප්‍රශ්න සඳහා විස්තරාත්මක පිළිතුරු දෙන්න.`
+        කේතය, තාක්ෂණය, විද්‍යාව, ඉතිහාසය සහ සාමාන්‍ය දැනුම පිලිබඳ ප්‍රශ්න සඳහා විස්තරාත්මක පිළිතුරු දෙන්න.`
     },
     english: {
         authTitle: "Smart AI",
@@ -125,7 +125,7 @@ let isOCREnabled = false;
 
 // API Keys
 const GOOGLE_AI_API_KEY = 'AIzaSyAJhruzaSUiKhP8GP7ZLg2h25GBTSKq1gs';
-const SERP_API_KEY = '0203345d7357f5c6cc6deb4c64afa3e1d79e7e2dab8fc922e909ac56c386810b'; // Replace with your SerpAPI key
+const SERP_API_KEY = '0203345d7357f5c6cc6deb4c64afa3e1d79e7e2dab8fc922e909ac56c386810b';
 
 // DOM Elements
 const authContainer = document.getElementById('authContainer');
@@ -153,7 +153,6 @@ const sinhalaBtn = document.getElementById('sinhalaBtn');
 const englishBtn = document.getElementById('englishBtn');
 const clearChatBtn = document.getElementById('clearChatBtn');
 const exportChatBtn = document.getElementById('exportChatBtn');
-const suggestionsBtn = document.getElementById('suggestionsBtn');
 const notification = document.getElementById('notification');
 const notificationText = document.getElementById('notificationText');
 
@@ -180,6 +179,8 @@ const imagePreview = document.getElementById('imagePreview');
 const imageRemoveBtn = document.getElementById('imageRemoveBtn');
 const webSearchStatus = document.getElementById('webSearchStatus');
 const webSearchStatusText = document.getElementById('webSearchStatusText');
+const ocrStatus = document.getElementById('ocrStatus');
+const featureStatus = document.getElementById('featureStatus');
 
 // User-specific data handling functions
 function getUserId() {
@@ -295,7 +296,7 @@ function switchToSession(sessionId) {
         renderChatSessions();
         updateSessionDisplay();
         
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 968) {
             chatSidebar.classList.remove('active');
         }
     }
@@ -373,7 +374,7 @@ function updateUserProfile(user) {
 
 // Show auth container
 function showAuthContainer() {
-    authContainer.style.display = 'block';
+    authContainer.style.display = 'flex';
     chatApp.style.display = 'none';
     showLoginForm();
 }
@@ -769,12 +770,14 @@ ocrBtn.addEventListener('click', () => {
     
     if (isOCREnabled) {
         ocrBtn.classList.add('active');
+        ocrStatus.style.display = 'flex';
         showNotification(
             currentLanguage === 'sinhala' ? 'OCR සක්‍රිය කරන ලදී' : 'OCR enabled',
             'success'
         );
     } else {
         ocrBtn.classList.remove('active');
+        ocrStatus.style.display = 'none';
         showNotification(
             currentLanguage === 'sinhala' ? 'OCR අක්‍රිය කරන ලදී' : 'OCR disabled',
             'success'
@@ -864,8 +867,6 @@ async function performOCR(imageData) {
 // Web Search Function using SerpAPI
 async function performWebSearch(query) {
     try {
-        // Note: You need to sign up for SerpAPI and get an API key
-        // Replace 'YOUR_SERP_API_KEY' with your actual SerpAPI key
         if (SERP_API_KEY === 'YOUR_SERP_API_KEY') {
             return currentLanguage === 'sinhala' ? 
                 'කරුණාකර වෙබ් සෙවීම සඳහා SerpAPI API key සකසන්න.' : 
@@ -920,28 +921,26 @@ function addMessage(message, isUser, imageData = null) {
     messageDiv.classList.add('message');
     messageDiv.classList.add(isUser ? 'user-message' : 'ai-message');
     
-    const messageHeader = document.createElement('div');
-    messageHeader.classList.add('message-header');
-    messageHeader.innerHTML = isUser ? 
-        `<div class="message-avatar"><i class="fas fa-user"></i></div> ${content.userLabel}` : 
-        `<div class="message-avatar"><i class="fas fa-robot"></i></div> ${content.aiLabel}`;
-    
-    const messageContent = document.createElement('div');
-    messageContent.classList.add('message-content');
+    const messageBubble = document.createElement('div');
+    messageBubble.classList.add('message-bubble');
     
     // Add image if present
     if (imageData && isUser) {
         const imageElement = document.createElement('div');
         imageElement.classList.add('message-image');
         imageElement.innerHTML = `<img src="${imageData}" alt="Uploaded Image">`;
-        messageContent.appendChild(imageElement);
+        messageBubble.appendChild(imageElement);
     }
     
-    messageContent.innerHTML += message.replace(/\n/g, '<br>');
+    const messageContent = document.createElement('div');
+    messageContent.classList.add('message-content');
+    messageContent.innerHTML = message.replace(/\n/g, '<br>');
+    messageBubble.appendChild(messageContent);
     
     const messageTime = document.createElement('div');
     messageTime.classList.add('message-time');
     messageTime.textContent = new Date().toLocaleTimeString();
+    messageBubble.appendChild(messageTime);
     
     // Add message actions for AI messages
     if (!isUser) {
@@ -961,13 +960,10 @@ function addMessage(message, isUser, imageData = null) {
         });
         
         messageActions.appendChild(copyBtn);
-        messageDiv.appendChild(messageActions);
+        messageBubble.appendChild(messageActions);
     }
     
-    messageDiv.appendChild(messageHeader);
-    messageDiv.appendChild(messageContent);
-    messageDiv.appendChild(messageTime);
-    
+    messageDiv.appendChild(messageBubble);
     chatMessages.appendChild(messageDiv);
     
     // Add to chat history and current session
@@ -1009,26 +1005,37 @@ function renderChatHistory() {
         welcomeMsg.classList.add('welcome-message');
         welcomeMsg.innerHTML = `
             <div class="welcome-icon">
-                <i class="fas fa-rocket"></i>
+                <i class="fas fa-robot"></i>
             </div>
             <h2 id="welcome-title">${languageContent[currentLanguage].welcomeTitle}</h2>
             <p id="welcome-text">${languageContent[currentLanguage].welcomeText}</p>
-            <div class="feature-buttons">
-                <button class="feature-btn" id="clearChatBtn">
-                    <i class="fas fa-trash"></i>
-                    <span id="clear-chat-text">${languageContent[currentLanguage].clearChatText}</span>
-                </button>
-                <button class="feature-btn" id="exportChatBtn">
-                    <i class="fas fa-download"></i>
-                    <span id="export-chat-text">${languageContent[currentLanguage].exportChatText}</span>
-                </button>
-                <button class="feature-btn" id="suggestionsBtn">
+            <div class="suggestions">
+                <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'AI ගැන මට තව දැනගන්න ඕන' : 'Tell me about AI'}">
                     <i class="fas fa-lightbulb"></i>
-                    <span id="suggestions-text">${languageContent[currentLanguage].suggestionsText}</span>
+                    <span>${currentLanguage === 'sinhala' ? 'AI පිළිබඳව' : 'AI Overview'}</span>
+                </button>
+                <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'කොහොමද කේතයක් ලියන්නේ?' : 'How to write code?'}">
+                    <i class="fas fa-code"></i>
+                    <span>${currentLanguage === 'sinhala' ? 'කේත ලිවීම' : 'Coding Help'}</span>
+                </button>
+                <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'වර්තමාන තාක්ෂණ ප්‍රවණතා' : 'Current technology trends'}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>${currentLanguage === 'sinhala' ? 'තාක්ෂණ ප්‍රවණතා' : 'Tech Trends'}</span>
                 </button>
             </div>
         `;
         chatMessages.appendChild(welcomeMsg);
+        
+        // Add event listeners to suggestion buttons
+        document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const prompt = this.getAttribute('data-prompt');
+                messageInput.value = prompt;
+                messageInput.focus();
+                messageInput.style.height = 'auto';
+                messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+            });
+        });
     } else {
         chatHistory.forEach(msg => {
             addMessage(msg.content, msg.isUser, msg.imageData);
@@ -1042,26 +1049,37 @@ function clearChatMessages() {
     welcomeMsg.classList.add('welcome-message');
     welcomeMsg.innerHTML = `
         <div class="welcome-icon">
-            <i class="fas fa-rocket"></i>
+            <i class="fas fa-robot"></i>
         </div>
         <h2 id="welcome-title">${languageContent[currentLanguage].welcomeTitle}</h2>
         <p id="welcome-text">${languageContent[currentLanguage].welcomeText}</p>
-        <div class="feature-buttons">
-            <button class="feature-btn" id="clearChatBtn">
-                <i class="fas fa-trash"></i>
-                <span id="clear-chat-text">${languageContent[currentLanguage].clearChatText}</span>
-            </button>
-            <button class="feature-btn" id="exportChatBtn">
-                <i class="fas fa-download"></i>
-                <span id="export-chat-text">${languageContent[currentLanguage].exportChatText}</span>
-            </button>
-            <button class="feature-btn" id="suggestionsBtn">
+        <div class="suggestions">
+            <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'AI ගැන මට තව දැනගන්න ඕන' : 'Tell me about AI'}">
                 <i class="fas fa-lightbulb"></i>
-                <span id="suggestions-text">${languageContent[currentLanguage].suggestionsText}</span>
+                <span>${currentLanguage === 'sinhala' ? 'AI පිළිබඳව' : 'AI Overview'}</span>
+            </button>
+            <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'කොහොමද කේතයක් ලියන්නේ?' : 'How to write code?'}">
+                <i class="fas fa-code"></i>
+                <span>${currentLanguage === 'sinhala' ? 'කේත ලිවීම' : 'Coding Help'}</span>
+            </button>
+            <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'වර්තමාන තාක්ෂණ ප්‍රවණතා' : 'Current technology trends'}">
+                <i class="fas fa-chart-line"></i>
+                <span>${currentLanguage === 'sinhala' ? 'තාක්ෂණ ප්‍රවණතා' : 'Tech Trends'}</span>
             </button>
         </div>
     `;
     chatMessages.appendChild(welcomeMsg);
+    
+    // Add event listeners to suggestion buttons
+    document.querySelectorAll('.suggestion-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const prompt = this.getAttribute('data-prompt');
+            messageInput.value = prompt;
+            messageInput.focus();
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+        });
+    });
 }
 
 // Enhanced Gemini API Integration with new features
@@ -1199,7 +1217,7 @@ async function sendMessage() {
     }
     
     sendButton.disabled = true;
-    typingIndicator.style.display = 'block';
+    typingIndicator.style.display = 'flex';
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
     try {
@@ -1284,32 +1302,6 @@ exportChatBtn.addEventListener('click', function() {
     );
 });
 
-// Suggestions function
-suggestionsBtn.addEventListener('click', function() {
-    const suggestions = currentLanguage === 'sinhala' ? [
-        "AI ගැන මට තව දැනගන්න ඕන",
-        "කොහොමද කේතයක් ලියන්නේ?",
-        "මට උදව් කරන්න වර්තමාන තාක්ෂණ ප්‍රවණතා ගැන",
-        "මට ඉගෙන ගැනීමට හොඳම ක්‍රමය කුමක්ද?"
-    ] : [
-        "Tell me more about AI",
-        "How do I write code?",
-        "Help me with current technology trends",
-        "What's the best way to learn?"
-    ];
-    
-    const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
-    messageInput.value = randomSuggestion;
-    messageInput.focus();
-    messageInput.style.height = 'auto';
-    messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
-    
-    showNotification(
-        currentLanguage === 'sinhala' ? 'යෝජනාවක් ඇතුලත් කරන ලදී' : 'Suggestion added to input',
-        'success'
-    );
-});
-
 // Enter key for form submission
 document.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
@@ -1330,9 +1322,9 @@ messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
 // Mobile responsiveness for sidebar
 function handleSidebarResponsive() {
     if (window.innerWidth <= 968) {
-        sidebarClose.style.display = 'block';
+        historyToggle.style.display = 'flex';
     } else {
-        sidebarClose.style.display = 'none';
+        historyToggle.style.display = 'none';
         chatSidebar.classList.remove('active');
     }
 }

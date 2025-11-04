@@ -34,27 +34,27 @@ const languageContent = {
         rememberPassword: "Remember your password?",
         logoTitle: "Smart AI",
         headerSubtitle: "Powered by Gemini AI",
-        username: "User",
-        userStatus: "Online",
-        logoutText: "Logout",
+        username: "පරිශීලක",
+        userStatus: "සබැඳි",
+        logoutText: "පිටවීම",
         welcomeTitle: "නව Model සාර්ථකව යාවත්කාලීන කරන ලදී! ✨",
         welcomeText: "Gemini AI Model සමඟ වැඩ කිරීමට සූදානම්!<br>ඔබගේ ප්‍රශ්නය පහතින් ටයිප් කර Enter කරන්න. 🚀",
-        typingText: "Smart AI is preparing response",
-        inputPlaceholder: "Type your question here...",
-        themeLabelDark: "Dark",
-        themeLabelLight: "Light",
-        clearChatText: "Clear Chat",
-        exportChatText: "Export Chat",
-        suggestionsText: "Suggestions",
+        typingText: "Smart AI ප්‍රතිචාර සකසමින්",
+        inputPlaceholder: "ඔබගේ ප්‍රශ්නය මෙතැන ටයිප් කරන්න...",
+        themeLabelDark: "අඳුරු",
+        themeLabelLight: "ආලෝක",
+        clearChatText: "සංවාදය හිස් කරන්න",
+        exportChatText: "සංවාදය බාගන්න",
+        suggestionsText: "යෝජනා",
         copyright: "Copyright © 2025 SPMods. All Rights Reserved.",
         designCredit: "Developed: Sandun Piumal",
-        userLabel: "You",
+        userLabel: "ඔබ",
         aiLabel: "Smart AI",
-        historyTitle: "Chat History",
-        historyToggleText: "History",
-        currentSessionTitle: "Current Session",
-        newChatText: "New Chat",
-        importChatText: "Import",
+        historyTitle: "සංවාද ඉතිහාසය",
+        historyToggleText: "ඉතිහාසය",
+        currentSessionTitle: "වත්මන් සංවාදය",
+        newChatText: "නව සංවාදය",
+        importChatText: "ආයාත කරන්න",
         imagePreviewTitle: "රූප පෙරදසුන",
         webSearchStatusText: "වෙබ් සෙවීම සක්‍රියයි",
         ocrProcessingText: "රූපය විශ්ලේෂණය කරමින්...",
@@ -189,7 +189,7 @@ function getUserId() {
 }
 
 function getStorageKey() {
-    return `neura-user-${getUserId()}-sessions`;
+    return `smart-ai-user-${getUserId()}-sessions`;
 }
 
 function generateSessionId() {
@@ -544,7 +544,7 @@ logoutBtn.addEventListener('click', () => {
 function switchTheme(theme) {
     currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('neura-theme', theme);
+    localStorage.setItem('smart-ai-theme', theme);
     
     const content = languageContent[currentLanguage];
     themeLabel.textContent = theme === 'dark' ? content.themeLabelDark : content.themeLabelLight;
@@ -595,8 +595,8 @@ function switchLanguage(lang) {
     document.getElementById('historyTitle').textContent = content.historyTitle;
     document.getElementById('historyToggleText').textContent = content.historyToggleText;
     document.getElementById('currentSessionTitle').textContent = content.currentSessionTitle;
-    document.getElementById('newChatBtn').innerHTML = `<i class="fas fa-plus"></i><span>${content.newChatText}</span>`;
-    document.getElementById('importChatBtn').innerHTML = `<i class="fas fa-upload"></i><span>${content.importChatText}</span>`;
+    document.getElementById('newChatText').textContent = content.newChatText;
+    document.getElementById('importChatText').textContent = content.importChatText;
     
     // New Feature Texts
     document.getElementById('imagePreviewTitle').textContent = content.imagePreviewTitle;
@@ -612,12 +612,12 @@ function switchLanguage(lang) {
         sinhalaBtn.classList.remove('active');
     }
     
-    localStorage.setItem('neura-language', lang);
+    localStorage.setItem('smart-ai-language', lang);
 }
 
 // Load saved preferences
-const savedTheme = localStorage.getItem('neura-theme') || 'dark';
-const savedLanguage = localStorage.getItem('neura-language') || 'sinhala';
+const savedTheme = localStorage.getItem('smart-ai-theme') || 'dark';
+const savedLanguage = localStorage.getItem('smart-ai-language') || 'sinhala';
 
 switchTheme(savedTheme);
 switchLanguage(savedLanguage);
@@ -787,10 +787,6 @@ async function analyzeImage(imageData, prompt) {
     try {
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GOOGLE_AI_API_KEY}`;
         
-        // Convert base64 to blob
-        const base64Response = await fetch(imageData);
-        const blob = await base64Response.blob();
-        
         const requestBody = {
             contents: [{
                 parts: [
@@ -870,6 +866,12 @@ async function performWebSearch(query) {
     try {
         // Note: You need to sign up for SerpAPI and get an API key
         // Replace 'YOUR_SERP_API_KEY' with your actual SerpAPI key
+        if (SERP_API_KEY === 'YOUR_SERP_API_KEY') {
+            return currentLanguage === 'sinhala' ? 
+                'කරුණාකර වෙබ් සෙවීම සඳහා SerpAPI API key සකසන්න.' : 
+                'Please configure SerpAPI API key for web search.';
+        }
+        
         const API_URL = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
         
         const response = await fetch(API_URL);
@@ -1325,6 +1327,22 @@ document.addEventListener('keypress', function(e) {
 messageInput.style.height = 'auto';
 messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
 
+// Mobile responsiveness for sidebar
+function handleSidebarResponsive() {
+    if (window.innerWidth <= 968) {
+        sidebarClose.style.display = 'block';
+    } else {
+        sidebarClose.style.display = 'none';
+        chatSidebar.classList.remove('active');
+    }
+}
+
+// Initial sidebar setup
+handleSidebarResponsive();
+
+// Window resize event
+window.addEventListener('resize', handleSidebarResponsive);
+
 // Close sidebar when clicking outside on mobile
 document.addEventListener('click', function(e) {
     if (window.innerWidth <= 768 && 
@@ -1333,4 +1351,18 @@ document.addEventListener('click', function(e) {
         chatSidebar.classList.contains('active')) {
         chatSidebar.classList.remove('active');
     }
+});
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Smart AI Chat Application initialized successfully!');
+    
+    // Check if user is already logged in
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            console.log('User already logged in:', user.email);
+        } else {
+            console.log('No user logged in');
+        }
+    });
 });

@@ -125,7 +125,7 @@ let isOCREnabled = false;
 
 // API Keys
 const GOOGLE_AI_API_KEY = 'AIzaSyAJhruzaSUiKhP8GP7ZLg2h25GBTSKq1gs';
-const SERP_API_KEY = 'YOUR_SERP_API_KEY'; // Replace with your SerpAPI key
+const SERP_API_KEY = '0203345d7357f5c6cc6deb4c64afa3e1d79e7e2dab8fc922e909ac56c386810b'; // Replace with your SerpAPI key
 
 // DOM Elements
 const authContainer = document.getElementById('authContainer');

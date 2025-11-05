@@ -106,7 +106,7 @@ const languageContent = {
 };
 
 // Current state
-let currentLanguage = 'english'; // Changed default to English
+let currentLanguage = 'english';
 let currentTheme = 'dark';
 let chatHistory = [];
 let chatSessions = [];
@@ -594,7 +594,7 @@ function switchLanguage(lang) {
 
 // Load saved preferences
 const savedTheme = localStorage.getItem('neura-theme') || 'dark';
-const savedLanguage = localStorage.getItem('neura-language') || 'english'; // Changed default to English
+const savedLanguage = localStorage.getItem('neura-language') || 'english';
 
 switchTheme(savedTheme);
 switchLanguage(savedLanguage);

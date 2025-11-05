@@ -34,33 +34,30 @@ const languageContent = {
         rememberPassword: "Remember your password?",
         logoTitle: "Smart AI",
         headerSubtitle: "Powered by Gemini AI",
-        username: "පරිශීලක",
-        userStatus: "සබැඳි",
-        logoutText: "පිටවීම",
+        username: "User",
+        userStatus: "Online",
+        logoutText: "Logout",
         welcomeTitle: "නව Model සාර්ථකව යාවත්කාලීන කරන ලදී! ✨",
         welcomeText: "Gemini AI Model සමඟ වැඩ කිරීමට සූදානම්!<br>ඔබගේ ප්‍රශ්නය පහතින් ටයිප් කර Enter කරන්න. 🚀",
-        typingText: "Smart AI ප්‍රතිචාර සකසමින්",
-        inputPlaceholder: "ඔබගේ ප්‍රශ්නය මෙතැන ටයිප් කරන්න...",
-        themeLabelDark: "අඳුරු",
-        themeLabelLight: "ආලෝක",
-        clearChatText: "සංවාදය හිස් කරන්න",
-        exportChatText: "සංවාදය බාගන්න",
-        suggestionsText: "යෝජනා",
+        typingText: "Smart AI is preparing response",
+        inputPlaceholder: "Type your question here...",
+        themeLabelDark: "Dark",
+        themeLabelLight: "Light",
+        clearChatText: "Clear Chat",
+        exportChatText: "Export Chat",
+        suggestionsText: "Suggestions",
         copyright: "Copyright © 2025 SPMods. All Rights Reserved.",
         designCredit: "Developed: Sandun Piumal",
-        userLabel: "ඔබ",
+        userLabel: "You",
         aiLabel: "Smart AI",
-        historyTitle: "සංවාද ඉතිහාසය",
-        historyToggleText: "ඉතිහාසය",
-        currentSessionTitle: "වත්මන් සංවාදය",
-        newChatText: "නව සංවාදය",
-        importChatText: "ආයාත කරන්න",
-        imagePreviewTitle: "රූප පෙරදසුන",
-        webSearchStatusText: "වෙබ් සෙවීම සක්‍රියයි",
-        ocrProcessingText: "රූපය විශ්ලේෂණය කරමින්...",
+        historyTitle: "Chat History",
+        historyToggleText: "History",
+        currentSessionTitle: "Current Session",
+        newChatText: "New Chat",
+        importChatText: "Import",
         systemPrompt: `ඔබ Smart AI නම් උපකාරක AI වේ. සියලුම ප්‍රශ්නවලට සිංහල භාෂාවෙන් පිළිතුරු දෙන්න. 
         පිළිතුරු සවිස්තරාත්මක, උපයෝගී සහ මිත්‍රශීලී විය යුතුය. 
-        කේතය, තාක්ෂණය, විද්‍යාව, ඉතිහාසය සහ සාමාන්‍ය දැනුම පිලිබඳ ප්‍රශ්න සඳහා විස්තරාත්මක පිළිතුරු දෙන්න.`
+        කේතය, තාක්ෂණය, විද්‍යාව, ඉතිහාසය සහ සාමාන්‍ය දැනුම පිළිබඳ ප්‍රශ්න සඳහා විස්තරාත්මක පිළිතුරු දෙන්න.`
     },
     english: {
         authTitle: "Smart AI",
@@ -102,9 +99,6 @@ const languageContent = {
         currentSessionTitle: "Current Session",
         newChatText: "New Chat",
         importChatText: "Import",
-        imagePreviewTitle: "Image Preview",
-        webSearchStatusText: "Web Search Active",
-        ocrProcessingText: "Analyzing image...",
         systemPrompt: `You are Smart AI, a helpful AI assistant. Respond to all questions in English.
         Responses should be detailed, helpful and friendly.
         Provide detailed answers for questions about code, technology, science, history and general knowledge.`
@@ -112,20 +106,14 @@ const languageContent = {
 };
 
 // Current state
-let currentLanguage = 'sinhala';
+let currentLanguage = 'english'; // Changed default to English
 let currentTheme = 'dark';
 let chatHistory = [];
 let chatSessions = [];
 let currentSessionId = null;
 
-// New Feature States
-let currentImage = null;
-let isWebSearchEnabled = false;
-let isOCREnabled = false;
-
-// API Keys
+// Gemini API Key
 const GOOGLE_AI_API_KEY = 'AIzaSyAJhruzaSUiKhP8GP7ZLg2h25GBTSKq1gs';
-const SERP_API_KEY = '0203345d7357f5c6cc6deb4c64afa3e1d79e7e2dab8fc922e909ac56c386810b';
 
 // DOM Elements
 const authContainer = document.getElementById('authContainer');
@@ -153,6 +141,7 @@ const sinhalaBtn = document.getElementById('sinhalaBtn');
 const englishBtn = document.getElementById('englishBtn');
 const clearChatBtn = document.getElementById('clearChatBtn');
 const exportChatBtn = document.getElementById('exportChatBtn');
+const suggestionsBtn = document.getElementById('suggestionsBtn');
 const notification = document.getElementById('notification');
 const notificationText = document.getElementById('notificationText');
 
@@ -169,19 +158,6 @@ const renameSessionBtn = document.getElementById('renameSessionBtn');
 const currentSessionTitle = document.getElementById('currentSessionTitle');
 const sessionDate = document.getElementById('sessionDate');
 
-// New Feature Elements
-const imageUploadBtn = document.getElementById('imageUploadBtn');
-const webSearchBtn = document.getElementById('webSearchBtn');
-const ocrBtn = document.getElementById('ocrBtn');
-const imageFileInput = document.getElementById('imageFileInput');
-const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-const imagePreview = document.getElementById('imagePreview');
-const imageRemoveBtn = document.getElementById('imageRemoveBtn');
-const webSearchStatus = document.getElementById('webSearchStatus');
-const webSearchStatusText = document.getElementById('webSearchStatusText');
-const ocrStatus = document.getElementById('ocrStatus');
-const featureStatus = document.getElementById('featureStatus');
-
 // User-specific data handling functions
 function getUserId() {
     const user = auth.currentUser;
@@ -190,7 +166,7 @@ function getUserId() {
 }
 
 function getStorageKey() {
-    return `smart-ai-user-${getUserId()}-sessions`;
+    return `neura-user-${getUserId()}-sessions`;
 }
 
 function generateSessionId() {
@@ -296,7 +272,7 @@ function switchToSession(sessionId) {
         renderChatSessions();
         updateSessionDisplay();
         
-        if (window.innerWidth <= 968) {
+        if (window.innerWidth <= 768) {
             chatSidebar.classList.remove('active');
         }
     }
@@ -374,7 +350,7 @@ function updateUserProfile(user) {
 
 // Show auth container
 function showAuthContainer() {
-    authContainer.style.display = 'flex';
+    authContainer.style.display = 'block';
     chatApp.style.display = 'none';
     showLoginForm();
 }
@@ -545,7 +521,7 @@ logoutBtn.addEventListener('click', () => {
 function switchTheme(theme) {
     currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('smart-ai-theme', theme);
+    localStorage.setItem('neura-theme', theme);
     
     const content = languageContent[currentLanguage];
     themeLabel.textContent = theme === 'dark' ? content.themeLabelDark : content.themeLabelLight;
@@ -596,29 +572,29 @@ function switchLanguage(lang) {
     document.getElementById('historyTitle').textContent = content.historyTitle;
     document.getElementById('historyToggleText').textContent = content.historyToggleText;
     document.getElementById('currentSessionTitle').textContent = content.currentSessionTitle;
-    document.getElementById('newChatText').textContent = content.newChatText;
-    document.getElementById('importChatText').textContent = content.importChatText;
-    
-    // New Feature Texts
-    document.getElementById('imagePreviewTitle').textContent = content.imagePreviewTitle;
-    document.getElementById('webSearchStatusText').textContent = content.webSearchStatusText;
+    document.getElementById('newChatBtn').innerHTML = `<i class="fas fa-plus"></i><span>${content.newChatText}</span>`;
+    document.getElementById('importChatBtn').innerHTML = `<i class="fas fa-upload"></i><span>${content.importChatText}</span>`;
     
     themeLabel.textContent = currentTheme === 'dark' ? content.themeLabelDark : content.themeLabelLight;
     
+    // Update language switcher animation
+    const languageSwitcher = document.querySelector('.language-switcher');
     if (lang === 'sinhala') {
         sinhalaBtn.classList.add('active');
         englishBtn.classList.remove('active');
+        languageSwitcher.classList.remove('english-active');
     } else {
         englishBtn.classList.add('active');
         sinhalaBtn.classList.remove('active');
+        languageSwitcher.classList.add('english-active');
     }
     
-    localStorage.setItem('smart-ai-language', lang);
+    localStorage.setItem('neura-language', lang);
 }
 
 // Load saved preferences
-const savedTheme = localStorage.getItem('smart-ai-theme') || 'dark';
-const savedLanguage = localStorage.getItem('smart-ai-language') || 'sinhala';
+const savedTheme = localStorage.getItem('neura-theme') || 'dark';
+const savedLanguage = localStorage.getItem('neura-language') || 'english'; // Changed default to English
 
 switchTheme(savedTheme);
 switchLanguage(savedLanguage);
@@ -697,220 +673,13 @@ renameSessionBtn.addEventListener('click', renameCurrentSession);
 
 historySearch.addEventListener('input', renderChatSessions);
 
-// =============================================
-// NEW FEATURES: Image Recognition, OCR, Web Search
-// =============================================
-
-// Image Upload Functionality
-imageUploadBtn.addEventListener('click', () => {
-    imageFileInput.click();
-});
-
-imageFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        if (file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                currentImage = event.target.result;
-                imagePreview.innerHTML = `<img src="${currentImage}" alt="Uploaded Image">`;
-                imagePreviewContainer.style.display = 'block';
-                
-                showNotification(
-                    currentLanguage === 'sinhala' ? 'රූපය සාර්ථකව උඩුගත කරන ලදී' : 'Image uploaded successfully',
-                    'success'
-                );
-            };
-            reader.readAsDataURL(file);
-        } else {
-            showNotification(
-                currentLanguage === 'sinhala' ? 'කරුණාකර වලංගු රූප ගොනුවක් තෝරන්න' : 'Please select a valid image file',
-                'error'
-            );
-        }
-    }
-});
-
-imageRemoveBtn.addEventListener('click', () => {
-    currentImage = null;
-    imagePreview.innerHTML = '';
-    imagePreviewContainer.style.display = 'none';
-    imageFileInput.value = '';
-    
-    showNotification(
-        currentLanguage === 'sinhala' ? 'රූපය ඉවත් කරන ලදී' : 'Image removed',
-        'success'
-    );
-});
-
-// Web Search Toggle
-webSearchBtn.addEventListener('click', () => {
-    isWebSearchEnabled = !isWebSearchEnabled;
-    
-    if (isWebSearchEnabled) {
-        webSearchBtn.classList.add('active');
-        webSearchStatus.style.display = 'flex';
-        showNotification(
-            currentLanguage === 'sinhala' ? 'වෙබ් සෙවීම සක්‍රිය කරන ලදී' : 'Web search enabled',
-            'success'
-        );
-    } else {
-        webSearchBtn.classList.remove('active');
-        webSearchStatus.style.display = 'none';
-        showNotification(
-            currentLanguage === 'sinhala' ? 'වෙබ් සෙවීම අක්‍රිය කරන ලදී' : 'Web search disabled',
-            'success'
-        );
-    }
-});
-
-// OCR Toggle
-ocrBtn.addEventListener('click', () => {
-    isOCREnabled = !isOCREnabled;
-    
-    if (isOCREnabled) {
-        ocrBtn.classList.add('active');
-        ocrStatus.style.display = 'flex';
-        showNotification(
-            currentLanguage === 'sinhala' ? 'OCR සක්‍රිය කරන ලදී' : 'OCR enabled',
-            'success'
-        );
-    } else {
-        ocrBtn.classList.remove('active');
-        ocrStatus.style.display = 'none';
-        showNotification(
-            currentLanguage === 'sinhala' ? 'OCR අක්‍රිය කරන ලදී' : 'OCR disabled',
-            'success'
-        );
-    }
-});
-
-// Image Recognition using Gemini API
-async function analyzeImage(imageData, prompt) {
-    try {
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GOOGLE_AI_API_KEY}`;
-        
-        const requestBody = {
-            contents: [{
-                parts: [
-                    {
-                        text: prompt
-                    },
-                    {
-                        inline_data: {
-                            mime_type: "image/jpeg",
-                            data: imageData.split(',')[1]
-                        }
-                    }
-                ]
-            }],
-            generationConfig: {
-                temperature: 0.4,
-                topK: 32,
-                topP: 1,
-                maxOutputTokens: 4096,
-            }
-        };
-        
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-            return data.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error('Invalid response format from Gemini API');
-        }
-    } catch (error) {
-        console.error("Gemini Vision API Error:", error);
-        return currentLanguage === 'sinhala' ? 
-            "රූප විශ්ලේෂණය කිරීමේ දෝෂයක් ඇති විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න." : 
-            "Image analysis failed. Please try again later.";
-    }
-}
-
-// OCR Function using Tesseract.js
-async function performOCR(imageData) {
-    try {
-        showNotification(
-            currentLanguage === 'sinhala' ? 'රූපයේ පෙළ හඳුනා ගැනීම...' : 'Extracting text from image...',
-            'success'
-        );
-        
-        const { data: { text } } = await Tesseract.recognize(
-            imageData,
-            currentLanguage === 'sinhala' ? 'sin' : 'eng',
-            {
-                logger: m => console.log(m)
-            }
-        );
-        
-        return text.trim();
-    } catch (error) {
-        console.error("OCR Error:", error);
-        return currentLanguage === 'sinhala' ? 
-            "පෙළ හඳුනා ගැනීමේ දෝෂයක් ඇති විය." : 
-            "Text extraction failed.";
-    }
-}
-
-// Web Search Function using SerpAPI
-async function performWebSearch(query) {
-    try {
-        if (SERP_API_KEY === 'YOUR_SERP_API_KEY') {
-            return currentLanguage === 'sinhala' ? 
-                'කරුණාකර වෙබ් සෙවීම සඳහා SerpAPI API key සකසන්න.' : 
-                'Please configure SerpAPI API key for web search.';
-        }
-        
-        const API_URL = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${SERP_API_KEY}`;
-        
-        const response = await fetch(API_URL);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Format search results
-        let searchResults = '';
-        if (data.organic_results && data.organic_results.length > 0) {
-            searchResults = data.organic_results.slice(0, 3).map(result => 
-                `• ${result.title}\n  ${result.snippet}\n  ${result.link}`
-            ).join('\n\n');
-        } else {
-            searchResults = currentLanguage === 'sinhala' ? 
-                'සෙවුම් ප්‍රතිඵල හමු නොවීය.' : 
-                'No search results found.';
-        }
-        
-        return searchResults;
-    } catch (error) {
-        console.error("Web Search Error:", error);
-        return currentLanguage === 'sinhala' ? 
-            "වෙබ් සෙවුම අසාර්ථකයි. කරුණාකර පසුව නැවත උත්සාහ කරන්න." : 
-            "Web search failed. Please try again later.";
-    }
-}
-
 // Chat functionality
 messageInput.addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
-function addMessage(message, isUser, imageData = null) {
+function addMessage(message, isUser) {
     const welcomeMsg = chatMessages.querySelector('.welcome-message');
     if (welcomeMsg) {
         welcomeMsg.remove();
@@ -921,26 +690,19 @@ function addMessage(message, isUser, imageData = null) {
     messageDiv.classList.add('message');
     messageDiv.classList.add(isUser ? 'user-message' : 'ai-message');
     
-    const messageBubble = document.createElement('div');
-    messageBubble.classList.add('message-bubble');
-    
-    // Add image if present
-    if (imageData && isUser) {
-        const imageElement = document.createElement('div');
-        imageElement.classList.add('message-image');
-        imageElement.innerHTML = `<img src="${imageData}" alt="Uploaded Image">`;
-        messageBubble.appendChild(imageElement);
-    }
+    const messageHeader = document.createElement('div');
+    messageHeader.classList.add('message-header');
+    messageHeader.innerHTML = isUser ? 
+        `<div class="message-avatar"><i class="fas fa-user"></i></div> ${content.userLabel}` : 
+        `<div class="message-avatar"><i class="fas fa-robot"></i></div> ${content.aiLabel}`;
     
     const messageContent = document.createElement('div');
     messageContent.classList.add('message-content');
     messageContent.innerHTML = message.replace(/\n/g, '<br>');
-    messageBubble.appendChild(messageContent);
     
     const messageTime = document.createElement('div');
     messageTime.classList.add('message-time');
     messageTime.textContent = new Date().toLocaleTimeString();
-    messageBubble.appendChild(messageTime);
     
     // Add message actions for AI messages
     if (!isUser) {
@@ -960,18 +722,20 @@ function addMessage(message, isUser, imageData = null) {
         });
         
         messageActions.appendChild(copyBtn);
-        messageBubble.appendChild(messageActions);
+        messageDiv.appendChild(messageActions);
     }
     
-    messageDiv.appendChild(messageBubble);
+    messageDiv.appendChild(messageHeader);
+    messageDiv.appendChild(messageContent);
+    messageDiv.appendChild(messageTime);
+    
     chatMessages.appendChild(messageDiv);
     
     // Add to chat history and current session
     const messageObj = {
         content: message,
         isUser: isUser,
-        timestamp: new Date().toISOString(),
-        imageData: imageData
+        timestamp: new Date().toISOString()
     };
     
     chatHistory.push(messageObj);
@@ -1005,40 +769,29 @@ function renderChatHistory() {
         welcomeMsg.classList.add('welcome-message');
         welcomeMsg.innerHTML = `
             <div class="welcome-icon">
-                <i class="fas fa-robot"></i>
+                <i class="fas fa-rocket"></i>
             </div>
             <h2 id="welcome-title">${languageContent[currentLanguage].welcomeTitle}</h2>
             <p id="welcome-text">${languageContent[currentLanguage].welcomeText}</p>
-            <div class="suggestions">
-                <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'AI ගැන මට තව දැනගන්න ඕන' : 'Tell me about AI'}">
+            <div class="feature-buttons">
+                <button class="feature-btn" id="clearChatBtn">
+                    <i class="fas fa-trash"></i>
+                    <span id="clear-chat-text">${languageContent[currentLanguage].clearChatText}</span>
+                </button>
+                <button class="feature-btn" id="exportChatBtn">
+                    <i class="fas fa-download"></i>
+                    <span id="export-chat-text">${languageContent[currentLanguage].exportChatText}</span>
+                </button>
+                <button class="feature-btn" id="suggestionsBtn">
                     <i class="fas fa-lightbulb"></i>
-                    <span>${currentLanguage === 'sinhala' ? 'AI පිළිබඳව' : 'AI Overview'}</span>
-                </button>
-                <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'කොහොමද කේතයක් ලියන්නේ?' : 'How to write code?'}">
-                    <i class="fas fa-code"></i>
-                    <span>${currentLanguage === 'sinhala' ? 'කේත ලිවීම' : 'Coding Help'}</span>
-                </button>
-                <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'වර්තමාන තාක්ෂණ ප්‍රවණතා' : 'Current technology trends'}">
-                    <i class="fas fa-chart-line"></i>
-                    <span>${currentLanguage === 'sinhala' ? 'තාක්ෂණ ප්‍රවණතා' : 'Tech Trends'}</span>
+                    <span id="suggestions-text">${languageContent[currentLanguage].suggestionsText}</span>
                 </button>
             </div>
         `;
         chatMessages.appendChild(welcomeMsg);
-        
-        // Add event listeners to suggestion buttons
-        document.querySelectorAll('.suggestion-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const prompt = this.getAttribute('data-prompt');
-                messageInput.value = prompt;
-                messageInput.focus();
-                messageInput.style.height = 'auto';
-                messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
-            });
-        });
     } else {
         chatHistory.forEach(msg => {
-            addMessage(msg.content, msg.isUser, msg.imageData);
+            addMessage(msg.content, msg.isUser);
         });
     }
 }
@@ -1049,131 +802,54 @@ function clearChatMessages() {
     welcomeMsg.classList.add('welcome-message');
     welcomeMsg.innerHTML = `
         <div class="welcome-icon">
-            <i class="fas fa-robot"></i>
+            <i class="fas fa-rocket"></i>
         </div>
         <h2 id="welcome-title">${languageContent[currentLanguage].welcomeTitle}</h2>
         <p id="welcome-text">${languageContent[currentLanguage].welcomeText}</p>
-        <div class="suggestions">
-            <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'AI ගැන මට තව දැනගන්න ඕන' : 'Tell me about AI'}">
+        <div class="feature-buttons">
+            <button class="feature-btn" id="clearChatBtn">
+                <i class="fas fa-trash"></i>
+                <span id="clear-chat-text">${languageContent[currentLanguage].clearChatText}</span>
+            </button>
+            <button class="feature-btn" id="exportChatBtn">
+                <i class="fas fa-download"></i>
+                <span id="export-chat-text">${languageContent[currentLanguage].exportChatText}</span>
+            </button>
+            <button class="feature-btn" id="suggestionsBtn">
                 <i class="fas fa-lightbulb"></i>
-                <span>${currentLanguage === 'sinhala' ? 'AI පිළිබඳව' : 'AI Overview'}</span>
-            </button>
-            <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'කොහොමද කේතයක් ලියන්නේ?' : 'How to write code?'}">
-                <i class="fas fa-code"></i>
-                <span>${currentLanguage === 'sinhala' ? 'කේත ලිවීම' : 'Coding Help'}</span>
-            </button>
-            <button class="suggestion-btn" data-prompt="${currentLanguage === 'sinhala' ? 'වර්තමාන තාක්ෂණ ප්‍රවණතා' : 'Current technology trends'}">
-                <i class="fas fa-chart-line"></i>
-                <span>${currentLanguage === 'sinhala' ? 'තාක්ෂණ ප්‍රවණතා' : 'Tech Trends'}</span>
+                <span id="suggestions-text">${languageContent[currentLanguage].suggestionsText}</span>
             </button>
         </div>
     `;
     chatMessages.appendChild(welcomeMsg);
-    
-    // Add event listeners to suggestion buttons
-    document.querySelectorAll('.suggestion-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const prompt = this.getAttribute('data-prompt');
-            messageInput.value = prompt;
-            messageInput.focus();
-            messageInput.style.height = 'auto';
-            messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
-        });
-    });
 }
 
-// Enhanced Gemini API Integration with new features
-async function getAIResponse(userMessage, imageData = null) {
+// Gemini API Integration
+async function getAIResponse(userMessage) {
     try {
-        let finalPrompt = userMessage;
-        let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_AI_API_KEY}`;
-        
-        // Handle image analysis
-        if (imageData) {
-            apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GOOGLE_AI_API_KEY}`;
-            
-            const languageInstruction = currentLanguage === 'sinhala' ? 
-                "කරුණාකර සිංහල භාෂාවෙන් පමණක් පිළිතුරු දෙන්න. පිළිතුර සරල හා පැහැදිලි විය යුතුය." : 
-                "Please respond in English only. Keep the response clear and concise.";
-            
-            finalPrompt = `${userMessage}\n\n${languageInstruction}`;
-            
-            const requestBody = {
-                contents: [{
-                    parts: [
-                        {
-                            text: finalPrompt
-                        },
-                        {
-                            inline_data: {
-                                mime_type: "image/jpeg",
-                                data: imageData.split(',')[1]
-                            }
-                        }
-                    ]
-                }],
-                generationConfig: {
-                    temperature: 0.4,
-                    topK: 32,
-                    topP: 1,
-                    maxOutputTokens: 4096,
-                }
-            };
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                throw new Error('Invalid response format from Gemini API');
-            }
-        }
-        
-        // Handle OCR
-        if (isOCREnabled && imageData) {
-            const ocrText = await performOCR(imageData);
-            finalPrompt = `${userMessage}\n\nExtracted Text from Image:\n${ocrText}`;
-        }
-        
-        // Handle web search
-        if (isWebSearchEnabled) {
-            const searchResults = await performWebSearch(userMessage);
-            finalPrompt = `${userMessage}\n\nWeb Search Results:\n${searchResults}\n\nPlease provide a comprehensive answer based on the above information.`;
-        }
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_AI_API_KEY}`;
         
         const languagePrompt = currentLanguage === 'sinhala' ? 
             "කරුණාකර සිංහල භාෂාවෙන් පමණක් පිළිතුරු දෙන්න. පිළිතුර සරල හා පැහැදිලි විය යුතුය. මානව ආකාරයේ ස්වභාවික සංවාද භාෂාව භාවිතා කරන්න." : 
             "Please respond in English only. Keep the response clear, concise and use natural conversational language.";
         
-        finalPrompt = `${finalPrompt}\n\n${languagePrompt}`;
+        const prompt = `${userMessage}\n\n${languagePrompt}`;
         
         const requestBody = {
             contents: [{
                 parts: [{
-                    text: finalPrompt
+                    text: prompt
                 }]
             }],
             generationConfig: {
                 temperature: 0.7,
                 topK: 40,
                 topP: 0.95,
-                maxOutputTokens: 2048,
+                maxOutputTokens: 1024,
             }
         };
         
-        const response = await fetch(apiUrl, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1202,26 +878,18 @@ async function getAIResponse(userMessage, imageData = null) {
 
 async function sendMessage() {
     const message = messageInput.value.trim();
-    if (message === '' && !currentImage) return;
+    if (message === '') return;
     
-    addMessage(message, true, currentImage);
+    addMessage(message, true);
     messageInput.value = '';
     messageInput.style.height = 'auto';
     
-    // Clear image after sending
-    if (currentImage) {
-        currentImage = null;
-        imagePreview.innerHTML = '';
-        imagePreviewContainer.style.display = 'none';
-        imageFileInput.value = '';
-    }
-    
     sendButton.disabled = true;
-    typingIndicator.style.display = 'flex';
+    typingIndicator.style.display = 'block';
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
     try {
-        const response = await getAIResponse(message, currentImage);
+        const response = await getAIResponse(message);
         typingIndicator.style.display = 'none';
         addMessage(response, false);
     } catch (error) {
@@ -1302,6 +970,32 @@ exportChatBtn.addEventListener('click', function() {
     );
 });
 
+// Suggestions function
+suggestionsBtn.addEventListener('click', function() {
+    const suggestions = currentLanguage === 'sinhala' ? [
+        "AI ගැන මට තව දැනගන්න ඕන",
+        "කොහොමද කේතයක් ලියන්නේ?",
+        "මට උදව් කරන්න වර්තමාන තාක්ෂණ ප්‍රවණතා ගැන",
+        "මට ඉගෙන ගැනීමට හොඳම ක්‍රමය කුමක්ද?"
+    ] : [
+        "Tell me more about AI",
+        "How do I write code?",
+        "Help me with current technology trends",
+        "What's the best way to learn?"
+    ];
+    
+    const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+    messageInput.value = randomSuggestion;
+    messageInput.focus();
+    messageInput.style.height = 'auto';
+    messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+    
+    showNotification(
+        currentLanguage === 'sinhala' ? 'යෝජනාවක් ඇතුලත් කරන ලදී' : 'Suggestion added to input',
+        'success'
+    );
+});
+
 // Enter key for form submission
 document.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
@@ -1319,22 +1013,6 @@ document.addEventListener('keypress', function(e) {
 messageInput.style.height = 'auto';
 messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
 
-// Mobile responsiveness for sidebar
-function handleSidebarResponsive() {
-    if (window.innerWidth <= 968) {
-        historyToggle.style.display = 'flex';
-    } else {
-        historyToggle.style.display = 'none';
-        chatSidebar.classList.remove('active');
-    }
-}
-
-// Initial sidebar setup
-handleSidebarResponsive();
-
-// Window resize event
-window.addEventListener('resize', handleSidebarResponsive);
-
 // Close sidebar when clicking outside on mobile
 document.addEventListener('click', function(e) {
     if (window.innerWidth <= 768 && 
@@ -1343,18 +1021,4 @@ document.addEventListener('click', function(e) {
         chatSidebar.classList.contains('active')) {
         chatSidebar.classList.remove('active');
     }
-});
-
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Smart AI Chat Application initialized successfully!');
-    
-    // Check if user is already logged in
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            console.log('User already logged in:', user.email);
-        } else {
-            console.log('No user logged in');
-        }
-    });
 });

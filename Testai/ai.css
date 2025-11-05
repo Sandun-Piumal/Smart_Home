@@ -648,8 +648,7 @@ input:checked + .theme-slider:before {
     white-space: nowrap;
 }
 
-/* Language Switcher - Fixed Animation */
-/* Language Switcher - Final Fixed Version */
+/* Language Switcher - Fixed Gradient Animation */
 .language-switcher {
     display: flex;
     background: rgba(255, 255, 255, 0.05);
@@ -788,11 +787,6 @@ input:checked + .theme-slider:before {
     box-shadow: var(--shadow-light);
 }
 
-/* Status Indicator (Removed) */
-.status-indicator {
-    display: none !important;
-}
-
 /* Messages Container */
 .chat-messages {
     flex: 1;
@@ -853,9 +847,10 @@ input:checked + .theme-slider:before {
     }
 }
 
+/* Normal Chat Bubbles - No Gradient */
 .user-message {
     align-self: flex-end;
-    background: var(--gradient-1);
+    background: var(--primary);
     color: white;
     border-bottom-right-radius: 5px;
 }

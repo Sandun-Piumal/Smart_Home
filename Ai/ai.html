@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart AI - Modern AI Chat Interface powered by Gemini">
+    <meta name="keywords" content="AI, Chat, Gemini, Sinhala, English, Assistant">
+    <title>Smart AI - Modern Chat Interface (Gemini)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="ai.css">
+</head>
+<body>
+    <!-- Authentication Container -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h1 class="auth-title" id="authTitle">Smart AI</h1>
+            <p class="auth-subtitle" id="authSubtitle">Powered by Gemini AI</p>
+        </div>
+        
+        <!-- Login Form -->
+        <form class="auth-form" id="loginForm">
+            <div class="form-group">
+                <label class="form-label" id="emailLabel">Email</label>
+                <input type="email" class="form-input" id="loginEmail" placeholder="Your email" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="passwordLabel">Password</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="Your password" required>
+            </div>
+            <button type="submit" class="auth-button" id="loginButton">Login</button>
+            <div class="error-message" id="loginError"></div>
+            
+            <div class="forgot-password">
+                <span class="auth-link" id="forgotPassword">Forgot Password?</span>
+            </div>
+            
+            <div class="auth-switch">
+                <span id="noAccount">Don't have an account?</span>
+                <span class="auth-link" id="showSignup">Sign Up</span>
+            </div>
+        </form>
+        
+        <!-- Signup Form -->
+        <form class="auth-form" id="signupForm" style="display: none;">
+            <div class="form-group">
+                <label class="form-label" id="nameLabel">Name</label>
+                <input type="text" class="form-input" id="signupName" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="signupEmailLabel">Email</label>
+                <input type="email" class="form-input" id="signupEmail" placeholder="Your email" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="signupPasswordLabel">Password</label>
+                <input type="password" class="form-input" id="signupPassword" placeholder="At least 6 characters" minlength="6" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="confirmPasswordLabel">Confirm Password</label>
+                <input type="password" class="form-input" id="confirmPassword" placeholder="Re-enter your password" required>
+            </div>
+            <button type="submit" class="auth-button" id="signupButton">Sign Up</button>
+            <div class="error-message" id="signupError"></div>
+            <div class="success-message" id="signupSuccess"></div>
+            <div class="auth-switch">
+                <span id="haveAccount">Already have an account?</span>
+                <span class="auth-link" id="showLogin">Login</span>
+            </div>
+        </form>
+
+        <!-- Forgot Password Form -->
+        <form class="auth-form" id="forgotPasswordForm" style="display: none;">
+            <div class="form-group">
+                <label class="form-label" id="forgotEmailLabel">Email</label>
+                <input type="email" class="form-input" id="forgotEmail" placeholder="Your email address" required>
+            </div>
+            <button type="submit" class="auth-button" id="resetPasswordButton">Reset Password</button>
+            <div class="error-message" id="forgotError"></div>
+            <div class="success-message" id="forgotSuccess"></div>
+            <div class="auth-switch">
+                <span>Remember your password?</span>
+                <span class="auth-link" id="backToLogin">Back to Login</span>
+            </div>
+        </form>
+
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-copyright">
+                    <p id="copyrightText">Copyright © 2025 SPMods. All Rights Reserved.</p>
+                    <p class="design-credit" id="designCredit">Developed: Sandun Piumal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chat Application -->
+    <div class="chat-app" id="chatApp">
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1 id="logoTitle">Smart AI</h1>
+                        <p id="headerSubtitle">Powered by Gemini AI</p>
+                    </div>
+                </div>
+                
+                <div class="header-controls">
+                    <div class="theme-toggle-container">
+                        <span class="theme-label" id="themeLabel">Light</span>
+                        <div class="theme-toggle">
+                            <input type="checkbox" id="themeToggle">
+                            <label class="theme-slider" for="themeToggle">
+                                <i class="fas fa-sun theme-icon sun-icon"></i>
+                                <i class="fas fa-moon theme-icon moon-icon"></i>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="language-switcher english-active">
+                        <button class="lang-btn" id="sinhalaBtn">
+                            <i class="fas fa-language"></i>
+                            <span>සිංහල</span>
+                        </button>
+                        <button class="lang-btn active" id="englishBtn">
+                            <i class="fas fa-globe"></i>
+                            <span>English</span>
+                        </button>
+                    </div>
+
+                    <!-- Logout Button moved here (replaced status indicator) -->
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span id="logoutText">Logout</span>
+                    </button>
+                    
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-info">
+                            <h3 id="username">User</h3>
+                            <p id="userStatus">Online</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Chat History Sidebar -->
+            <div class="chat-sidebar" id="chatSidebar">
+                <div class="sidebar-header">
+                    <h3 id="historyTitle">Chat History</h3>
+                    <button class="sidebar-close" id="sidebarClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="sidebar-search">
+                    <input type="text" id="historySearch" placeholder="Search chat history...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="chat-sessions" id="chatSessions">
+                    <!-- Chat sessions will be loaded here -->
+                </div>
+                <div class="sidebar-actions">
+                    <button class="sidebar-btn" id="newChatBtn">
+                        <i class="fas fa-plus"></i>
+                        <span>New Chat</span>
+                    </button>
+                    <button class="sidebar-btn" id="importChatBtn">
+                        <i class="fas fa-upload"></i>
+                        <span>Import</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <button class="history-toggle" id="historyToggle">
+                        <i class="fas fa-history"></i>
+                        <span id="historyToggleText">History</span>
+                    </button>
+                    <div class="current-session">
+                        <h3 id="currentSessionTitle">Current Session</h3>
+                        <span class="session-date" id="sessionDate"></span>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="chat-action-btn" id="saveSessionBtn" title="Save Chat">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="chat-action-btn" id="renameSessionBtn" title="Rename Chat">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h2 id="welcomeTitle">New Model Successfully Updated! ✨</h2>
+                        <p id="welcomeText">
+                            Ready to work with Gemini AI Model!<br> Type your question below and press Enter 🚀
+                        </p>
+                        <div class="feature-buttons">
+                            <button class="feature-btn" id="clearChatBtn">
+                                <i class="fas fa-trash"></i>
+                                <span id="clearChatText">Clear Chat</span>
+                            </button>
+                            <button class="feature-btn" id="exportChatBtn">
+                                <i class="fas fa-download"></i>
+                                <span id="exportChatText">Export Chat</span>
+                            </button>
+                            <button class="feature-btn" id="suggestionsBtn">
+                                <i class="fas fa-lightbulb"></i>
+                                <span id="suggestionsText">Suggestions</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator">
+                    <i class="fas fa-robot"></i> <span id="typingText">Smart AI is preparing response</span>
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea class="chat-input" id="messageInput" placeholder="Type your question here..." rows="1"></textarea>
+                        <button class="send-button" id="sendButton">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer chat-footer">
+            <div class="footer-content">
+                <div class="footer-copyright">
+                    <p id="footerCopyright">Copyright © 2025 SPMods. All Rights Reserved.</p>
+                    <p class="design-credit" id="footerDesign">Developed: Sandun Piumal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Operation completed successfully</span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <script src="ai.js"></script>
+</body>
+</html>
